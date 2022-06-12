@@ -265,13 +265,14 @@
 
 <p>上述合约中，一旦在 a 中调用了 b 的<code>funcb</code>函数，那么对应 a 中 x1 就会等于，x2 就会等于 2。</p>
 <p>在这个过程中实际 b 合约的<code>funcb</code>函数是把 storage 里面的<code>slot 1</code>的值更换为了 1，把<code>slot 2</code>的值更换为了 2，那么由于 delegatecall 的原因这里修改的是 a 的 storage，对应就是修改了 x1，x2。</p>
+<p>注意，和slot所在的位置有关系，和变量名字没有关系</p>
 </li>
 <li><p><code>delegateCall</code> 方法仅仅使用目标合约的代码， 其余的 <code>storage</code> 等数据均使用自己的，这就使得某些访存操作会错误的处理对象</p>
 </li>
 <li><p>所以这个题可以这样解决：</p>
 <ul>
-<li>我们调用 <code>Preservation</code> 的 <code>setFirstTime</code> 函数实际通过 <code>delegatecall</code> 执行了 <code>LibraryContract</code> 的 <code>setTime</code> 函数，修改了 <code>slot 1</code> ，也就是修改了 <code>timeZone1Library</code> 变量</li>
-<li>这样，我们第一次调用 <code>setFirstTime</code> 将 <code>timeZone1Library</code> 变量修改为我们的恶意合约的地址，第二次调用 <code>setFirstTime</code> 就可以执行我们的任意代码了</li>
+<li>我们调用 <code>Preservation</code> 的 <code>setFirstTime</code> 函数实际通过 <code>delegatecall</code> 执行了 <code>LibraryContract</code> 的 <code>setTime</code> 函数，修改了 <code>slot 0</code> ，也就是修改了 <code>timeZone1Library</code> 变量（在 <code>LibraryContract</code> 合约中所修改的 <code>storedTime</code> 位于 <code>slot 0</code> ）</li>
+<li>这样，我们第一次调用 <code>setFirstTime</code> 将 <code>timeZone1Library</code> 变量修改为我们的恶意合约的地址，第二次调用 <code>setFirstTime</code> 就可以执行我们合约的任意代码了</li>
 </ul>
 </li>
 </ul>
