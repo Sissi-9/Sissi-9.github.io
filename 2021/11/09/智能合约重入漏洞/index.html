@@ -178,7 +178,8 @@
         
 
         <div class="article-content markdown-body">
-            <h1 id="智能合约重⼊漏洞"><a href="#智能合约重⼊漏洞" class="headerlink" title="智能合约重⼊漏洞"></a>智能合约重⼊漏洞</h1><h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>外部恶意合约回调了受攻击合约上的一个函数，并在受攻击合约上的任意位置“重新进入”代码执行。因为原合约的程序员可能没有预料到合约代码可以被”重入“，因此合约会出现不可预知的行为。在 gas 足够的情况下，合约之间甚至可以相互循环调用，直至达到 gas 的上限，但是如果循环中有转账之类的操作，就会导致严重的后果。</p>
+            <h1 id="智能合约重⼊漏洞"><a href="#智能合约重⼊漏洞" class="headerlink" title="智能合约重⼊漏洞"></a>智能合约重⼊漏洞</h1><p>文章首发：<a class="link" target="_blank" rel="noopener" href="https://forum.butian.net/share/878">奇安信攻防社区<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>外部恶意合约回调了受攻击合约上的一个函数，并在受攻击合约上的任意位置“重新进入”代码执行。因为原合约的程序员可能没有预料到合约代码可以被”重入“，因此合约会出现不可预知的行为。在 gas 足够的情况下，合约之间甚至可以相互循环调用，直至达到 gas 的上限，但是如果循环中有转账之类的操作，就会导致严重的后果。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">function withdraw(uint _amount) public &#123;</span><br><span class="line">	require(balances[msg.sender] &gt;= _amount)</span><br><span class="line">	msg.sender.call.value(_amount)();</span><br><span class="line">	balances[msg.sender] -= _amount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><img lazyload src="/images/loading.svg" data-src="image-20211025202430311.png" alt="image-20211025202430311"></p>
