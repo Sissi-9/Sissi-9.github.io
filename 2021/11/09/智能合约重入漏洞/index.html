@@ -241,6 +241,7 @@
 <p><img lazyload src="/images/loading.svg" data-src="image-20211110234242078.png" alt="image-20211110234242078"></p>
 <p>大约是9次</p>
 <p>注意，一旦 out of gas 就会攻击失败。</p>
+<p>可以通过使用for循环、用受害者合约的某些状态、用if判断来控制重入次数</p>
 <h2 id="规避建议"><a href="#规避建议" class="headerlink" title="规避建议"></a>规避建议</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>总是用 <code>send()</code>或<code>transfer()</code> 来发送 ether，而不是用 <code>call.value()</code>。因为transfer和send函数的gas仅有2300，这点gas仅够捕获一个event，所以将无法进行可重入攻击。</p>
 <h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>确保在执行外部调用之前已经更新了所有的内部状态，这一模式被称为：Checks-Effects-Interactions（“检查-生效-交互”）</p>
 <p>第一步，大多数函数会先做一些检查工作（例如谁调用了函数，参数是否在取值范围之内，它们是否发送了足够的以太币Ether ，用户是否具有token等等）。这些检查工作应该首先被完成。</p>
