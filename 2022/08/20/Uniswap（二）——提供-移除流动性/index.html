@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="Sissice">
+    
+    <title>
+        
+            Uniswap（二）——提供/移除流动性 |
+        
+        Sissice&#39;s Blog
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/tou.png">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","language":"en","path":"search.json"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":false,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/tou.png","favicon":"/images/tou.png","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":true}}},"local_search":{"enable":true,"preload":true},"code_copy":{"enable":true,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":true},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                Sissice&#39;s Blog
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                归档
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags"
+                            >
+                                标签
+                            </a>
+                        </li>
+                    
+                    
+                        <li class="menu-item search search-popup-trigger">
+                            <i class="fas fa-search"></i>
+                        </li>
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                    <div class="icon-item search search-popup-trigger"><i class="fas fa-search"></i></div>
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags">标签</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Uniswap（二）——提供/移除流动性</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/tou.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">Sissice</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2022-08-20 20:19:38
+    </span>
+    
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.8k Words</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fas fa-clock"></i>&nbsp;<span>23 Mins</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="提供流动性"><a href="#提供流动性" class="headerlink" title="提供流动性"></a>提供流动性</h1><p>在合约内，v3 会保存所有用户的流动性，代码内称作 <code>Position</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">User-&gt;NonfungiblePositionManager:mint</span><br><span class="line">NonfungiblePositionManager-&gt;NonfungiblePositionManager:addLiquidity</span><br><span class="line">NonfungiblePositionManager-&gt;UniswapV3Pool:mint</span><br><span class="line">UniswapV3Pool-&gt;UniswapV3Pool:_modifyPosition</span><br><span class="line">UniswapV3Pool-&gt;UniswapV3Pool:_updatePosition</span><br></pre></td></tr></table></figure>
+
+<p><code>NonfungiblePositionManager</code>的mint函数实现初始的流动性的添加。<code>increaseLiquidity</code>函数实现了流动性的增加。这两个函数的逻辑基本一致，都是通过调用<code>addLiquidity</code>函数实现。mint需要额外创建ERC721的token。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><span class="line">    /// @inheritdoc INonfungiblePositionManager</span><br><span class="line">    //mint函数实现初始的流动性的添加</span><br><span class="line">    function mint(MintParams calldata params)</span><br><span class="line">        external</span><br><span class="line">        payable</span><br><span class="line">        override</span><br><span class="line">        checkDeadline(params.deadline) //modifier，确保_blockTimestamp() &lt;= deadline</span><br><span class="line">        returns (</span><br><span class="line">            uint256 tokenId,</span><br><span class="line">            uint128 liquidity,</span><br><span class="line">            uint256 amount0,</span><br><span class="line">            uint256 amount1</span><br><span class="line">        )</span><br><span class="line">    &#123;</span><br><span class="line">        IUniswapV3Pool pool;</span><br><span class="line">        //添加流动性，并完成token0和token1的发送</span><br><span class="line">        //核心，在下面进行解释</span><br><span class="line">        (liquidity, amount0, amount1, pool) = addLiquidity(</span><br><span class="line">            AddLiquidityParams(&#123;</span><br><span class="line">                token0: params.token0,</span><br><span class="line">                token1: params.token1,</span><br><span class="line">                fee: params.fee,</span><br><span class="line">                recipient: address(this),</span><br><span class="line">                tickLower: params.tickLower,</span><br><span class="line">                tickUpper: params.tickUpper,</span><br><span class="line">                amount0Desired: params.amount0Desired,</span><br><span class="line">                amount1Desired: params.amount1Desired,</span><br><span class="line">                amount0Min: params.amount0Min,</span><br><span class="line">                amount1Min: params.amount1Min</span><br><span class="line">            &#125;)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        //铸造 ERC721 token 给用户，用来代表用户所持有的流动性</span><br><span class="line">        _mint(params.recipient, (tokenId = _nextId++));</span><br><span class="line">		</span><br><span class="line">		//由创建地址和边界return keccak256(abi.encodePacked(owner, tickLower, tickUpper))</span><br><span class="line">        bytes32 positionKey = PositionKey.compute(address(this), params.tickLower, params.tickUpper);</span><br><span class="line">        // feeGrowthGlobal0X128 和 feeGrowthGlobal1X128 ，分别表示此 position 内的 token0 和 token1 所累计的手续费总额。它只会在 position 发生变动，或者用户提取手续费时更新</span><br><span class="line">        //pool.positions是一个mapping，mapping(bytes32 =&gt; Position.Info) public override positions</span><br><span class="line">        //Position.Info是一个struct，在Position.sol中</span><br><span class="line">        (, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, , ) = pool.positions(positionKey);</span><br><span class="line"></span><br><span class="line">        // idempotent set</span><br><span class="line">        uint80 poolId =</span><br><span class="line">            cachePoolKey(</span><br><span class="line">                address(pool),</span><br><span class="line">                PoolAddress.PoolKey(&#123;token0: params.token0, token1: params.token1, fee: params.fee&#125;)</span><br><span class="line">            );</span><br><span class="line">		</span><br><span class="line">		//更新mapping _positions，用 ERC721 的 token ID 作为键，将用户提供流动性的元信息保存起来</span><br><span class="line">        _positions[tokenId] = Position(&#123;</span><br><span class="line">            nonce: 0,</span><br><span class="line">            operator: address(0),</span><br><span class="line">            poolId: poolId,</span><br><span class="line">            tickLower: params.tickLower,</span><br><span class="line">            tickUpper: params.tickUpper,</span><br><span class="line">            liquidity: liquidity,</span><br><span class="line">            feeGrowthInside0LastX128: feeGrowthInside0LastX128,</span><br><span class="line">            feeGrowthInside1LastX128: feeGrowthInside1LastX128,</span><br><span class="line">            tokensOwed0: 0,</span><br><span class="line">            tokensOwed1: 0</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        emit IncreaseLiquidity(tokenId, liquidity, amount0, amount1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">	</span><br><span class="line">	//increaseLiquidity函数实现了流动性的增加，与上面的mint类似</span><br><span class="line">    function increaseLiquidity(IncreaseLiquidityParams calldata params)</span><br><span class="line">        external</span><br><span class="line">        payable</span><br><span class="line">        override</span><br><span class="line">        checkDeadline(params.deadline)</span><br><span class="line">        returns (</span><br><span class="line">            uint128 liquidity,</span><br><span class="line">            uint256 amount0,</span><br><span class="line">            uint256 amount1</span><br><span class="line">        )</span><br><span class="line">    &#123;</span><br><span class="line">        Position storage position = _positions[params.tokenId];</span><br><span class="line"></span><br><span class="line">        PoolAddress.PoolKey memory poolKey = _poolIdToPoolKey[position.poolId];</span><br><span class="line"></span><br><span class="line">        IUniswapV3Pool pool;</span><br><span class="line">        //核心</span><br><span class="line">        (liquidity, amount0, amount1, pool) = addLiquidity(</span><br><span class="line">            AddLiquidityParams(&#123;</span><br><span class="line">                token0: poolKey.token0,</span><br><span class="line">                token1: poolKey.token1,</span><br><span class="line">                fee: poolKey.fee,</span><br><span class="line">                tickLower: position.tickLower,</span><br><span class="line">                tickUpper: position.tickUpper,</span><br><span class="line">                amount0Desired: params.amount0Desired,</span><br><span class="line">                amount1Desired: params.amount1Desired,</span><br><span class="line">                amount0Min: params.amount0Min,</span><br><span class="line">                amount1Min: params.amount1Min,</span><br><span class="line">                recipient: address(this)</span><br><span class="line">            &#125;)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        bytes32 positionKey = PositionKey.compute(address(this), position.tickLower, position.tickUpper);</span><br><span class="line"></span><br><span class="line">        // this is now updated to the current transaction</span><br><span class="line">        (, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, , ) = pool.positions(positionKey);</span><br><span class="line"></span><br><span class="line">        position.tokensOwed0 += uint128(</span><br><span class="line">        	//计算a×b÷denominator</span><br><span class="line">            FullMath.mulDiv(</span><br><span class="line">                feeGrowthInside0LastX128 - position.feeGrowthInside0LastX128, //a</span><br><span class="line">                position.liquidity, //b</span><br><span class="line">                FixedPoint128.Q128 //denominator，这里等于0x100000000000000000000000000000000</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">        position.tokensOwed1 += uint128(</span><br><span class="line">            FullMath.mulDiv(</span><br><span class="line">                feeGrowthInside1LastX128 - position.feeGrowthInside1LastX128,</span><br><span class="line">                position.liquidity,</span><br><span class="line">                FixedPoint128.Q128</span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        position.feeGrowthInside0LastX128 = feeGrowthInside0LastX128;</span><br><span class="line">        position.feeGrowthInside1LastX128 = feeGrowthInside1LastX128;</span><br><span class="line">        position.liquidity += liquidity;</span><br><span class="line"></span><br><span class="line">        emit IncreaseLiquidity(params.tokenId, liquidity, amount0, amount1);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="addLiquidity"><a href="#addLiquidity" class="headerlink" title="addLiquidity"></a>addLiquidity</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line">  struct AddLiquidityParams &#123;</span><br><span class="line">      address token0; //token0的地址</span><br><span class="line">      address token1; //token1的地址</span><br><span class="line">      uint24 fee; //交易费率</span><br><span class="line">      address recipient; //流动性所属人地址</span><br><span class="line">      int24 tickLower; //流动性价格下限（以token0计价），这里传入的是 tick index</span><br><span class="line">      int24 tickUpper; //流动性价格上限（以token0计价），这里传入的是 tick index</span><br><span class="line">      uint256 amount0Desired; //</span><br><span class="line">      uint256 amount1Desired;</span><br><span class="line">      uint256 amount0Min; //提供的token0下限数</span><br><span class="line">      uint256 amount1Min; //提供的token1下限数</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  /// @notice Add liquidity to an initialized pool</span><br><span class="line">  function addLiquidity(AddLiquidityParams memory params)</span><br><span class="line">      internal</span><br><span class="line">      returns (</span><br><span class="line">          uint128 liquidity,</span><br><span class="line">          uint256 amount0,</span><br><span class="line">          uint256 amount1,</span><br><span class="line">          IUniswapV3Pool pool</span><br><span class="line">      )</span><br><span class="line">  &#123;</span><br><span class="line">  	//检索对应的流动性池</span><br><span class="line">      PoolAddress.PoolKey memory poolKey =</span><br><span class="line">          PoolAddress.PoolKey(&#123;token0: params.token0, token1: params.token1, fee: params.fee&#125;);</span><br><span class="line"></span><br><span class="line">//不需要访问factory就可以计算出pool的地址，原理在上面的CREATE2部分</span><br><span class="line">      pool = IUniswapV3Pool(PoolAddress.computeAddress(factory, poolKey));</span><br><span class="line"></span><br><span class="line">      // compute the liquidity amount</span><br><span class="line">      //计算流动性的大小，详见下文</span><br><span class="line">      &#123;</span><br><span class="line">          (uint160 sqrtPriceX96, , , , , , ) = pool.slot0();</span><br><span class="line">          uint160 sqrtRatioAX96 = TickMath.getSqrtRatioAtTick(params.tickLower);</span><br><span class="line">          uint160 sqrtRatioBX96 = TickMath.getSqrtRatioAtTick(params.tickUpper);</span><br><span class="line"></span><br><span class="line">          liquidity = LiquidityAmounts.getLiquidityForAmounts(</span><br><span class="line">              sqrtPriceX96, //意思是价格P的平方根, 然后左移了96位保存精度</span><br><span class="line">              sqrtRatioAX96,</span><br><span class="line">              sqrtRatioBX96,</span><br><span class="line">              params.amount0Desired,</span><br><span class="line">              params.amount1Desired</span><br><span class="line">          );</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      (amount0, amount1) = pool.mint(</span><br><span class="line">          params.recipient,</span><br><span class="line">          params.tickLower,</span><br><span class="line">          params.tickUpper,</span><br><span class="line">          liquidity,</span><br><span class="line">          //用于 pool 合约回调</span><br><span class="line">          abi.encode(MintCallbackData(&#123;poolKey: poolKey, payer: msg.sender&#125;))</span><br><span class="line">      );</span><br><span class="line"></span><br><span class="line">      require(amount0 &gt;= params.amount0Min &amp;&amp; amount1 &gt;= params.amount1Min, &#x27;Price slippage check&#x27;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="getLiquidityForAmounts"><a href="#getLiquidityForAmounts" class="headerlink" title="getLiquidityForAmounts"></a>getLiquidityForAmounts</h3><p>用来计算流动性</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">  /// @notice Computes the maximum amount of liquidity received for a given amount of token0, token1, the current</span><br><span class="line">  /// pool prices and the prices at the tick boundaries</span><br><span class="line">  /// @param sqrtRatioX96 A sqrt price representing the current pool prices</span><br><span class="line">  /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary</span><br><span class="line">  /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary</span><br><span class="line">  /// @param amount0 The amount of token0 being sent in</span><br><span class="line">  /// @param amount1 The amount of token1 being sent in</span><br><span class="line">  /// @return liquidity The maximum amount of liquidity received</span><br><span class="line">  function getLiquidityForAmounts(</span><br><span class="line">      uint160 sqrtRatioX96,  //当前矿池价格的平方根</span><br><span class="line">      uint160 sqrtRatioAX96, //第一个tick边界的价格的平方根</span><br><span class="line">      uint160 sqrtRatioBX96, //第二个tick边界的价格的平方根</span><br><span class="line">      uint256 amount0, //发送的token0的数量</span><br><span class="line">      uint256 amount1 //发送的token1的数量</span><br><span class="line">      //返回收到的最大流动性金额</span><br><span class="line">  ) internal pure returns (uint128 liquidity) &#123;</span><br><span class="line">  	//排序，保证sqrtRatioAX96&lt;sqrtRatioBX96</span><br><span class="line">      if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);</span><br><span class="line">//情况1</span><br><span class="line">      if (sqrtRatioX96 &lt;= sqrtRatioAX96) &#123;</span><br><span class="line">          liquidity = getLiquidityForAmount0(sqrtRatioAX96, sqrtRatioBX96, amount0);</span><br><span class="line">      //情况2    </span><br><span class="line">      &#125; else if (sqrtRatioX96 &lt; sqrtRatioBX96) &#123;</span><br><span class="line">          uint128 liquidity0 = getLiquidityForAmount0(sqrtRatioX96, sqrtRatioBX96, amount0);</span><br><span class="line">          uint128 liquidity1 = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioX96, amount1);</span><br><span class="line"></span><br><span class="line">          liquidity = liquidity0 &lt; liquidity1 ? liquidity0 : liquidity1;</span><br><span class="line">      //情况3    </span><br><span class="line">      &#125; else &#123;</span><br><span class="line">          liquidity = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioBX96, amount1);</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>情况1：当前池中的价格小于等于价格范围的最小值</p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819160147301.png" alt="image-20220819160147301" style="zoom:50%;">
+
+<p>此时添加的流动性全部为x token<br>$$<br>L=\frac {\Delta x} {\frac{1}{\sqrt P_a}- \frac{1}{\sqrt P_b}}<br>$$<br>以上过程表示在getLiquidityForAmount0中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function getLiquidityForAmount0(</span><br><span class="line">    uint160 sqrtRatioAX96,</span><br><span class="line">    uint160 sqrtRatioBX96,</span><br><span class="line">    uint256 amount0</span><br><span class="line">) internal pure returns (uint128 liquidity) &#123;</span><br><span class="line">	//排序</span><br><span class="line">    if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);</span><br><span class="line">    //sqrtRatioAX96*sqrtRatioBX96/FixedPoint96.Q96</span><br><span class="line">    uint256 intermediate = FullMath.mulDiv(sqrtRatioAX96, sqrtRatioBX96, FixedPoint96.Q96);</span><br><span class="line">    return toUint128(FullMath.mulDiv(amount0, intermediate, sqrtRatioBX96 - sqrtRatioAX96));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>情况二：当前池中的价格在价格范围中</p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819160225006.png" alt="image-20220819160225006" style="zoom:50%;">
+
+<p>此时添加的流动性包含两个币种，可以通过任意一个 token 数量计算出流动性<br>$$<br>L=\frac {\Delta x} {\frac{1}{\sqrt P_c}- \frac{1}{\sqrt P_b}}=\frac {\Delta y} {\sqrt P_c- \sqrt P_a}<br>$$</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">uint128 liquidity0 = getLiquidityForAmount0(sqrtRatioX96, sqrtRatioBX96, amount0);</span><br><span class="line">uint128 liquidity1 = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioX96, amount1);</span><br><span class="line"></span><br><span class="line">liquidity = liquidity0 &lt; liquidity1 ? liquidity0 : liquidity1;</span><br></pre></td></tr></table></figure>
+
+<p>比较两种算法的结果，取更小的一个</p>
+<p>情况三：当前池中的价格大于等于价格范围的最大值</p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819162404788.png" alt="image-20220819162404788" style="zoom:50%;">
+
+<p>此时添加的流动性全部为y token<br>$$<br>L=\frac {\Delta y} {\sqrt P_c- \sqrt P_a}<br>$$<br>以上过程表示在getLiquidityForAmount0中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function getLiquidityForAmount1(</span><br><span class="line">    uint160 sqrtRatioAX96,</span><br><span class="line">    uint160 sqrtRatioBX96,</span><br><span class="line">    uint256 amount1</span><br><span class="line">) internal pure returns (uint128 liquidity) &#123;</span><br><span class="line">	//排序</span><br><span class="line">    if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);</span><br><span class="line">    return toUint128(FullMath.mulDiv(amount1, FixedPoint96.Q96, sqrtRatioBX96 - sqrtRatioAX96));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="MintCallbackData"><a href="#MintCallbackData" class="headerlink" title="MintCallbackData"></a>MintCallbackData</h3><p>这里是为了将Position的owner和实际流动性token的支付者解耦，让合约来管理用户的流动性，并将流动性token化（ERC721）</p>
+<p>用户调用NonfungiblePositionManager来提供流动性，所以Position的owner是NonfungiblePositionManager，NonfungiblePositionManager是通过NFT token将Position和用户关联起来的</p>
+<p>这个函数可以将指定数量的token0与token1发送到合约中去</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">struct MintCallbackData &#123;</span><br><span class="line">        PoolAddress.PoolKey poolKey;</span><br><span class="line">        address payer; //支付token的地址</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /// @inheritdoc IUniswapV3MintCallback</span><br><span class="line">    function uniswapV3MintCallback(</span><br><span class="line">        uint256 amount0Owed,</span><br><span class="line">        uint256 amount1Owed,</span><br><span class="line">        bytes calldata data</span><br><span class="line">    ) external override &#123;</span><br><span class="line">        MintCallbackData memory decoded = abi.decode(data, (MintCallbackData));</span><br><span class="line">        CallbackValidation.verifyCallback(factory, decoded.poolKey);</span><br><span class="line"></span><br><span class="line">		//根据传入的参数，使用transferFrom代用户向Pool中支付token</span><br><span class="line">        if (amount0Owed &gt; 0) pay(decoded.poolKey.token0, decoded.payer, msg.sender, amount0Owed);</span><br><span class="line">        if (amount1Owed &gt; 0) pay(decoded.poolKey.token1, decoded.payer, msg.sender, amount1Owed);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="mint"><a href="#mint" class="headerlink" title="mint"></a>mint</h2><p>位于UniswapV3Pool.sol</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">/// @inheritdoc IUniswapV3PoolActions</span><br><span class="line">/// @dev noDelegateCall is applied indirectly via _modifyPosition</span><br><span class="line">function mint(</span><br><span class="line">    address recipient, //创造流动性的地址</span><br><span class="line">    int24 tickLower, //流动性头寸下限</span><br><span class="line">    int24 tickUpper, //流动性头寸上限</span><br><span class="line">    uint128 amount, //增加的流动性数量</span><br><span class="line">    bytes calldata data //回调函数的参数</span><br><span class="line">) external override lock returns (uint256 amount0, uint256 amount1) &#123;</span><br><span class="line">	//检查增加的流动性的数量大于0</span><br><span class="line">    require(amount &gt; 0);</span><br><span class="line">    //修改Position，添加流动性，详见下面的_modifyPosition部分</span><br><span class="line">    //返回需要投入的token0和token1的数量</span><br><span class="line">    (, int256 amount0Int, int256 amount1Int) =</span><br><span class="line">        _modifyPosition(</span><br><span class="line">            ModifyPositionParams(&#123;</span><br><span class="line">                owner: recipient,</span><br><span class="line">                tickLower: tickLower,</span><br><span class="line">                tickUpper: tickUpper,</span><br><span class="line">                liquidityDelta: int256(amount).toInt128()</span><br><span class="line">            &#125;)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    amount0 = uint256(amount0Int);</span><br><span class="line">    amount1 = uint256(amount1Int);</span><br><span class="line"></span><br><span class="line">    uint256 balance0Before;</span><br><span class="line">    uint256 balance1Before;</span><br><span class="line">    if (amount0 &gt; 0) balance0Before = balance0();</span><br><span class="line">    if (amount1 &gt; 0) balance1Before = balance1();</span><br><span class="line">    //回调函数将指定数量的token0和token1发送到合约中</span><br><span class="line">    IUniswapV3MintCallback(msg.sender).uniswapV3MintCallback(amount0, amount1, data);</span><br><span class="line">    //检查投入的token0和token1是否符合预期的数量</span><br><span class="line">    if (amount0 &gt; 0) require(balance0Before.add(amount0) &lt;= balance0(), &#x27;M0&#x27;);</span><br><span class="line">    if (amount1 &gt; 0) require(balance1Before.add(amount1) &lt;= balance1(), &#x27;M1&#x27;);</span><br><span class="line"></span><br><span class="line">    emit Mint(msg.sender, recipient, tickLower, tickUpper, amount, amount0, amount1);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="modifyPosition"><a href="#modifyPosition" class="headerlink" title="_modifyPosition"></a>_modifyPosition</h2><p>ModifyPositionParams用于存储Position(流动性)相关的数据信息，包括流动性所有者地址、流动性的上下限、流动性的改动：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">struct ModifyPositionParams &#123;</span><br><span class="line">    // the address that owns the position</span><br><span class="line">    address owner;</span><br><span class="line">    // the lower and upper tick of the position</span><br><span class="line">    int24 tickLower;</span><br><span class="line">    int24 tickUpper;</span><br><span class="line">    // any change in liquidity</span><br><span class="line">    int128 liquidityDelta;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>_modifyPosition用于更新当前Position</p>
+<p>添加流动性的规则</p>
+<p>我们知道V3的核心公式</p>
+<blockquote>
+<p>y = p*x</p>
+<p>x*y = L^2</p>
+</blockquote>
+<p>可以得到</p>
+<blockquote>
+<p>x = L / √p </p>
+<p>y = L * √p</p>
+</blockquote>
+<p><strong>当价格p在区间内时</strong></p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819162436593.png" alt="image-20220819162436593" style="zoom:80%;">
+
+<p>橙色区域是我们实际需要添加的流动性，虚拟流动性是绿色区域扣除橙色的部分的宽度和高度。</p>
+<p><code>delta x</code> 就是 <code>p</code>（红点） 和 <code>p_upper</code> 在 x 轴上的距离， <code>delta y</code> 就是 <code>p</code> 和 <code>p_lower</code> 在 y 轴上的距离。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">delta x = L / √p - L / √p_&#123;upper&#125; = L * (√p_&#123;upper&#125; - √p) / (√p * √p_&#123;upper&#125;) </span><br><span class="line"></span><br><span class="line">delta y = L * √p  - L * √p_&#123;lower&#125; = L * (√p - √p_&#123;lower&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>再变换一下，改写成求 L（流动性数量）的等式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">L = delta x * (√p * √p_&#123;upper&#125;) / (√p_&#123;upper&#125; - √p) </span><br><span class="line">L = delta y / √(p - p_&#123;lower&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>当价格p大于区间时</strong></p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819162505525.png" alt="image-20220819162505525" style="zoom:80%;">
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">L = delta y / √(p_&#123;upper&#125; - p_&#123;lower&#125;)</span><br></pre></td></tr></table></figure>
+
+<p><strong>当价格p小于区间时</strong></p>
+<img lazyload src="/images/loading.svg" data-src="image-20220819162537608.png" alt="image-20220819162537608" style="zoom:80%;">
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">L = delta x * (√p_&#123;upper&#125; * √p_&#123;lower&#125;) / (√p_&#123;upper&#125; - √p_&#123;lower&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>转化为代码</p>
+<p>注意：这里的amount0与amount1为int256类型，也就是说这里的amount0与amount1这两个返回值可正可负，如果为正则表示流动性提供至需要给池子给予的数量，为负数则表示池子需要给流动性提供者给予的数量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line">  /// @dev Effect some changes to a position</span><br><span class="line">  /// @param params the position details and the change to the position&#x27;s liquidity to effect</span><br><span class="line">  /// @return position a storage pointer referencing the position with the given owner and tick range</span><br><span class="line">  /// @return amount0 the amount of token0 owed to the pool, negative if the pool should pay the recipient</span><br><span class="line">  /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient</span><br><span class="line">  function _modifyPosition(ModifyPositionParams memory params)</span><br><span class="line">      private</span><br><span class="line">      noDelegateCall</span><br><span class="line">      returns (</span><br><span class="line">          Position.Info storage position,</span><br><span class="line">          int256 amount0,</span><br><span class="line">          int256 amount1</span><br><span class="line">      )</span><br><span class="line">  &#123;</span><br><span class="line">  	//检查流动性上下限是否满足条件</span><br><span class="line">      checkTicks(params.tickLower, params.tickUpper);</span><br><span class="line"></span><br><span class="line">//读入内存，这样后续可以通过MLOAD直接访问而不用重新去加载LOAD，从而节省gas</span><br><span class="line">      Slot0 memory _slot0 = slot0; // SLOAD for gas optimization</span><br><span class="line"></span><br><span class="line">//创建或修改用户的position，后面有介绍</span><br><span class="line">      position = _updatePosition(</span><br><span class="line">          params.owner,</span><br><span class="line">          params.tickLower,</span><br><span class="line">          params.tickUpper,</span><br><span class="line">          params.liquidityDelta,</span><br><span class="line">          _slot0.tick</span><br><span class="line">      );</span><br><span class="line"></span><br><span class="line">      if (params.liquidityDelta != 0) &#123;</span><br><span class="line">          if (_slot0.tick &lt; params.tickLower) &#123;</span><br><span class="line">              // current tick is below the passed range; liquidity can only become in range by crossing from left to</span><br><span class="line">              // right, when we&#x27;ll need _more_ token0 (it&#x27;s becoming more valuable) so user must provide it</span><br><span class="line">              //如果当前的trick小于tricklower，则所有的token1将转变为token0</span><br><span class="line">              //即liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))</span><br><span class="line">              amount0 = SqrtPriceMath.getAmount0Delta(</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickLower),</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickUpper),</span><br><span class="line">                  params.liquidityDelta</span><br><span class="line">              );</span><br><span class="line">          &#125; else if (_slot0.tick &lt; params.tickUpper) &#123;</span><br><span class="line">              // current tick is inside the passed range</span><br><span class="line">              //如果当前trick小于trickupper</span><br><span class="line">              uint128 liquidityBefore = liquidity; // SLOAD for gas optimization</span><br><span class="line"></span><br><span class="line">              // write an oracle entry</span><br><span class="line">              //增加Oracle条目（预言机）</span><br><span class="line">              (slot0.observationIndex, slot0.observationCardinality) = observations.write(</span><br><span class="line">                  _slot0.observationIndex,</span><br><span class="line">                  _blockTimestamp(),</span><br><span class="line">                  _slot0.tick,</span><br><span class="line">                  liquidityBefore,</span><br><span class="line">                  _slot0.observationCardinality,</span><br><span class="line">                  _slot0.observationCardinalityNext</span><br><span class="line">              );</span><br><span class="line"></span><br><span class="line">              //计算amout0和amount1的增量</span><br><span class="line">              amount0 = SqrtPriceMath.getAmount0Delta(</span><br><span class="line">                  _slot0.sqrtPriceX96,</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickUpper),</span><br><span class="line">                  params.liquidityDelta</span><br><span class="line">              );</span><br><span class="line">              amount1 = SqrtPriceMath.getAmount1Delta(</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickLower),</span><br><span class="line">                  _slot0.sqrtPriceX96,</span><br><span class="line">                  params.liquidityDelta</span><br><span class="line">              );</span><br><span class="line">		</span><br><span class="line">		//</span><br><span class="line">              liquidity = LiquidityMath.addDelta(liquidityBefore, params.liquidityDelta);</span><br><span class="line">          &#125; else &#123;</span><br><span class="line">              // current tick is above the passed range; liquidity can only become in range by crossing from right to</span><br><span class="line">              // left, when we&#x27;ll need _more_ token1 (it&#x27;s becoming more valuable) so user must provide it</span><br><span class="line">              //如果trick超过了trickupper则此时所有的token0将转变为token1</span><br><span class="line">              //使用TickMath 库中的 getSqrtRatioAtTick 来通过 tick index 计算其所对应的价格</span><br><span class="line">              amount1 = SqrtPriceMath.getAmount1Delta(</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickLower),</span><br><span class="line">                  TickMath.getSqrtRatioAtTick(params.tickUpper),</span><br><span class="line">                  params.liquidityDelta</span><br><span class="line">              );</span><br><span class="line">          &#125;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="getAmountDelta"><a href="#getAmountDelta" class="headerlink" title="getAmountDelta"></a>getAmountDelta</h3><p>在 <code>SqrtPriceMath</code> 库中</p>
+<p>在具体的计算过程中，分成了 RoundUp 和 RoundDown 两种情况，简单来说：</p>
+<ol>
+<li>当提供/增加流动性时，会使用 RoundUp，这样可以保证增加数量为 L 的流动性时，用户提供足够的 token 到 pool 中</li>
+<li>当移除/减少流动性时，会使用 RoundDown，这样可以保证减少数量为 L 的流动性时，不会从 pool 中给用户多余的 token</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><span class="line">    /// @notice Gets the amount0 delta between two prices</span><br><span class="line">    /// @dev Calculates liquidity / sqrt(lower) - liquidity / sqrt(upper),</span><br><span class="line">    /// i.e. liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))</span><br><span class="line">    /// @param sqrtRatioAX96 A sqrt price</span><br><span class="line">    /// @param sqrtRatioBX96 Another sqrt price</span><br><span class="line">    /// @param liquidity The amount of usable liquidity</span><br><span class="line">    /// @param roundUp Whether to round the amount up or down</span><br><span class="line">    /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices</span><br><span class="line">    function getAmount0Delta(</span><br><span class="line">        uint160 sqrtRatioAX96,</span><br><span class="line">        uint160 sqrtRatioBX96,</span><br><span class="line">        uint128 liquidity,</span><br><span class="line">        bool roundUp</span><br><span class="line">    ) internal pure returns (uint256 amount0) &#123;</span><br><span class="line">        if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);</span><br><span class="line"></span><br><span class="line">        uint256 numerator1 = uint256(liquidity) &lt;&lt; FixedPoint96.RESOLUTION;</span><br><span class="line">        uint256 numerator2 = sqrtRatioBX96 - sqrtRatioAX96;</span><br><span class="line"></span><br><span class="line">        require(sqrtRatioAX96 &gt; 0);</span><br><span class="line"></span><br><span class="line">        return</span><br><span class="line">            roundUp</span><br><span class="line">            	//返回ceil(x / y)</span><br><span class="line">                ? UnsafeMath.divRoundingUp(</span><br><span class="line">                	//numerator1*numerator2/sqrtRatioBX96并取整</span><br><span class="line">                    FullMath.mulDivRoundingUp(numerator1, numerator2, sqrtRatioBX96),</span><br><span class="line">                    sqrtRatioAX96</span><br><span class="line">                )</span><br><span class="line">                : FullMath.mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /// @notice Gets the amount1 delta between two prices</span><br><span class="line">    /// @dev Calculates liquidity * (sqrt(upper) - sqrt(lower))</span><br><span class="line">    /// @param sqrtRatioAX96 A sqrt price</span><br><span class="line">    /// @param sqrtRatioBX96 Another sqrt price</span><br><span class="line">    /// @param liquidity The amount of usable liquidity</span><br><span class="line">    /// @param roundUp Whether to round the amount up, or down</span><br><span class="line">    /// @return amount1 Amount of token1 required to cover a position of size liquidity between the two passed prices</span><br><span class="line">    function getAmount1Delta(</span><br><span class="line">        uint160 sqrtRatioAX96,</span><br><span class="line">        uint160 sqrtRatioBX96,</span><br><span class="line">        uint128 liquidity,</span><br><span class="line">        bool roundUp</span><br><span class="line">    ) internal pure returns (uint256 amount1) &#123;</span><br><span class="line">        if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);</span><br><span class="line"></span><br><span class="line">        return</span><br><span class="line">            roundUp</span><br><span class="line">                ? FullMath.mulDivRoundingUp(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)</span><br><span class="line">                : FullMath.mulDiv(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    /// @notice Helper that gets signed token0 delta</span><br><span class="line">    /// @param sqrtRatioAX96 A sqrt price</span><br><span class="line">    /// @param sqrtRatioBX96 Another sqrt price</span><br><span class="line">    /// @param liquidity The change in liquidity for which to compute the amount0 delta</span><br><span class="line">    /// @return amount0 Amount of token0 corresponding to the passed liquidityDelta between the two prices</span><br><span class="line">    function getAmount0Delta(</span><br><span class="line">        uint160 sqrtRatioAX96,</span><br><span class="line">        uint160 sqrtRatioBX96,</span><br><span class="line">        int128 liquidity</span><br><span class="line">    ) internal pure returns (int256 amount0) &#123;</span><br><span class="line">        return</span><br><span class="line">            liquidity &lt; 0</span><br><span class="line">                ? -getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(-liquidity), false).toInt256()</span><br><span class="line">                : getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(liquidity), true).toInt256();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    /// @notice Helper that gets signed token1 delta</span><br><span class="line">    /// @param sqrtRatioAX96 A sqrt price</span><br><span class="line">    /// @param sqrtRatioBX96 Another sqrt price</span><br><span class="line">    /// @param liquidity The change in liquidity for which to compute the amount1 delta</span><br><span class="line">    /// @return amount1 Amount of token1 corresponding to the passed liquidityDelta between the two prices</span><br><span class="line">    function getAmount1Delta(</span><br><span class="line">        uint160 sqrtRatioAX96,</span><br><span class="line">        uint160 sqrtRatioBX96,</span><br><span class="line">        int128 liquidity</span><br><span class="line">    ) internal pure returns (int256 amount1) &#123;</span><br><span class="line">        return</span><br><span class="line">            liquidity &lt; 0</span><br><span class="line">                ? -getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(-liquidity), false).toInt256()</span><br><span class="line">                : getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(liquidity), true).toInt256();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="updatePosition"><a href="#updatePosition" class="headerlink" title="_updatePosition"></a>_updatePosition</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line">/// @dev Gets and updates a position with the given liquidity delta</span><br><span class="line">/// @param owner the owner of the position</span><br><span class="line">/// @param tickLower the lower tick of the position&#x27;s tick range</span><br><span class="line">/// @param tickUpper the upper tick of the position&#x27;s tick range</span><br><span class="line">/// @param tick the current tick, passed to avoid sloads</span><br><span class="line">function _updatePosition(</span><br><span class="line">    address owner,</span><br><span class="line">    int24 tickLower,</span><br><span class="line">    int24 tickUpper,</span><br><span class="line">    int128 liquidityDelta,</span><br><span class="line">    int24 tick</span><br><span class="line">) private returns (Position.Info storage position) &#123;</span><br><span class="line">	//获取用户的position</span><br><span class="line">    position = positions.get(owner, tickLower, tickUpper);</span><br><span class="line"></span><br><span class="line">    uint256 _feeGrowthGlobal0X128 = feeGrowthGlobal0X128; // SLOAD for gas optimization</span><br><span class="line">    uint256 _feeGrowthGlobal1X128 = feeGrowthGlobal1X128; // SLOAD for gas optimization</span><br><span class="line"></span><br><span class="line">    // if we need to update the ticks, do it</span><br><span class="line">    //根据传入的参数修改position中的lower/upper tick</span><br><span class="line">    bool flippedLower;</span><br><span class="line">    bool flippedUpper;</span><br><span class="line">    if (liquidityDelta != 0) &#123;</span><br><span class="line">        uint32 time = _blockTimestamp();</span><br><span class="line">        //获取请求时间点的Oracle数据</span><br><span class="line">        (int56 tickCumulative, uint160 secondsPerLiquidityCumulativeX128) =</span><br><span class="line">            observations.observeSingle(</span><br><span class="line">                time,</span><br><span class="line">                0,</span><br><span class="line">                slot0.tick,</span><br><span class="line">                slot0.observationIndex,</span><br><span class="line">                liquidity,</span><br><span class="line">                slot0.observationCardinality</span><br><span class="line">            );</span><br><span class="line"></span><br><span class="line">        // 更新 lower tikc 和 upper tick</span><br><span class="line">    	// fippedX 变量表示是此 tick 的引用状态是否发生变化，即</span><br><span class="line">    	// 被引用 -&gt; 未被引用 或</span><br><span class="line">    	// 未被引用 -&gt; 被引用</span><br><span class="line">    	// 后续需要根据这个变量的值来更新 tick 位图</span><br><span class="line">        flippedLower = ticks.update(</span><br><span class="line">            tickLower,</span><br><span class="line">            tick,</span><br><span class="line">            liquidityDelta,</span><br><span class="line">            _feeGrowthGlobal0X128,</span><br><span class="line">            _feeGrowthGlobal1X128,</span><br><span class="line">            secondsPerLiquidityCumulativeX128,</span><br><span class="line">            tickCumulative,</span><br><span class="line">            time,</span><br><span class="line">            false,</span><br><span class="line">            maxLiquidityPerTick</span><br><span class="line">        );</span><br><span class="line">        flippedUpper = ticks.update(</span><br><span class="line">            tickUpper,</span><br><span class="line">            tick,</span><br><span class="line">            liquidityDelta,</span><br><span class="line">            _feeGrowthGlobal0X128,</span><br><span class="line">            _feeGrowthGlobal1X128,</span><br><span class="line">            secondsPerLiquidityCumulativeX128,</span><br><span class="line">            tickCumulative,</span><br><span class="line">            time,</span><br><span class="line">            true,</span><br><span class="line">            maxLiquidityPerTick</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        // 如果一个 tick 第一次被引用，或者移除了所有引用</span><br><span class="line">    	// 那么更新 tick 位图</span><br><span class="line">        if (flippedLower) &#123;</span><br><span class="line">            tickBitmap.flipTick(tickLower, tickSpacing);</span><br><span class="line">        &#125;</span><br><span class="line">        if (flippedUpper) &#123;</span><br><span class="line">            tickBitmap.flipTick(tickUpper, tickSpacing);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    (uint256 feeGrowthInside0X128, uint256 feeGrowthInside1X128) =</span><br><span class="line">        ticks.getFeeGrowthInside(tickLower, tickUpper, tick, _feeGrowthGlobal0X128, _feeGrowthGlobal1X128);</span><br><span class="line"></span><br><span class="line">    //更新position</span><br><span class="line">    position.update(liquidityDelta, feeGrowthInside0X128, feeGrowthInside1X128);</span><br><span class="line"></span><br><span class="line">    // clear any tick data that is no longer needed</span><br><span class="line">    // 如果移除了对 tick 的引用，那么清除之前记录的元数据</span><br><span class="line">	// 这只会发生在移除流动性的操作中</span><br><span class="line">    if (liquidityDelta &lt; 0) &#123;</span><br><span class="line">        if (flippedLower) &#123;</span><br><span class="line">            ticks.clear(tickLower);</span><br><span class="line">        &#125;</span><br><span class="line">        if (flippedUpper) &#123;</span><br><span class="line">            ticks.clear(tickUpper);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="tick"><a href="#tick" class="headerlink" title="tick"></a>tick</h3><p>V3使用的等幂数列</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p_&#123;i&#125;=1.0001^i</span><br><span class="line">//调整一下</span><br><span class="line">√p_&#123;i&#125;=(√1.0001)^i</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>i</code> 也就是价格的序号，我们称之为 <code>tick</code>，而由所有序号组成的集合称之为 <code>Ticks</code>。在合约代码中，主要是以 tick 来记录流动性的区间。</p>
+<p>在 <code>UniswapV3Pool</code> 合约中有两个状态变量记录了 tick 相关的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">    // tick 元数据管理的库</span><br><span class="line">    using Tick for mapping(int24 =&gt; Tick.Info);</span><br><span class="line">    // tick 位图槽位的库</span><br><span class="line">    using TickBitmap for mapping(int16 =&gt; uint256);</span><br><span class="line"></span><br><span class="line">    // 记录了一个 tick 包含的元数据，这里只会包含所有 Position 的 lower/upper ticks</span><br><span class="line">    mapping(int24 =&gt; Tick.Info) public override ticks;</span><br><span class="line">    // tick 位图，因为这个位图比较长（一共有 887272x2 个位），大部分的位不需要初始化</span><br><span class="line">    // 因此分成两级来管理，每 256 位为一个单位，一个单位称为一个 word</span><br><span class="line">    // map 中的键是 word 的索引</span><br><span class="line">    mapping(int16 =&gt; uint256) public override tickBitmap;</span><br><span class="line"></span><br><span class="line">library Tick &#123;</span><br><span class="line">    ...</span><br><span class="line">    // tick 中记录的数据</span><br><span class="line">    struct Info &#123;</span><br><span class="line">        // 记录了所有引用这个 tick 的 position 流动性的和</span><br><span class="line">        uint128 liquidityGross;</span><br><span class="line">        // 当此 tick 被越过时（从左至右），池子中整体流动性需要变化的值</span><br><span class="line">        int128 liquidityNet;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>tick 位图用于记录所有被引用的 lower/upper tick index，我们可以用过 tick 位图，从当前价格找到下一个（从左至右或者从右至左）被引用的 tick index。</p>
+<p><a class="link" target="_blank" rel="noopener" href="https://github.com/Uniswap/uniswap-v3-core/blob/2dc1eb9f251bad1c260d22dd392d8cedb2c6a4b5/contracts/libraries/TickBitmap.sol">tick 位图<i class="fas fa-external-link-alt"></i></a>有以下几个特性：</p>
+<ul>
+<li>对于不存在的 tick，不需要初始值，因为访问 map 中不存在的 key 默认值就是 0</li>
+<li>通过对位图的每个 word(uint256) 建立索引来管理位图，即访问路径为 word index -&gt; word -&gt; tick bit</li>
+</ul>
+<p><code>liquidityGross</code>: 很好理解，每当有流动性将该 tick 设为价格区间时，不论是价格上限还是价格下限， <code>liquidityGross</code> 都会增加。换言之，当 <code>liquidityGross &gt; 0</code> 说明该 tick 已经初始化，正在被流动性使用，而 <code>liquidityGross == 0</code> 则该 tick 未初始化，没有流动性使用，计算时可以忽略。</p>
+<p><code>liquidityNet</code> 表示当价格从左至右经过此 tick 时整体流动性需要变化的净值。在单个流动性中，对于 lower tick 来说，它的值为正，对于 upper tick 来说它的值为 负。</p>
+<p>在注入或移除数量为 <code>l</code> 的流动性时，具体规则如下：</p>
+<ul>
+<li>注入流动性，tick 是价格下限，<code>liquidityNet</code> 增加 <code>l</code></li>
+<li>注入流动性，tick 是价格上限，<code>liquidityNet</code> 减少 <code>l</code></li>
+<li>移除流动性，tick 是价格下限，<code>liquidityNet</code> 减少 <code>l</code></li>
+<li>移除流动性，tick 是价格上限，<code>liquidityNet</code> 增加 <code>l</code></li>
+</ul>
+<p>在Tick.sol中，update用于更新 tick 元数据，此函数返回的 flipped 表示此 tick 的引用状态是否发生变化，之前的 <code>_updatePosition</code> 中的代码会根据这个返回值去更新 tick 位图</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">function update(</span><br><span class="line">    mapping(int24 =&gt; Tick.Info) storage self,</span><br><span class="line">    int24 tick,</span><br><span class="line">    int24 tickCurrent,</span><br><span class="line">    int128 liquidityDelta,</span><br><span class="line">    uint256 feeGrowthGlobal0X128,</span><br><span class="line">    uint256 feeGrowthGlobal1X128,</span><br><span class="line">    uint160 secondsPerLiquidityCumulativeX128,</span><br><span class="line">    int56 tickCumulative,</span><br><span class="line">    uint32 time,</span><br><span class="line">    bool upper,</span><br><span class="line">    uint128 maxLiquidity</span><br><span class="line">) internal returns (bool flipped) &#123;</span><br><span class="line">    Tick.Info storage info = self[tick];</span><br><span class="line"></span><br><span class="line">    uint128 liquidityGrossBefore = info.liquidityGross;</span><br><span class="line">    uint128 liquidityGrossAfter = LiquidityMath.addDelta(liquidityGrossBefore, liquidityDelta);</span><br><span class="line"></span><br><span class="line">    require(liquidityGrossAfter &lt;= maxLiquidity, &#x27;LO&#x27;);</span><br><span class="line"></span><br><span class="line">    //通过 liquidityGross 在进行 position 变化前后的值来判断 tick 是否仍被引用</span><br><span class="line">    flipped = (liquidityGrossAfter == 0) != (liquidityGrossBefore == 0);</span><br><span class="line"></span><br><span class="line">    if (liquidityGrossBefore == 0) &#123;</span><br><span class="line">        // by convention, we assume that all growth before a tick was initialized happened _below_ the tick</span><br><span class="line">        if (tick &lt;= tickCurrent) &#123;</span><br><span class="line">            info.feeGrowthOutside0X128 = feeGrowthGlobal0X128;</span><br><span class="line">            info.feeGrowthOutside1X128 = feeGrowthGlobal1X128;</span><br><span class="line">            info.secondsPerLiquidityOutsideX128 = secondsPerLiquidityCumulativeX128;</span><br><span class="line">            info.tickCumulativeOutside = tickCumulative;</span><br><span class="line">            info.secondsOutside = time;</span><br><span class="line">        &#125;</span><br><span class="line">        info.initialized = true;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    info.liquidityGross = liquidityGrossAfter;</span><br><span class="line"></span><br><span class="line">    // when the lower (upper) tick is crossed left to right (right to left), liquidity must be added (removed)</span><br><span class="line">    //更新liquidityNet的值</span><br><span class="line">    info.liquidityNet = upper</span><br><span class="line">        ? int256(info.liquidityNet).sub(liquidityDelta).toInt128()</span><br><span class="line">        : int256(info.liquidityNet).add(liquidityDelta).toInt128();</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="tickspacing"><a href="#tickspacing" class="headerlink" title="tickspacing"></a>tickspacing</h3><p>V3 引入了费率三档可选等级和相应的 <code>tick</code> 疏密程度，也就是 <code>tickspacing</code> 。对于每一种交易对而言，都有三档可选费率等级，0.05%, 0.3%, 1%，并且以后通过社区治理，还有可能永久增加可选的挡位。每种交易费率等级都由给定的 tickspacing，比如稳定币交易对，就是 tick 之间需要间隔 10 个才是有效的可使用的 tick 。位于间隔内的 tick 虽然存在，但程序不会去初始化和使用，也就不会产生 gas 费用。因此，我们在等幂数列的基础上，进一步节省了计算消耗。</p>
+<table>
+<thead>
+<tr>
+<th align="left">费率</th>
+<th align="left">tickspacing</th>
+<th align="left">建议的使用范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0.05%</td>
+<td align="left">10</td>
+<td align="left">稳定币交易对</td>
+</tr>
+<tr>
+<td align="left">0.3%</td>
+<td align="left">60</td>
+<td align="left">适用大多数交易对</td>
+</tr>
+<tr>
+<td align="left">1%</td>
+<td align="left">200</td>
+<td align="left">波动极大的交易对</td>
+</tr>
+</tbody></table>
+<p>在UniswapV3Factory.sol中设定</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mapping(uint24 =&gt; int24) public override feeAmountTickSpacing;</span><br><span class="line"></span><br><span class="line">	constructor() &#123;</span><br><span class="line">       owner = msg.sender;</span><br><span class="line">       emit OwnerChanged(address(0), msg.sender);</span><br><span class="line"></span><br><span class="line">       feeAmountTickSpacing[500] = 10;</span><br><span class="line">       emit FeeAmountEnabled(500, 10);</span><br><span class="line">       feeAmountTickSpacing[3000] = 60;</span><br><span class="line">       emit FeeAmountEnabled(3000, 60);</span><br><span class="line">       feeAmountTickSpacing[10000] = 200;</span><br><span class="line">       emit FeeAmountEnabled(10000, 200);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="移除流动性"><a href="#移除流动性" class="headerlink" title="移除流动性"></a>移除流动性</h1><p>在合约UniswapV3Pool中，burn用来实现流动性的移除</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">function burn(</span><br><span class="line">    int24 tickLower,</span><br><span class="line">    int24 tickUpper,</span><br><span class="line">    uint128 amount</span><br><span class="line">) external override lock returns (uint256 amount0, uint256 amount1) &#123;</span><br><span class="line">	//计算需要移除的token数</span><br><span class="line">    (Position.Info storage position, int256 amount0Int, int256 amount1Int) =</span><br><span class="line">        _modifyPosition(</span><br><span class="line">            ModifyPositionParams(&#123;</span><br><span class="line">                owner: msg.sender,</span><br><span class="line">                tickLower: tickLower,</span><br><span class="line">                tickUpper: tickUpper,</span><br><span class="line">                liquidityDelta: -int256(amount).toInt128()</span><br><span class="line">            &#125;)</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    amount0 = uint256(-amount0Int);</span><br><span class="line">    amount1 = uint256(-amount1Int);</span><br><span class="line"></span><br><span class="line">    //注意这里，移除流动性后，将移出的 token 数记录到了 position.tokensOwed 上</span><br><span class="line">    if (amount0 &gt; 0 || amount1 &gt; 0) &#123;</span><br><span class="line">        (position.tokensOwed0, position.tokensOwed1) = (</span><br><span class="line">            position.tokensOwed0 + uint128(amount0),</span><br><span class="line">            position.tokensOwed1 + uint128(amount1)</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    emit Burn(msg.sender, tickLower, tickUpper, amount, amount0, amount1);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：Uniswap（二）——提供/移除流动性</li>
+        <li>Post author：Sissice</li>
+        <li>Create time：2022-08-20 20:19:38</li>
+        <li>
+            Post link：https://sissice.github.io/2022/08/20/Uniswap（二）——提供-移除流动性/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/08/20/Uniswap%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94%E5%88%9B%E5%BB%BA%E4%BA%A4%E6%98%93%E5%AF%B9/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Uniswap（一）——创建交易对</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">Sissice</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E4%BE%9B%E6%B5%81%E5%8A%A8%E6%80%A7"><span class="nav-text">提供流动性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#addLiquidity"><span class="nav-text">addLiquidity</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getLiquidityForAmounts"><span class="nav-text">getLiquidityForAmounts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MintCallbackData"><span class="nav-text">MintCallbackData</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mint"><span class="nav-text">mint</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#modifyPosition"><span class="nav-text">_modifyPosition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getAmountDelta"><span class="nav-text">getAmountDelta</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#updatePosition"><span class="nav-text">_updatePosition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tick"><span class="nav-text">tick</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tickspacing"><span class="nav-text">tickspacing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7"><span class="nav-text">移除流动性</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+        <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-input-field-pre">
+            <i class="fas fa-keyboard"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+    
+<script src="/js/local-search.js"></script>
+
+
+
+
+    
+<script src="/js/code-copy.js"></script>
+
+
+
+
+    
+<script src="/js/lazyload.js"></script>
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>
