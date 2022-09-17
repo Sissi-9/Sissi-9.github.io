@@ -1,0 +1,670 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="整数溢出原理简介通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：  乘法溢出 加法溢出 减法溢出  在Solidity语言中，变量支持的整数类型步长以8递增，支持从uint8到uint256，以及int8到int256。例如，一个 uint8类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="合约基础漏洞">
+<meta property="og:url" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="整数溢出原理简介通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：  乘法溢出 加法溢出 减法溢出  在Solidity语言中，变量支持的整数类型步长以8递增，支持从uint8到uint256，以及int8到int256。例如，一个 uint8类">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220806235658226.png">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220807000410789.png">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814210003053.png">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213108897.png">
+<meta property="og:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213131853.png">
+<meta property="article:published_time" content="2022-08-17T13:58:37.000Z">
+<meta property="article:modified_time" content="2022-08-17T14:00:01.860Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png">
+  
+  
+  
+  <title>合约基础漏洞 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="合约基础漏洞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-17 21:58" pubdate>
+          August 17, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.1k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          18 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">合约基础漏洞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="整数溢出"><a href="#整数溢出" class="headerlink" title="整数溢出"></a>整数溢出</h1><h2 id="原理简介"><a href="#原理简介" class="headerlink" title="原理简介"></a>原理简介</h2><p>通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：</p>
+<ul>
+<li>乘法溢出</li>
+<li>加法溢出</li>
+<li>减法溢出</li>
+</ul>
+<p>在Solidity语言中，变量支持的整数类型步长以8递增，支持从uint8到uint256，以及int8到int256。例如，一个 uint8类型 ，只能存储在范围 0到2^8-1，也就是[0,255] 的数字，一个 uint256类型 ，只能存储在范围 0到2^256-1的数字。</p>
+<p>在以太坊虚拟机（EVM）中为整数指定固定大小的数据类型，而且是无符号的，这意味着在以太坊虚拟机中一个整型变量只能有一定范围的数字表示，不能超过这个制定的范围。</p>
+<p>如果试图存储 256这个数字 到一个 uint8类型中，这个256数字最终将变成 0，所以整数溢出的原理其实很简单，为了说明整数溢出原理，这里以 8 (uint8)位无符整型为例，8 位整型可表示的范围为 [0, 255]，255 在内存中存储按位存储的形式为下图所示：</p>
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>8 位无符整数 255 在内存中占据了 8bit 位置，若再加上 1 整体会因为进位而导致整体翻转为 0，最后导致原有的 8bit 表示的整数变为 0。</p>
+<p>上图即说明了智能合约中整数上溢的原理，同样整数下溢也是一样，如 <code>(uint8)0 - 1 = (uint8)255</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.12;<br>contract POC&#123;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br>    //加法溢出<br>    //如果uint256 类型的变量达到了它的最大值(2**256 - 1)，如果在加上一个大于0的值便会变成0<br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    //减法溢出<br>    //如果uint256 类型的变量达到了它的最小值(0)，如果在减去一个小于0的值便会变成2**256-1(uin256类型的最大值)<br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    //乘法溢出<br>    //如果uint256 类型的变量超过了它的最大值(2**256 - 1)，最后它的值就会回绕变成0<br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220806235658226.png" srcset="/img/loading.gif" lazyload alt="image-20220806235658226"></p>
+<h2 id="防御方式"><a href="#防御方式" class="headerlink" title="防御方式"></a>防御方式</h2><p>为了防止整数溢出的发生，一方面可以在算术逻辑前后进行验证，另一方面可以直接使用 OpenZeppelin 维护的一套智能合约函数库中的 <a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/utils#SafeMath">SafeMath</a> 来处理算术逻辑。</p>
+<p>注意：0.8版本的solidity默认使用 SafeMath，一旦溢出直接回退</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.8.0;<br>import &quot;@openzeppelin/contracts/utils/math/SafeMath.sol&quot;;<br>contract safe&#123;<br>    using SafeMath for uint256;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br><br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时将调用失败</p>
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220807000410789.png" srcset="/img/loading.gif" lazyload alt="image-20220807000410789"></p>
+<h2 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 5.Token</a></p>
+<h1 id="重入攻击"><a href="#重入攻击" class="headerlink" title="重入攻击"></a>重入攻击</h1><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">智能合约重入漏洞</a></p>
+<h1 id="随机数漏洞"><a href="#随机数漏洞" class="headerlink" title="随机数漏洞"></a>随机数漏洞</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/">智能合约错误随机性</a></p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>block.blockhash(block.number-1)：<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 3.Coin Flip</a></p>
+<h1 id="tx-origin"><a href="#tx-origin" class="headerlink" title="tx.origin"></a>tx.origin</h1><h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>tx.origin和msg.sender很直观的区别</p>
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814210003053.png" srcset="/img/loading.gif" lazyload alt="image-20220814210003053"></p>
+<p>tx.origin 不应用于授权。例如，如果所有者设置为</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">address owner = msg.sender<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>但是函数的访问检查是用</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">require(owner == tx.origin)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>这可能会被利用。</p>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 4.Telephone</a></p>
+<h1 id="call调用"><a href="#call调用" class="headerlink" title="call调用"></a>call调用</h1><h2 id="原理简介-1"><a href="#原理简介-1" class="headerlink" title="原理简介"></a>原理简介</h2><p>call</p>
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213108897.png" srcset="/img/loading.gif" lazyload alt="image-20220814213108897"></p>
+<p>delegateCall</p>
+<p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213131853.png" srcset="/img/loading.gif" lazyload alt="image-20220814213131853"></p>
+<h2 id="案例分析-1"><a href="#案例分析-1" class="headerlink" title="案例分析"></a>案例分析</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 6.Delegation</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 16. Preservation</a></p>
+<h1 id="合约变量存储机制"><a href="#合约变量存储机制" class="headerlink" title="合约变量存储机制"></a>合约变量存储机制</h1><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">合约变量存储机制</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%BC%8F%E6%B4%9E/">#漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>合约基础漏洞</div>
+      <div>http://example.com/2022/08/17/合约基础漏洞/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>August 17, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/08/20/Uniswap%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94%E5%88%9B%E5%BB%BA%E4%BA%A4%E6%98%93%E5%AF%B9/" title="Uniswap（一）——创建交易对">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Uniswap（一）——创建交易对</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/13/GO%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="GO语言学习笔记">
+                        <span class="hidden-mobile">GO语言学习笔记</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

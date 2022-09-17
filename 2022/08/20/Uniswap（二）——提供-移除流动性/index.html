@@ -1,0 +1,879 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="提供流动性在合约内，v3 会保存所有用户的流动性，代码内称作 Position 12345User-&gt;NonfungiblePositionManager:mintNonfungiblePositionManager-&gt;NonfungiblePositionManager:addLiquidityNonfungiblePositionManager-&gt;UniswapV3Pool:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uniswap（二）——提供&#x2F;移除流动性">
+<meta property="og:url" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="提供流动性在合约内，v3 会保存所有用户的流动性，代码内称作 Position 12345User-&gt;NonfungiblePositionManager:mintNonfungiblePositionManager-&gt;NonfungiblePositionManager:addLiquidityNonfungiblePositionManager-&gt;UniswapV3Pool:">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819160147301.png">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819160225006.png">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162404788.png">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162436593.png">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162505525.png">
+<meta property="og:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162537608.png">
+<meta property="article:published_time" content="2022-08-20T12:19:38.000Z">
+<meta property="article:modified_time" content="2022-08-20T12:31:47.811Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819160147301.png">
+  
+  
+  
+  <title>Uniswap（二）——提供/移除流动性 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Uniswap（二）——提供/移除流动性"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-08-20 20:19" pubdate>
+          August 20, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          23k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          194 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Uniswap（二）——提供/移除流动性</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="提供流动性"><a href="#提供流动性" class="headerlink" title="提供流动性"></a>提供流动性</h1><p>在合约内，v3 会保存所有用户的流动性，代码内称作 <code>Position</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sequence">User-&gt;NonfungiblePositionManager:mint<br>NonfungiblePositionManager-&gt;NonfungiblePositionManager:addLiquidity<br>NonfungiblePositionManager-&gt;UniswapV3Pool:mint<br>UniswapV3Pool-&gt;UniswapV3Pool:_modifyPosition<br>UniswapV3Pool-&gt;UniswapV3Pool:_updatePosition<br></code></pre></td></tr></table></figure>
+
+<p><code>NonfungiblePositionManager</code>的mint函数实现初始的流动性的添加。<code>increaseLiquidity</code>函数实现了流动性的增加。这两个函数的逻辑基本一致，都是通过调用<code>addLiquidity</code>函数实现。mint需要额外创建ERC721的token。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br></pre></td><td class="code"><pre><code class="hljs solidity">    /// @inheritdoc INonfungiblePositionManager<br>    //mint函数实现初始的流动性的添加<br>    function mint(MintParams calldata params)<br>        external<br>        payable<br>        override<br>        checkDeadline(params.deadline) //modifier，确保_blockTimestamp() &lt;= deadline<br>        returns (<br>            uint256 tokenId,<br>            uint128 liquidity,<br>            uint256 amount0,<br>            uint256 amount1<br>        )<br>    {<br>        IUniswapV3Pool pool;<br>        //添加流动性，并完成token0和token1的发送<br>        //核心，在下面进行解释<br>        (liquidity, amount0, amount1, pool) = addLiquidity(<br>            AddLiquidityParams({<br>                token0: params.token0,<br>                token1: params.token1,<br>                fee: params.fee,<br>                recipient: address(this),<br>                tickLower: params.tickLower,<br>                tickUpper: params.tickUpper,<br>                amount0Desired: params.amount0Desired,<br>                amount1Desired: params.amount1Desired,<br>                amount0Min: params.amount0Min,<br>                amount1Min: params.amount1Min<br>            })<br>        );<br><br>        //铸造 ERC721 token 给用户，用来代表用户所持有的流动性<br>        _mint(params.recipient, (tokenId = _nextId++));<br>		<br>		//由创建地址和边界return keccak256(abi.encodePacked(owner, tickLower, tickUpper))<br>        bytes32 positionKey = PositionKey.compute(address(this), params.tickLower, params.tickUpper);<br>        // feeGrowthGlobal0X128 和 feeGrowthGlobal1X128 ，分别表示此 position 内的 token0 和 token1 所累计的手续费总额。它只会在 position 发生变动，或者用户提取手续费时更新<br>        //pool.positions是一个mapping，mapping(bytes32 =&gt; Position.Info) public override positions<br>        //Position.Info是一个struct，在Position.sol中<br>        (, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, , ) = pool.positions(positionKey);<br><br>        // idempotent set<br>        uint80 poolId =<br>            cachePoolKey(<br>                address(pool),<br>                PoolAddress.PoolKey({token0: params.token0, token1: params.token1, fee: params.fee})<br>            );<br>		<br>		//更新mapping _positions，用 ERC721 的 token ID 作为键，将用户提供流动性的元信息保存起来<br>        _positions[tokenId] = Position({<br>            nonce: 0,<br>            operator: address(0),<br>            poolId: poolId,<br>            tickLower: params.tickLower,<br>            tickUpper: params.tickUpper,<br>            liquidity: liquidity,<br>            feeGrowthInside0LastX128: feeGrowthInside0LastX128,<br>            feeGrowthInside1LastX128: feeGrowthInside1LastX128,<br>            tokensOwed0: 0,<br>            tokensOwed1: 0<br>        });<br><br>        emit IncreaseLiquidity(tokenId, liquidity, amount0, amount1);<br>    }<br><br>...<br>	<br>	//increaseLiquidity函数实现了流动性的增加，与上面的mint类似<br>    function increaseLiquidity(IncreaseLiquidityParams calldata params)<br>        external<br>        payable<br>        override<br>        checkDeadline(params.deadline)<br>        returns (<br>            uint128 liquidity,<br>            uint256 amount0,<br>            uint256 amount1<br>        )<br>    {<br>        Position storage position = _positions[params.tokenId];<br><br>        PoolAddress.PoolKey memory poolKey = _poolIdToPoolKey[position.poolId];<br><br>        IUniswapV3Pool pool;<br>        //核心<br>        (liquidity, amount0, amount1, pool) = addLiquidity(<br>            AddLiquidityParams({<br>                token0: poolKey.token0,<br>                token1: poolKey.token1,<br>                fee: poolKey.fee,<br>                tickLower: position.tickLower,<br>                tickUpper: position.tickUpper,<br>                amount0Desired: params.amount0Desired,<br>                amount1Desired: params.amount1Desired,<br>                amount0Min: params.amount0Min,<br>                amount1Min: params.amount1Min,<br>                recipient: address(this)<br>            })<br>        );<br><br>        bytes32 positionKey = PositionKey.compute(address(this), position.tickLower, position.tickUpper);<br><br>        // this is now updated to the current transaction<br>        (, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, , ) = pool.positions(positionKey);<br><br>        position.tokensOwed0 += uint128(<br>        	//计算a×b÷denominator<br>            FullMath.mulDiv(<br>                feeGrowthInside0LastX128 - position.feeGrowthInside0LastX128, //a<br>                position.liquidity, //b<br>                FixedPoint128.Q128 //denominator，这里等于0x100000000000000000000000000000000<br>            )<br>        );<br>        position.tokensOwed1 += uint128(<br>            FullMath.mulDiv(<br>                feeGrowthInside1LastX128 - position.feeGrowthInside1LastX128,<br>                position.liquidity,<br>                FixedPoint128.Q128<br>            )<br>        );<br><br>        position.feeGrowthInside0LastX128 = feeGrowthInside0LastX128;<br>        position.feeGrowthInside1LastX128 = feeGrowthInside1LastX128;<br>        position.liquidity += liquidity;<br><br>        emit IncreaseLiquidity(params.tokenId, liquidity, amount0, amount1);<br>    }<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="addLiquidity"><a href="#addLiquidity" class="headerlink" title="addLiquidity"></a>addLiquidity</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs solidity">  struct AddLiquidityParams {<br>      address token0; //token0的地址<br>      address token1; //token1的地址<br>      uint24 fee; //交易费率<br>      address recipient; //流动性所属人地址<br>      int24 tickLower; //流动性价格下限（以token0计价），这里传入的是 tick index<br>      int24 tickUpper; //流动性价格上限（以token0计价），这里传入的是 tick index<br>      uint256 amount0Desired; //<br>      uint256 amount1Desired;<br>      uint256 amount0Min; //提供的token0下限数<br>      uint256 amount1Min; //提供的token1下限数<br>  }<br><br>  /// @notice Add liquidity to an initialized pool<br>  function addLiquidity(AddLiquidityParams memory params)<br>      internal<br>      returns (<br>          uint128 liquidity,<br>          uint256 amount0,<br>          uint256 amount1,<br>          IUniswapV3Pool pool<br>      )<br>  {<br>  	//检索对应的流动性池<br>      PoolAddress.PoolKey memory poolKey =<br>          PoolAddress.PoolKey({token0: params.token0, token1: params.token1, fee: params.fee});<br><br>//不需要访问factory就可以计算出pool的地址，原理在上面的CREATE2部分<br>      pool = IUniswapV3Pool(PoolAddress.computeAddress(factory, poolKey));<br><br>      // compute the liquidity amount<br>      //计算流动性的大小，详见下文<br>      {<br>          (uint160 sqrtPriceX96, , , , , , ) = pool.slot0();<br>          uint160 sqrtRatioAX96 = TickMath.getSqrtRatioAtTick(params.tickLower);<br>          uint160 sqrtRatioBX96 = TickMath.getSqrtRatioAtTick(params.tickUpper);<br><br>          liquidity = LiquidityAmounts.getLiquidityForAmounts(<br>              sqrtPriceX96, //意思是价格P的平方根, 然后左移了96位保存精度<br>              sqrtRatioAX96,<br>              sqrtRatioBX96,<br>              params.amount0Desired,<br>              params.amount1Desired<br>          );<br>      }<br><br>      (amount0, amount1) = pool.mint(<br>          params.recipient,<br>          params.tickLower,<br>          params.tickUpper,<br>          liquidity,<br>          //用于 pool 合约回调<br>          abi.encode(MintCallbackData({poolKey: poolKey, payer: msg.sender}))<br>      );<br><br>      require(amount0 &gt;= params.amount0Min &amp;&amp; amount1 &gt;= params.amount1Min, 'Price slippage check');<br>  }<br></code></pre></td></tr></table></figure>
+
+<h3 id="getLiquidityForAmounts"><a href="#getLiquidityForAmounts" class="headerlink" title="getLiquidityForAmounts"></a>getLiquidityForAmounts</h3><p>用来计算流动性</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs solidity">  /// @notice Computes the maximum amount of liquidity received for a given amount of token0, token1, the current<br>  /// pool prices and the prices at the tick boundaries<br>  /// @param sqrtRatioX96 A sqrt price representing the current pool prices<br>  /// @param sqrtRatioAX96 A sqrt price representing the first tick boundary<br>  /// @param sqrtRatioBX96 A sqrt price representing the second tick boundary<br>  /// @param amount0 The amount of token0 being sent in<br>  /// @param amount1 The amount of token1 being sent in<br>  /// @return liquidity The maximum amount of liquidity received<br>  function getLiquidityForAmounts(<br>      uint160 sqrtRatioX96,  //当前矿池价格的平方根<br>      uint160 sqrtRatioAX96, //第一个tick边界的价格的平方根<br>      uint160 sqrtRatioBX96, //第二个tick边界的价格的平方根<br>      uint256 amount0, //发送的token0的数量<br>      uint256 amount1 //发送的token1的数量<br>      //返回收到的最大流动性金额<br>  ) internal pure returns (uint128 liquidity) {<br>  	//排序，保证sqrtRatioAX96&lt;sqrtRatioBX96<br>      if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);<br>//情况1<br>      if (sqrtRatioX96 &lt;= sqrtRatioAX96) {<br>          liquidity = getLiquidityForAmount0(sqrtRatioAX96, sqrtRatioBX96, amount0);<br>      //情况2    <br>      } else if (sqrtRatioX96 &lt; sqrtRatioBX96) {<br>          uint128 liquidity0 = getLiquidityForAmount0(sqrtRatioX96, sqrtRatioBX96, amount0);<br>          uint128 liquidity1 = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioX96, amount1);<br><br>          liquidity = liquidity0 &lt; liquidity1 ? liquidity0 : liquidity1;<br>      //情况3    <br>      } else {<br>          liquidity = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioBX96, amount1);<br>      }<br>  }<br><br></code></pre></td></tr></table></figure>
+
+<p>情况1：当前池中的价格小于等于价格范围的最小值</p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819160147301.png" srcset="/img/loading.gif" lazyload alt="image-20220819160147301"></p>
+<p>此时添加的流动性全部为x token<br><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -3.307ex;" xmlns="http://www.w3.org/2000/svg" width="16.791ex" height="6.456ex" role="img" focusable="false" viewbox="0 -1392 7421.8 2853.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"/></g><g data-mml-node="mo" transform="translate(958.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(2014.6,0)"><g data-mml-node="mrow" transform="translate(2001.1,676)"><g data-mml-node="mi"><path data-c="394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"/></g><g data-mml-node="mi" transform="translate(833,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"/></g></g><g data-mml-node="mrow" transform="translate(220,-824.9)"><g data-mml-node="mfrac"><g data-mml-node="mn" transform="translate(771.9,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="msub" transform="translate(220,-525.2) scale(0.707)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,91.4)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="42.4" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"/></g></g><rect width="1657.4" height="60" x="120" y="220"/></g><g data-mml-node="mo" transform="translate(2119.6,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mfrac" transform="translate(3119.8,0)"><g data-mml-node="mn" transform="translate(746.9,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="msub" transform="translate(220,-525.2) scale(0.707)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,91.4)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="42.4" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D44F" d="M73 647Q73 657 77 670T89 683Q90 683 161 688T234 694Q246 694 246 685T212 542Q204 508 195 472T180 418L176 399Q176 396 182 402Q231 442 283 442Q345 442 383 396T422 280Q422 169 343 79T173 -11Q123 -11 82 27T40 150V159Q40 180 48 217T97 414Q147 611 147 623T109 637Q104 637 101 637H96Q86 637 83 637T76 640T73 647ZM336 325V331Q336 405 275 405Q258 405 240 397T207 376T181 352T163 330L157 322L136 236Q114 150 114 114Q114 66 138 42Q154 26 178 26Q211 26 245 58Q270 81 285 114T318 219Q336 291 336 325Z"/></g></g><rect width="1607.4" height="60" x="120" y="220"/></g></g><rect width="5167.2" height="60" x="120" y="220"/></g></g></g></svg></mjx-container><br>以上过程表示在getLiquidityForAmount0中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function getLiquidityForAmount0(<br>    uint160 sqrtRatioAX96,<br>    uint160 sqrtRatioBX96,<br>    uint256 amount0<br>) internal pure returns (uint128 liquidity) {<br>	//排序<br>    if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);<br>    //sqrtRatioAX96*sqrtRatioBX96/FixedPoint96.Q96<br>    uint256 intermediate = FullMath.mulDiv(sqrtRatioAX96, sqrtRatioBX96, FixedPoint96.Q96);<br>    return toUint128(FullMath.mulDiv(amount0, intermediate, sqrtRatioBX96 - sqrtRatioAX96));<br>}<br></code></pre></td></tr></table></figure>
+
+<p>情况二：当前池中的价格在价格范围中</p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819160225006.png" srcset="/img/loading.gif" lazyload alt="image-20220819160225006"></p>
+<p>此时添加的流动性包含两个币种，可以通过任意一个 token 数量计算出流动性<br><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -3.307ex;" xmlns="http://www.w3.org/2000/svg" width="32.634ex" height="6.456ex" role="img" focusable="false" viewbox="0 -1392 14424 2853.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"/></g><g data-mml-node="mo" transform="translate(958.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(2014.6,0)"><g data-mml-node="mrow" transform="translate(1977.1,676)"><g data-mml-node="mi"><path data-c="394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"/></g><g data-mml-node="mi" transform="translate(833,0)"><path data-c="1D465" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"/></g></g><g data-mml-node="mrow" transform="translate(220,-824.9)"><g data-mml-node="mfrac"><g data-mml-node="mn" transform="translate(747.9,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="msub" transform="translate(220,-525.2) scale(0.707)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,91.4)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="42.4" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D450" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"/></g></g><rect width="1609.4" height="60" x="120" y="220"/></g><g data-mml-node="mo" transform="translate(2071.6,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="mfrac" transform="translate(3071.8,0)"><g data-mml-node="mn" transform="translate(746.9,394) scale(0.707)"><path data-c="31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"/></g><g data-mml-node="msub" transform="translate(220,-525.2) scale(0.707)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,91.4)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="42.4" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D44F" d="M73 647Q73 657 77 670T89 683Q90 683 161 688T234 694Q246 694 246 685T212 542Q204 508 195 472T180 418L176 399Q176 396 182 402Q231 442 283 442Q345 442 383 396T422 280Q422 169 343 79T173 -11Q123 -11 82 27T40 150V159Q40 180 48 217T97 414Q147 611 147 623T109 637Q104 637 101 637H96Q86 637 83 637T76 640T73 647ZM336 325V331Q336 405 275 405Q258 405 240 397T207 376T181 352T163 330L157 322L136 236Q114 150 114 114Q114 66 138 42Q154 26 178 26Q211 26 245 58Q270 81 285 114T318 219Q336 291 336 325Z"/></g></g><rect width="1607.4" height="60" x="120" y="220"/></g></g><rect width="5119.2" height="60" x="120" y="220"/></g><g data-mml-node="mo" transform="translate(7651.6,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(8707.3,0)"><g data-mml-node="mrow" transform="translate(2196.8,676)"><g data-mml-node="mi"><path data-c="394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"/></g><g data-mml-node="mi" transform="translate(833,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="mrow" transform="translate(220,-929)"><g data-mml-node="msub"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,109)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="60" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D450" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"/></g></g><g data-mml-node="mo" transform="translate(2215.4,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="msub" transform="translate(3215.6,0)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,109)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="60" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"/></g></g></g><rect width="5476.7" height="60" x="120" y="220"/></g></g></g></svg></mjx-container></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">uint128 liquidity0 = getLiquidityForAmount0(sqrtRatioX96, sqrtRatioBX96, amount0);<br>uint128 liquidity1 = getLiquidityForAmount1(sqrtRatioAX96, sqrtRatioX96, amount1);<br><br>liquidity = liquidity0 &lt; liquidity1 ? liquidity0 : liquidity1;<br></code></pre></td></tr></table></figure>
+
+<p>比较两种算法的结果，取更小的一个</p>
+<p>情况三：当前池中的价格大于等于价格范围的最大值</p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162404788.png" srcset="/img/loading.gif" lazyload alt="image-20220819162404788"></p>
+<p>此时添加的流动性全部为y token<br><mjx-container class="MathJax" jax="SVG" display="true"><svg style="vertical-align: -2.459ex;" xmlns="http://www.w3.org/2000/svg" width="17.491ex" height="5.608ex" role="img" focusable="false" viewbox="0 -1392 7731.2 2478.8"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><path data-c="1D43F" d="M228 637Q194 637 192 641Q191 643 191 649Q191 673 202 682Q204 683 217 683Q271 680 344 680Q485 680 506 683H518Q524 677 524 674T522 656Q517 641 513 637H475Q406 636 394 628Q387 624 380 600T313 336Q297 271 279 198T252 88L243 52Q243 48 252 48T311 46H328Q360 46 379 47T428 54T478 72T522 106T564 161Q580 191 594 228T611 270Q616 273 628 273H641Q647 264 647 262T627 203T583 83T557 9Q555 4 553 3T537 0T494 -1Q483 -1 418 -1T294 0H116Q32 0 32 10Q32 17 34 24Q39 43 44 45Q48 46 59 46H65Q92 46 125 49Q139 52 144 61Q147 65 216 339T285 628Q285 635 228 637Z"/></g><g data-mml-node="mo" transform="translate(958.8,0)"><path data-c="3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"/></g><g data-mml-node="mfrac" transform="translate(2014.6,0)"><g data-mml-node="mrow" transform="translate(2196.8,676)"><g data-mml-node="mi"><path data-c="394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"/></g><g data-mml-node="mi" transform="translate(833,0)"><path data-c="1D466" d="M21 287Q21 301 36 335T84 406T158 442Q199 442 224 419T250 355Q248 336 247 334Q247 331 231 288T198 191T182 105Q182 62 196 45T238 27Q261 27 281 38T312 61T339 94Q339 95 344 114T358 173T377 247Q415 397 419 404Q432 431 462 431Q475 431 483 424T494 412T496 403Q496 390 447 193T391 -23Q363 -106 294 -155T156 -205Q111 -205 77 -183T43 -117Q43 -95 50 -80T69 -58T89 -48T106 -45Q150 -45 150 -87Q150 -107 138 -122T115 -142T102 -147L99 -148Q101 -153 118 -160T152 -167H160Q177 -167 186 -165Q219 -156 247 -127T290 -65T313 -9T321 21L315 17Q309 13 296 6T270 -6Q250 -11 231 -11Q185 -11 150 11T104 82Q103 89 103 113Q103 170 138 262T173 379Q173 380 173 381Q173 390 173 393T169 400T158 404H154Q131 404 112 385T82 344T65 302T57 280Q55 278 41 278H27Q21 284 21 287Z"/></g></g><g data-mml-node="mrow" transform="translate(220,-929)"><g data-mml-node="msub"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,109)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="60" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D450" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"/></g></g><g data-mml-node="mo" transform="translate(2215.4,0)"><path data-c="2212" d="M84 237T84 250T98 270H679Q694 262 694 250T679 230H98Q84 237 84 250Z"/></g><g data-mml-node="msub" transform="translate(3215.6,0)"><g data-mml-node="msqrt"><g transform="translate(853,0)"><g data-mml-node="mi"><path data-c="1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"/></g></g><g data-mml-node="mo" transform="translate(0,109)"><path data-c="221A" d="M95 178Q89 178 81 186T72 200T103 230T169 280T207 309Q209 311 212 311H213Q219 311 227 294T281 177Q300 134 312 108L397 -77Q398 -77 501 136T707 565T814 786Q820 800 834 800Q841 800 846 794T853 782V776L620 293L385 -193Q381 -200 366 -200Q357 -200 354 -197Q352 -195 256 15L160 225L144 214Q129 202 113 190T95 178Z"/></g><rect width="751" height="60" x="853" y="849"/></g><g data-mml-node="mi" transform="translate(1637,-150) scale(0.707)"><path data-c="1D44E" d="M33 157Q33 258 109 349T280 441Q331 441 370 392Q386 422 416 422Q429 422 439 414T449 394Q449 381 412 234T374 68Q374 43 381 35T402 26Q411 27 422 35Q443 55 463 131Q469 151 473 152Q475 153 483 153H487Q506 153 506 144Q506 138 501 117T481 63T449 13Q436 0 417 -8Q409 -10 393 -10Q359 -10 336 5T306 36L300 51Q299 52 296 50Q294 48 292 46Q233 -10 172 -10Q117 -10 75 30T33 157ZM351 328Q351 334 346 350T323 385T277 405Q242 405 210 374T160 293Q131 214 119 129Q119 126 119 118T118 106Q118 61 136 44T179 26Q217 26 254 59T298 110Q300 114 325 217T351 328Z"/></g></g></g><rect width="5476.7" height="60" x="120" y="220"/></g></g></g></svg></mjx-container><br>以上过程表示在getLiquidityForAmount0中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function getLiquidityForAmount1(<br>    uint160 sqrtRatioAX96,<br>    uint160 sqrtRatioBX96,<br>    uint256 amount1<br>) internal pure returns (uint128 liquidity) {<br>	//排序<br>    if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);<br>    return toUint128(FullMath.mulDiv(amount1, FixedPoint96.Q96, sqrtRatioBX96 - sqrtRatioAX96));<br>}<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="MintCallbackData"><a href="#MintCallbackData" class="headerlink" title="MintCallbackData"></a>MintCallbackData</h3><p>这里是为了将Position的owner和实际流动性token的支付者解耦，让合约来管理用户的流动性，并将流动性token化（ERC721）</p>
+<p>用户调用NonfungiblePositionManager来提供流动性，所以Position的owner是NonfungiblePositionManager，NonfungiblePositionManager是通过NFT token将Position和用户关联起来的</p>
+<p>这个函数可以将指定数量的token0与token1发送到合约中去</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct MintCallbackData {<br>        PoolAddress.PoolKey poolKey;<br>        address payer; //支付token的地址<br>    }<br><br>    /// @inheritdoc IUniswapV3MintCallback<br>    function uniswapV3MintCallback(<br>        uint256 amount0Owed,<br>        uint256 amount1Owed,<br>        bytes calldata data<br>    ) external override {<br>        MintCallbackData memory decoded = abi.decode(data, (MintCallbackData));<br>        CallbackValidation.verifyCallback(factory, decoded.poolKey);<br><br>		//根据传入的参数，使用transferFrom代用户向Pool中支付token<br>        if (amount0Owed &gt; 0) pay(decoded.poolKey.token0, decoded.payer, msg.sender, amount0Owed);<br>        if (amount1Owed &gt; 0) pay(decoded.poolKey.token1, decoded.payer, msg.sender, amount1Owed);<br>    }<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="mint"><a href="#mint" class="headerlink" title="mint"></a>mint</h2><p>位于UniswapV3Pool.sol</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @inheritdoc IUniswapV3PoolActions<br>/// @dev noDelegateCall is applied indirectly via _modifyPosition<br>function mint(<br>    address recipient, //创造流动性的地址<br>    int24 tickLower, //流动性头寸下限<br>    int24 tickUpper, //流动性头寸上限<br>    uint128 amount, //增加的流动性数量<br>    bytes calldata data //回调函数的参数<br>) external override lock returns (uint256 amount0, uint256 amount1) {<br>	//检查增加的流动性的数量大于0<br>    require(amount &gt; 0);<br>    //修改Position，添加流动性，详见下面的_modifyPosition部分<br>    //返回需要投入的token0和token1的数量<br>    (, int256 amount0Int, int256 amount1Int) =<br>        _modifyPosition(<br>            ModifyPositionParams({<br>                owner: recipient,<br>                tickLower: tickLower,<br>                tickUpper: tickUpper,<br>                liquidityDelta: int256(amount).toInt128()<br>            })<br>        );<br><br>    amount0 = uint256(amount0Int);<br>    amount1 = uint256(amount1Int);<br><br>    uint256 balance0Before;<br>    uint256 balance1Before;<br>    if (amount0 &gt; 0) balance0Before = balance0();<br>    if (amount1 &gt; 0) balance1Before = balance1();<br>    //回调函数将指定数量的token0和token1发送到合约中<br>    IUniswapV3MintCallback(msg.sender).uniswapV3MintCallback(amount0, amount1, data);<br>    //检查投入的token0和token1是否符合预期的数量<br>    if (amount0 &gt; 0) require(balance0Before.add(amount0) &lt;= balance0(), 'M0');<br>    if (amount1 &gt; 0) require(balance1Before.add(amount1) &lt;= balance1(), 'M1');<br><br>    emit Mint(msg.sender, recipient, tickLower, tickUpper, amount, amount0, amount1);<br>}<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="modifyPosition"><a href="#modifyPosition" class="headerlink" title="_modifyPosition"></a>_modifyPosition</h2><p>ModifyPositionParams用于存储Position(流动性)相关的数据信息，包括流动性所有者地址、流动性的上下限、流动性的改动：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct ModifyPositionParams {<br>    // the address that owns the position<br>    address owner;<br>    // the lower and upper tick of the position<br>    int24 tickLower;<br>    int24 tickUpper;<br>    // any change in liquidity<br>    int128 liquidityDelta;<br>}<br></code></pre></td></tr></table></figure>
+
+<p>_modifyPosition用于更新当前Position</p>
+<p>添加流动性的规则</p>
+<p>我们知道V3的核心公式</p>
+<blockquote>
+<p>y = p*x</p>
+<p>x*y = L^2</p>
+</blockquote>
+<p>可以得到</p>
+<blockquote>
+<p>x = L / √p </p>
+<p>y = L * √p</p>
+</blockquote>
+<p><strong>当价格p在区间内时</strong></p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162436593.png" srcset="/img/loading.gif" lazyload alt="image-20220819162436593"></p>
+<p>橙色区域是我们实际需要添加的流动性，虚拟流动性是绿色区域扣除橙色的部分的宽度和高度。</p>
+<p><code>delta x</code> 就是 <code>p</code>（红点） 和 <code>p_upper</code> 在 x 轴上的距离， <code>delta y</code> 就是 <code>p</code> 和 <code>p_lower</code> 在 y 轴上的距离。</p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs excel"><span class="hljs-built_in">delta</span> x = L / √p - L / √p_{<span class="hljs-built_in">upper</span>} = L * (√p_{<span class="hljs-built_in">upper</span>} - √p) / (√p * √p_{<span class="hljs-built_in">upper</span>}) <br><br><span class="hljs-built_in">delta</span> y = L * √p  - L * √p_{<span class="hljs-built_in">lower</span>} = L * (√p - √p_{<span class="hljs-built_in">lower</span>})<br></code></pre></td></tr></table></figure>
+
+<p>再变换一下，改写成求 L（流动性数量）的等式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs math">L = delta x * (√p * √p_{upper}) / (√p_{upper} - √p) <br>L = delta y / √(p - p_{lower})<br></code></pre></td></tr></table></figure>
+
+<p><strong>当价格p大于区间时</strong></p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162505525.png" srcset="/img/loading.gif" lazyload alt="image-20220819162505525"></p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs excel">L = <span class="hljs-built_in">delta</span> y / √(p_{<span class="hljs-built_in">upper</span>} - p_{<span class="hljs-built_in">lower</span>})<br></code></pre></td></tr></table></figure>
+
+<p><strong>当价格p小于区间时</strong></p>
+<p><img src="/2022/08/20/Uniswap%EF%BC%88%E4%BA%8C%EF%BC%89%E2%80%94%E2%80%94%E6%8F%90%E4%BE%9B-%E7%A7%BB%E9%99%A4%E6%B5%81%E5%8A%A8%E6%80%A7/image-20220819162537608.png" srcset="/img/loading.gif" lazyload alt="image-20220819162537608"></p>
+<figure class="highlight excel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs excel">L = <span class="hljs-built_in">delta</span> x * (√p_{<span class="hljs-built_in">upper</span>} * √p_{<span class="hljs-built_in">lower</span>}) / (√p_{<span class="hljs-built_in">upper</span>} - √p_{<span class="hljs-built_in">lower</span>})<br></code></pre></td></tr></table></figure>
+
+<p>转化为代码</p>
+<p>注意：这里的amount0与amount1为int256类型，也就是说这里的amount0与amount1这两个返回值可正可负，如果为正则表示流动性提供至需要给池子给予的数量，为负数则表示池子需要给流动性提供者给予的数量</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><code class="hljs solidity">  /// @dev Effect some changes to a position<br>  /// @param params the position details and the change to the position's liquidity to effect<br>  /// @return position a storage pointer referencing the position with the given owner and tick range<br>  /// @return amount0 the amount of token0 owed to the pool, negative if the pool should pay the recipient<br>  /// @return amount1 the amount of token1 owed to the pool, negative if the pool should pay the recipient<br>  function _modifyPosition(ModifyPositionParams memory params)<br>      private<br>      noDelegateCall<br>      returns (<br>          Position.Info storage position,<br>          int256 amount0,<br>          int256 amount1<br>      )<br>  {<br>  	//检查流动性上下限是否满足条件<br>      checkTicks(params.tickLower, params.tickUpper);<br><br>//读入内存，这样后续可以通过MLOAD直接访问而不用重新去加载LOAD，从而节省gas<br>      Slot0 memory _slot0 = slot0; // SLOAD for gas optimization<br><br>//创建或修改用户的position，后面有介绍<br>      position = _updatePosition(<br>          params.owner,<br>          params.tickLower,<br>          params.tickUpper,<br>          params.liquidityDelta,<br>          _slot0.tick<br>      );<br><br>      if (params.liquidityDelta != 0) {<br>          if (_slot0.tick &lt; params.tickLower) {<br>              // current tick is below the passed range; liquidity can only become in range by crossing from left to<br>              // right, when we'll need _more_ token0 (it's becoming more valuable) so user must provide it<br>              //如果当前的trick小于tricklower，则所有的token1将转变为token0<br>              //即liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))<br>              amount0 = SqrtPriceMath.getAmount0Delta(<br>                  TickMath.getSqrtRatioAtTick(params.tickLower),<br>                  TickMath.getSqrtRatioAtTick(params.tickUpper),<br>                  params.liquidityDelta<br>              );<br>          } else if (_slot0.tick &lt; params.tickUpper) {<br>              // current tick is inside the passed range<br>              //如果当前trick小于trickupper<br>              uint128 liquidityBefore = liquidity; // SLOAD for gas optimization<br><br>              // write an oracle entry<br>              //增加Oracle条目（预言机）<br>              (slot0.observationIndex, slot0.observationCardinality) = observations.write(<br>                  _slot0.observationIndex,<br>                  _blockTimestamp(),<br>                  _slot0.tick,<br>                  liquidityBefore,<br>                  _slot0.observationCardinality,<br>                  _slot0.observationCardinalityNext<br>              );<br><br>              //计算amout0和amount1的增量<br>              amount0 = SqrtPriceMath.getAmount0Delta(<br>                  _slot0.sqrtPriceX96,<br>                  TickMath.getSqrtRatioAtTick(params.tickUpper),<br>                  params.liquidityDelta<br>              );<br>              amount1 = SqrtPriceMath.getAmount1Delta(<br>                  TickMath.getSqrtRatioAtTick(params.tickLower),<br>                  _slot0.sqrtPriceX96,<br>                  params.liquidityDelta<br>              );<br>		<br>		//<br>              liquidity = LiquidityMath.addDelta(liquidityBefore, params.liquidityDelta);<br>          } else {<br>              // current tick is above the passed range; liquidity can only become in range by crossing from right to<br>              // left, when we'll need _more_ token1 (it's becoming more valuable) so user must provide it<br>              //如果trick超过了trickupper则此时所有的token0将转变为token1<br>              //使用TickMath 库中的 getSqrtRatioAtTick 来通过 tick index 计算其所对应的价格<br>              amount1 = SqrtPriceMath.getAmount1Delta(<br>                  TickMath.getSqrtRatioAtTick(params.tickLower),<br>                  TickMath.getSqrtRatioAtTick(params.tickUpper),<br>                  params.liquidityDelta<br>              );<br>          }<br>      }<br>  }<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="getAmountDelta"><a href="#getAmountDelta" class="headerlink" title="getAmountDelta"></a>getAmountDelta</h3><p>在 <code>SqrtPriceMath</code> 库中</p>
+<p>在具体的计算过程中，分成了 RoundUp 和 RoundDown 两种情况，简单来说：</p>
+<ol>
+<li>当提供/增加流动性时，会使用 RoundUp，这样可以保证增加数量为 L 的流动性时，用户提供足够的 token 到 pool 中</li>
+<li>当移除/减少流动性时，会使用 RoundDown，这样可以保证减少数量为 L 的流动性时，不会从 pool 中给用户多余的 token</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br></pre></td><td class="code"><pre><code class="hljs solidity">    /// @notice Gets the amount0 delta between two prices<br>    /// @dev Calculates liquidity / sqrt(lower) - liquidity / sqrt(upper),<br>    /// i.e. liquidity * (sqrt(upper) - sqrt(lower)) / (sqrt(upper) * sqrt(lower))<br>    /// @param sqrtRatioAX96 A sqrt price<br>    /// @param sqrtRatioBX96 Another sqrt price<br>    /// @param liquidity The amount of usable liquidity<br>    /// @param roundUp Whether to round the amount up or down<br>    /// @return amount0 Amount of token0 required to cover a position of size liquidity between the two passed prices<br>    function getAmount0Delta(<br>        uint160 sqrtRatioAX96,<br>        uint160 sqrtRatioBX96,<br>        uint128 liquidity,<br>        bool roundUp<br>    ) internal pure returns (uint256 amount0) {<br>        if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);<br><br>        uint256 numerator1 = uint256(liquidity) &lt;&lt; FixedPoint96.RESOLUTION;<br>        uint256 numerator2 = sqrtRatioBX96 - sqrtRatioAX96;<br><br>        require(sqrtRatioAX96 &gt; 0);<br><br>        return<br>            roundUp<br>            	//返回ceil(x / y)<br>                ? UnsafeMath.divRoundingUp(<br>                	//numerator1*numerator2/sqrtRatioBX96并取整<br>                    FullMath.mulDivRoundingUp(numerator1, numerator2, sqrtRatioBX96),<br>                    sqrtRatioAX96<br>                )<br>                : FullMath.mulDiv(numerator1, numerator2, sqrtRatioBX96) / sqrtRatioAX96;<br>    }<br><br>    /// @notice Gets the amount1 delta between two prices<br>    /// @dev Calculates liquidity * (sqrt(upper) - sqrt(lower))<br>    /// @param sqrtRatioAX96 A sqrt price<br>    /// @param sqrtRatioBX96 Another sqrt price<br>    /// @param liquidity The amount of usable liquidity<br>    /// @param roundUp Whether to round the amount up, or down<br>    /// @return amount1 Amount of token1 required to cover a position of size liquidity between the two passed prices<br>    function getAmount1Delta(<br>        uint160 sqrtRatioAX96,<br>        uint160 sqrtRatioBX96,<br>        uint128 liquidity,<br>        bool roundUp<br>    ) internal pure returns (uint256 amount1) {<br>        if (sqrtRatioAX96 &gt; sqrtRatioBX96) (sqrtRatioAX96, sqrtRatioBX96) = (sqrtRatioBX96, sqrtRatioAX96);<br><br>        return<br>            roundUp<br>                ? FullMath.mulDivRoundingUp(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96)<br>                : FullMath.mulDiv(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96);<br>    }<br>    <br>    /// @notice Helper that gets signed token0 delta<br>    /// @param sqrtRatioAX96 A sqrt price<br>    /// @param sqrtRatioBX96 Another sqrt price<br>    /// @param liquidity The change in liquidity for which to compute the amount0 delta<br>    /// @return amount0 Amount of token0 corresponding to the passed liquidityDelta between the two prices<br>    function getAmount0Delta(<br>        uint160 sqrtRatioAX96,<br>        uint160 sqrtRatioBX96,<br>        int128 liquidity<br>    ) internal pure returns (int256 amount0) {<br>        return<br>            liquidity &lt; 0<br>                ? -getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(-liquidity), false).toInt256()<br>                : getAmount0Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(liquidity), true).toInt256();<br>    }<br><br>    /// @notice Helper that gets signed token1 delta<br>    /// @param sqrtRatioAX96 A sqrt price<br>    /// @param sqrtRatioBX96 Another sqrt price<br>    /// @param liquidity The change in liquidity for which to compute the amount1 delta<br>    /// @return amount1 Amount of token1 corresponding to the passed liquidityDelta between the two prices<br>    function getAmount1Delta(<br>        uint160 sqrtRatioAX96,<br>        uint160 sqrtRatioBX96,<br>        int128 liquidity<br>    ) internal pure returns (int256 amount1) {<br>        return<br>            liquidity &lt; 0<br>                ? -getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(-liquidity), false).toInt256()<br>                : getAmount1Delta(sqrtRatioAX96, sqrtRatioBX96, uint128(liquidity), true).toInt256();<br>    }<br>}<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="updatePosition"><a href="#updatePosition" class="headerlink" title="_updatePosition"></a>_updatePosition</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev Gets and updates a position with the given liquidity delta<br>/// @param owner the owner of the position<br>/// @param tickLower the lower tick of the position's tick range<br>/// @param tickUpper the upper tick of the position's tick range<br>/// @param tick the current tick, passed to avoid sloads<br>function _updatePosition(<br>    address owner,<br>    int24 tickLower,<br>    int24 tickUpper,<br>    int128 liquidityDelta,<br>    int24 tick<br>) private returns (Position.Info storage position) {<br>	//获取用户的position<br>    position = positions.get(owner, tickLower, tickUpper);<br><br>    uint256 _feeGrowthGlobal0X128 = feeGrowthGlobal0X128; // SLOAD for gas optimization<br>    uint256 _feeGrowthGlobal1X128 = feeGrowthGlobal1X128; // SLOAD for gas optimization<br><br>    // if we need to update the ticks, do it<br>    //根据传入的参数修改position中的lower/upper tick<br>    bool flippedLower;<br>    bool flippedUpper;<br>    if (liquidityDelta != 0) {<br>        uint32 time = _blockTimestamp();<br>        //获取请求时间点的Oracle数据<br>        (int56 tickCumulative, uint160 secondsPerLiquidityCumulativeX128) =<br>            observations.observeSingle(<br>                time,<br>                0,<br>                slot0.tick,<br>                slot0.observationIndex,<br>                liquidity,<br>                slot0.observationCardinality<br>            );<br><br>        // 更新 lower tikc 和 upper tick<br>    	// fippedX 变量表示是此 tick 的引用状态是否发生变化，即<br>    	// 被引用 -&gt; 未被引用 或<br>    	// 未被引用 -&gt; 被引用<br>    	// 后续需要根据这个变量的值来更新 tick 位图<br>        flippedLower = ticks.update(<br>            tickLower,<br>            tick,<br>            liquidityDelta,<br>            _feeGrowthGlobal0X128,<br>            _feeGrowthGlobal1X128,<br>            secondsPerLiquidityCumulativeX128,<br>            tickCumulative,<br>            time,<br>            false,<br>            maxLiquidityPerTick<br>        );<br>        flippedUpper = ticks.update(<br>            tickUpper,<br>            tick,<br>            liquidityDelta,<br>            _feeGrowthGlobal0X128,<br>            _feeGrowthGlobal1X128,<br>            secondsPerLiquidityCumulativeX128,<br>            tickCumulative,<br>            time,<br>            true,<br>            maxLiquidityPerTick<br>        );<br><br>        // 如果一个 tick 第一次被引用，或者移除了所有引用<br>    	// 那么更新 tick 位图<br>        if (flippedLower) {<br>            tickBitmap.flipTick(tickLower, tickSpacing);<br>        }<br>        if (flippedUpper) {<br>            tickBitmap.flipTick(tickUpper, tickSpacing);<br>        }<br>    }<br><br>    (uint256 feeGrowthInside0X128, uint256 feeGrowthInside1X128) =<br>        ticks.getFeeGrowthInside(tickLower, tickUpper, tick, _feeGrowthGlobal0X128, _feeGrowthGlobal1X128);<br><br>    //更新position<br>    position.update(liquidityDelta, feeGrowthInside0X128, feeGrowthInside1X128);<br><br>    // clear any tick data that is no longer needed<br>    // 如果移除了对 tick 的引用，那么清除之前记录的元数据<br>	// 这只会发生在移除流动性的操作中<br>    if (liquidityDelta &lt; 0) {<br>        if (flippedLower) {<br>            ticks.clear(tickLower);<br>        }<br>        if (flippedUpper) {<br>            ticks.clear(tickUpper);<br>        }<br>    }<br>}<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="tick"><a href="#tick" class="headerlink" title="tick"></a>tick</h3><p>V3使用的等幂数列</p>
+<figure class="highlight cos"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cos">p_{i}=<span class="hljs-number">1.0001</span><span class="hljs-symbol">^i</span><br><span class="hljs-comment">//调整一下</span><br>√p_{i}=(√<span class="hljs-number">1.0001</span>)<span class="hljs-symbol">^i</span><br></code></pre></td></tr></table></figure>
+
+<p>这里的 <code>i</code> 也就是价格的序号，我们称之为 <code>tick</code>，而由所有序号组成的集合称之为 <code>Ticks</code>。在合约代码中，主要是以 tick 来记录流动性的区间。</p>
+<p>在 <code>UniswapV3Pool</code> 合约中有两个状态变量记录了 tick 相关的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs solidity">    // tick 元数据管理的库<br>    using Tick for mapping(int24 =&gt; Tick.Info);<br>    // tick 位图槽位的库<br>    using TickBitmap for mapping(int16 =&gt; uint256);<br><br>    // 记录了一个 tick 包含的元数据，这里只会包含所有 Position 的 lower/upper ticks<br>    mapping(int24 =&gt; Tick.Info) public override ticks;<br>    // tick 位图，因为这个位图比较长（一共有 887272x2 个位），大部分的位不需要初始化<br>    // 因此分成两级来管理，每 256 位为一个单位，一个单位称为一个 word<br>    // map 中的键是 word 的索引<br>    mapping(int16 =&gt; uint256) public override tickBitmap;<br><br>library Tick {<br>    ...<br>    // tick 中记录的数据<br>    struct Info {<br>        // 记录了所有引用这个 tick 的 position 流动性的和<br>        uint128 liquidityGross;<br>        // 当此 tick 被越过时（从左至右），池子中整体流动性需要变化的值<br>        int128 liquidityNet;<br>        ...<br>    }<br></code></pre></td></tr></table></figure>
+
+<p>tick 位图用于记录所有被引用的 lower/upper tick index，我们可以用过 tick 位图，从当前价格找到下一个（从左至右或者从右至左）被引用的 tick index。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Uniswap/uniswap-v3-core/blob/2dc1eb9f251bad1c260d22dd392d8cedb2c6a4b5/contracts/libraries/TickBitmap.sol">tick 位图</a>有以下几个特性：</p>
+<ul>
+<li>对于不存在的 tick，不需要初始值，因为访问 map 中不存在的 key 默认值就是 0</li>
+<li>通过对位图的每个 word(uint256) 建立索引来管理位图，即访问路径为 word index -&gt; word -&gt; tick bit</li>
+</ul>
+<p><code>liquidityGross</code>: 很好理解，每当有流动性将该 tick 设为价格区间时，不论是价格上限还是价格下限， <code>liquidityGross</code> 都会增加。换言之，当 <code>liquidityGross &gt; 0</code> 说明该 tick 已经初始化，正在被流动性使用，而 <code>liquidityGross == 0</code> 则该 tick 未初始化，没有流动性使用，计算时可以忽略。</p>
+<p><code>liquidityNet</code> 表示当价格从左至右经过此 tick 时整体流动性需要变化的净值。在单个流动性中，对于 lower tick 来说，它的值为正，对于 upper tick 来说它的值为 负。</p>
+<p>在注入或移除数量为 <code>l</code> 的流动性时，具体规则如下：</p>
+<ul>
+<li>注入流动性，tick 是价格下限，<code>liquidityNet</code> 增加 <code>l</code></li>
+<li>注入流动性，tick 是价格上限，<code>liquidityNet</code> 减少 <code>l</code></li>
+<li>移除流动性，tick 是价格下限，<code>liquidityNet</code> 减少 <code>l</code></li>
+<li>移除流动性，tick 是价格上限，<code>liquidityNet</code> 增加 <code>l</code></li>
+</ul>
+<p>在Tick.sol中，update用于更新 tick 元数据，此函数返回的 flipped 表示此 tick 的引用状态是否发生变化，之前的 <code>_updatePosition</code> 中的代码会根据这个返回值去更新 tick 位图</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function update(<br>    mapping(int24 =&gt; Tick.Info) storage self,<br>    int24 tick,<br>    int24 tickCurrent,<br>    int128 liquidityDelta,<br>    uint256 feeGrowthGlobal0X128,<br>    uint256 feeGrowthGlobal1X128,<br>    uint160 secondsPerLiquidityCumulativeX128,<br>    int56 tickCumulative,<br>    uint32 time,<br>    bool upper,<br>    uint128 maxLiquidity<br>) internal returns (bool flipped) {<br>    Tick.Info storage info = self[tick];<br><br>    uint128 liquidityGrossBefore = info.liquidityGross;<br>    uint128 liquidityGrossAfter = LiquidityMath.addDelta(liquidityGrossBefore, liquidityDelta);<br><br>    require(liquidityGrossAfter &lt;= maxLiquidity, 'LO');<br><br>    //通过 liquidityGross 在进行 position 变化前后的值来判断 tick 是否仍被引用<br>    flipped = (liquidityGrossAfter == 0) != (liquidityGrossBefore == 0);<br><br>    if (liquidityGrossBefore == 0) {<br>        // by convention, we assume that all growth before a tick was initialized happened _below_ the tick<br>        if (tick &lt;= tickCurrent) {<br>            info.feeGrowthOutside0X128 = feeGrowthGlobal0X128;<br>            info.feeGrowthOutside1X128 = feeGrowthGlobal1X128;<br>            info.secondsPerLiquidityOutsideX128 = secondsPerLiquidityCumulativeX128;<br>            info.tickCumulativeOutside = tickCumulative;<br>            info.secondsOutside = time;<br>        }<br>        info.initialized = true;<br>    }<br><br>    info.liquidityGross = liquidityGrossAfter;<br><br>    // when the lower (upper) tick is crossed left to right (right to left), liquidity must be added (removed)<br>    //更新liquidityNet的值<br>    info.liquidityNet = upper<br>        ? int256(info.liquidityNet).sub(liquidityDelta).toInt128()<br>        : int256(info.liquidityNet).add(liquidityDelta).toInt128();<br>}<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="tickspacing"><a href="#tickspacing" class="headerlink" title="tickspacing"></a>tickspacing</h3><p>V3 引入了费率三档可选等级和相应的 <code>tick</code> 疏密程度，也就是 <code>tickspacing</code> 。对于每一种交易对而言，都有三档可选费率等级，0.05%, 0.3%, 1%，并且以后通过社区治理，还有可能永久增加可选的挡位。每种交易费率等级都由给定的 tickspacing，比如稳定币交易对，就是 tick 之间需要间隔 10 个才是有效的可使用的 tick 。位于间隔内的 tick 虽然存在，但程序不会去初始化和使用，也就不会产生 gas 费用。因此，我们在等幂数列的基础上，进一步节省了计算消耗。</p>
+<table>
+<thead>
+<tr>
+<th align="left">费率</th>
+<th align="left">tickspacing</th>
+<th align="left">建议的使用范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0.05%</td>
+<td align="left">10</td>
+<td align="left">稳定币交易对</td>
+</tr>
+<tr>
+<td align="left">0.3%</td>
+<td align="left">60</td>
+<td align="left">适用大多数交易对</td>
+</tr>
+<tr>
+<td align="left">1%</td>
+<td align="left">200</td>
+<td align="left">波动极大的交易对</td>
+</tr>
+</tbody></table>
+<p>在UniswapV3Factory.sol中设定</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">mapping(uint24 =&gt; int24) public override feeAmountTickSpacing;<br><br>	constructor() {<br>       owner = msg.sender;<br>       emit OwnerChanged(address(0), msg.sender);<br><br>       feeAmountTickSpacing[500] = 10;<br>       emit FeeAmountEnabled(500, 10);<br>       feeAmountTickSpacing[3000] = 60;<br>       emit FeeAmountEnabled(3000, 60);<br>       feeAmountTickSpacing[10000] = 200;<br>       emit FeeAmountEnabled(10000, 200);<br>   }<br></code></pre></td></tr></table></figure>
+
+<h1 id="移除流动性"><a href="#移除流动性" class="headerlink" title="移除流动性"></a>移除流动性</h1><p>在合约UniswapV3Pool中，burn用来实现流动性的移除</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function burn(<br>    int24 tickLower,<br>    int24 tickUpper,<br>    uint128 amount<br>) external override lock returns (uint256 amount0, uint256 amount1) {<br>	//计算需要移除的token数<br>    (Position.Info storage position, int256 amount0Int, int256 amount1Int) =<br>        _modifyPosition(<br>            ModifyPositionParams({<br>                owner: msg.sender,<br>                tickLower: tickLower,<br>                tickUpper: tickUpper,<br>                liquidityDelta: -int256(amount).toInt128()<br>            })<br>        );<br><br>    amount0 = uint256(-amount0Int);<br>    amount1 = uint256(-amount1Int);<br><br>    //注意这里，移除流动性后，将移出的 token 数记录到了 position.tokensOwed 上<br>    if (amount0 &gt; 0 || amount1 &gt; 0) {<br>        (position.tokensOwed0, position.tokensOwed1) = (<br>            position.tokensOwed0 + uint128(amount0),<br>            position.tokensOwed1 + uint128(amount1)<br>        );<br>    }<br><br>    emit Burn(msg.sender, tickLower, tickUpper, amount, amount0, amount1);<br>}<br><br></code></pre></td></tr></table></figure>
+
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Uniswap（二）——提供/移除流动性</div>
+      <div>http://example.com/2022/08/20/Uniswap（二）——提供-移除流动性/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>August 20, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/08/20/Uniswap%EF%BC%88%E4%B8%80%EF%BC%89%E2%80%94%E2%80%94%E5%88%9B%E5%BB%BA%E4%BA%A4%E6%98%93%E5%AF%B9/" title="Uniswap（一）——创建交易对">
+                        <span class="hidden-mobile">Uniswap（一）——创建交易对</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>

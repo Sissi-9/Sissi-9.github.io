@@ -1,0 +1,782 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="John Doe">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="参考教程Fabric测试环境的搭建流程 - 掘金 (juejin.cn) 搭建fabric开发环境 前提环境准备换源1234567lsb_release -a | grep Codename | awk &amp;#x27;&amp;#123;print $2&amp;#125;&amp;#x27; &#x2F;&#x2F;查看ubuntu的Codenamesudo cp &#x2F;etc&#x2F;apt&#x2F;sources.list &#x2F;etc&#x2F;apt&#x2F;sources">
+<meta property="og:type" content="article">
+<meta property="og:title" content="fabric测试环境的搭建">
+<meta property="og:url" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="参考教程Fabric测试环境的搭建流程 - 掘金 (juejin.cn) 搭建fabric开发环境 前提环境准备换源1234567lsb_release -a | grep Codename | awk &amp;#x27;&amp;#123;print $2&amp;#125;&amp;#x27; &#x2F;&#x2F;查看ubuntu的Codenamesudo cp &#x2F;etc&#x2F;apt&#x2F;sources.list &#x2F;etc&#x2F;apt&#x2F;sources">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709143056454.png">
+<meta property="og:image" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709162901961.png">
+<meta property="og:image" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709164626988.png">
+<meta property="og:image" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709214302474.png">
+<meta property="article:published_time" content="2022-07-10T09:42:39.000Z">
+<meta property="article:modified_time" content="2022-08-15T13:31:25.381Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="fabric">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709143056454.png">
+  
+  
+  
+  <title>fabric测试环境的搭建 - Hexo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                Home
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                Archives
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                Categories
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                Tags
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                About
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="fabric测试环境的搭建"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-07-10 17:42" pubdate>
+          July 10, 2022 pm
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.7k words
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          65 mins
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">fabric测试环境的搭建</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="参考教程"><a href="#参考教程" class="headerlink" title="参考教程"></a>参考教程</h2><p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7033235760392175629#heading-1">Fabric测试环境的搭建流程 - 掘金 (juejin.cn)</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013137970/article/details/112634474">搭建fabric开发环境</a></p>
+<h2 id="前提环境准备"><a href="#前提环境准备" class="headerlink" title="前提环境准备"></a>前提环境准备</h2><h3 id="换源"><a href="#换源" class="headerlink" title="换源"></a>换源</h3><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs groovy">lsb_release -a | grep Codename | awk <span class="hljs-string">&#x27;&#123;print $2&#125;&#x27;</span> <span class="hljs-comment">//查看ubuntu的Codename</span><br><br>sudo cp <span class="hljs-regexp">/etc/</span>apt<span class="hljs-regexp">/sources.list /</span>etc<span class="hljs-regexp">/apt/</span>sources.list.b <span class="hljs-comment">// 备份原始文件</span><br><br>sudo chmod <span class="hljs-number">777</span> <span class="hljs-regexp">/etc/</span>apt<span class="hljs-regexp">/sources.list  /</span>/ 修改文件权限<br><br>sudo vi <span class="hljs-regexp">/etc/</span>apt<span class="hljs-regexp">/sources.list /</span>/ 用 vim 打开文件，删除文件中所有内容，替换为以下对应内容<br></code></pre></td></tr></table></figure>
+
+<p><strong>国内的几个源：</strong><br><a target="_blank" rel="noopener" href="http://mirrors.aliyun.com/">阿里源</a><br><a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/">中科大源</a><br><a target="_blank" rel="noopener" href="http://mirrors.163.com/">163源</a><br><a target="_blank" rel="noopener" href="http://mirrors.tuna.tsinghua.edu.cn/">清华源</a></p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs q"><span class="hljs-comment">//我这里需要翻墙才能执行</span><br>sudo apt <span class="hljs-keyword">update</span><br><br>sudo apt upgrade<br><br>sudo apt-<span class="hljs-built_in">get</span> <span class="hljs-keyword">update</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="安装git"><a href="#安装git" class="headerlink" title="安装git"></a>安装git</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">sudo apt <span class="hljs-keyword">install</span> git<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装cURL"><a href="#安装cURL" class="headerlink" title="安装cURL"></a>安装cURL</h3><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">sudo apt <span class="hljs-keyword">install</span> curl<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装Docker"><a href="#安装Docker" class="headerlink" title="安装Docker"></a>安装Docker</h3><p>查看系统中是否已经安装Docker：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">docker <span class="hljs-comment">--version</span><br></code></pre></td></tr></table></figure>
+
+<p> 使用如下命令安装Docker的最新版本：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">sudo apt <span class="hljs-keyword">install</span> docker.io<br></code></pre></td></tr></table></figure>
+
+<p> 查看Docker版本信息：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">docker <span class="hljs-comment">--version</span><br></code></pre></td></tr></table></figure>
+
+<p>修改为当前用户:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">sudo</span> usermod -aG docker 用户名<br></code></pre></td></tr></table></figure>
+
+<p>注销重启:</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">sudo systemctl restart docker</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="安装Docker-compose"><a href="#安装Docker-compose" class="headerlink" title="安装Docker-compose"></a>安装Docker-compose</h3><p>确定系统中是否已安装docker－compose工具：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">docker-compose <span class="hljs-comment">--version</span><br></code></pre></td></tr></table></figure>
+
+<p> 如系统提示未安装，则使用如下命令安装docker-compose工具：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs cmake">sudo apt <span class="hljs-keyword">install</span> docker-compose<br></code></pre></td></tr></table></figure>
+
+<p> 安装成功后，查看Docker－Compose版本信息：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada">docker-compose <span class="hljs-comment">--version</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="安装Golang"><a href="#安装Golang" class="headerlink" title="安装Golang"></a>安装Golang</h3><p>创建Go目录</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima"><span class="hljs-built_in">mkdir</span> $HOME/<span class="hljs-built_in">go</span><br></code></pre></td></tr></table></figure>
+
+<p>使用wget工具下载Golang的最新版本压缩包文件 go1.14.4.linux-amd64.tar.gz</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">wget</span> https://dl.google.com/go/go<span class="hljs-number">1</span>.<span class="hljs-number">14</span>.<span class="hljs-number">4</span>.linux-amd<span class="hljs-number">64</span>.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>下载完成后，文件会保存在当前目录下。可以使用 ll 命令查看</p>
+<p>使用 tar 命令将下载后的压缩包文件解压到指定的 /usr/local/ 路径下</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> tar -zxvf go<span class="hljs-number">1</span>.<span class="hljs-number">14</span>.<span class="hljs-number">4</span>.linux-amd<span class="hljs-number">64</span>.tar.gz -C /usr/local/<br></code></pre></td></tr></table></figure>
+
+<p>配置环境变量：解压后，Golang可以让系统的所有用户正常使用， 所以我们使用 vim 文件编辑工具打开系统的 profile 文件进行编辑：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">sudo vim <span class="hljs-regexp">/etc/</span>profile<br></code></pre></td></tr></table></figure>
+
+<p> 在profile文件最后添加如下内容:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">GOPATH</span>=<span class="hljs-variable">$HOME</span>/go<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">GOROOT</span>=/usr/local/go<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$GOROOT</span>/bin:$PATH<br></code></pre></td></tr></table></figure>
+
+<p> 使用 source 命令，使刚刚添加的配置信息生效：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle"><span class="hljs-keyword">source</span> <span class="hljs-regexp">/etc/</span>profile<br></code></pre></td></tr></table></figure>
+
+<p> 通过 go version命令验证是否成功：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">go</span> <span class="hljs-keyword">version</span><br></code></pre></td></tr></table></figure>
+
+<h3 id="安装make"><a href="#安装make" class="headerlink" title="安装make"></a>安装make</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">sudo apt install make<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装g"><a href="#安装g" class="headerlink" title="安装g++"></a>安装g++</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">sudo apt install g++<br></code></pre></td></tr></table></figure>
+
+<h3 id="安装libltdl-dev-库"><a href="#安装libltdl-dev-库" class="headerlink" title="安装libltdl-dev 库"></a>安装<code>libltdl-dev</code> 库</h3><figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">sudo apt-get install libltdl-dev<br></code></pre></td></tr></table></figure>
+
+<h2 id="一键式部署Fabric"><a href="#一键式部署Fabric" class="headerlink" title="一键式部署Fabric"></a>一键式部署Fabric</h2><p>新建一个目录并进入：</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">mkdir</span> hyperledger-fabric &amp;&amp; <span class="hljs-built_in">cd</span> hyperledger-fabric<br></code></pre></td></tr></table></figure>
+
+<p>下载执行脚本，此脚本用来自动化下载 fabric 镜像、程序和测试网运行脚本等工具：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">wget https:<span class="hljs-regexp">//</span>raw.githubusercontent.com<span class="hljs-regexp">/hyperledger/</span>fabric<span class="hljs-regexp">/master/</span>scripts/bootstrap.sh<br></code></pre></td></tr></table></figure>
+
+<p>给脚本添加执行权限：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">chmod +x bootstrap.sh<br></code></pre></td></tr></table></figure>
+
+<p>执行脚本，指定下载 v1.3.0 版本的相关工具：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">./bootstrap.sh 1.3.0 1.3.0<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709143056454.png" srcset="/img/loading.gif" lazyload alt="image-20220709143056454"></p>
+<p>将fabric-samples中的可执行程序的路径添加到全局下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=/home/sissice/hyperledger-fabric/fabric-samples/bin:$PATH<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$&#123;PWD&#125;</span>/../bin:$PATH<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">FABRIC_CFG_PATH</span>=<span class="hljs-variable">$PWD</span>/../config/<br></code></pre></td></tr></table></figure>
+
+<h2 id="测试环境搭建"><a href="#测试环境搭建" class="headerlink" title="测试环境搭建"></a>测试环境搭建</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">cd</span> fabric<span class="hljs-literal">-samples</span>/<span class="hljs-built_in">test-network</span><br></code></pre></td></tr></table></figure>
+
+<p>该目录下有一个<code>network.sh</code>脚本，可以拉起一个测试环境，具体如何使用可以参考<code>./network.sh --help</code></p>
+<p>执行<code>./network.sh up </code>,脚本将帮我们自动拉起一个测试环境</p>
+<p>可以用 <code>docker ps</code> 查看容器状态</p>
+<p>用 <code>docker container rm xxx</code> 删除</p>
+<p><img src="/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709162901961.png" srcset="/img/loading.gif" lazyload alt="image-20220709162901961"></p>
+<p><code>./network.sh up </code> 该脚本将创建出一个<code>order</code>节点，两个<code>peer</code>节点，一个<code>cli</code>容器，用来和其他节点进行交互操作。</p>
+<p>但是不会自动帮我们创建通道，如果需要自动帮我们创建通道，可以查看<code>network.sh</code>的帮助文档,比如，创建通道的命令为<code>./network.sh createChannel</code></p>
+<p><img src="/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709164626988.png" srcset="/img/loading.gif" lazyload alt="image-20220709164626988"></p>
+<p>至此，你就可以部署智能合约了</p>
+<h2 id="chaincode操作流程"><a href="#chaincode操作流程" class="headerlink" title="chaincode操作流程"></a>chaincode操作流程</h2><p><a target="_blank" rel="noopener" href="https://hyperledger-fabric.readthedocs.io/en/release-2.2/test_network.html#">官方文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7049546118161498120#heading-0">Fabric chaincode操作流程</a></p>
+<h3 id="启动测试环境并创建通道"><a href="#启动测试环境并创建通道" class="headerlink" title="启动测试环境并创建通道"></a>启动测试环境并创建通道</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">cd</span> fabric<span class="hljs-literal">-samples</span>/<span class="hljs-built_in">test-network</span><br></code></pre></td></tr></table></figure>
+
+<p>通过执行一下命令，会创建两个org组织，一个order节点，并且创建一个通道<code>channel1</code>，并将两个org组织的peer节点加入到channel1中，并且设置anchor peer锚节点。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">./network.<span class="hljs-keyword">sh</span> <span class="hljs-keyword">up</span> createChannel -<span class="hljs-keyword">c</span> channel1<br></code></pre></td></tr></table></figure>
+
+<h3 id="打包chaincode"><a href="#打包chaincode" class="headerlink" title="打包chaincode"></a>打包chaincode</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">peer lifecycle chaincode package basic.tar.gz <span class="hljs-params">--path</span> <span class="hljs-string">../asset-transfer-basic/chaincode-go/</span> <span class="hljs-params">--lang</span> golang <span class="hljs-params">--label</span> basic_1.0<br></code></pre></td></tr></table></figure>
+
+<p>上面的命令会将合约代码打包成<code>tar</code>文件,<code>--path</code>指定代码文件的路径，<code>label</code>是打包的标签，这个标签在后续中会使用到。</p>
+<h3 id="安装chaincode"><a href="#安装chaincode" class="headerlink" title="安装chaincode"></a>安装chaincode</h3><p>首先在org1组织中进行安装</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_TLS_ENABLED</span>=<span class="hljs-literal">true</span><br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_LOCALMSPID</span>=<span class="hljs-string">&quot;Org1MSP&quot;</span><br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_TLS_ROOTCERT_FILE</span>=<span class="hljs-variable">$&#123;PWD&#125;</span>/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt<br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_MSPCONFIGPATH</span>=<span class="hljs-variable">$&#123;PWD&#125;</span>/organizations/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp<br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_ADDRESS</span>=localhost:7051<br><span class="hljs-built_in"></span><br><span class="hljs-built_in">peer </span>lifecycle chaincode install basic.tar.gz<br></code></pre></td></tr></table></figure>
+
+<p>在org2中安装</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros">test-network git:(ad8fc2f) ✗ <span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_LOCALMSPID</span>=<span class="hljs-string">&quot;Org2MSP&quot;</span><br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_TLS_ROOTCERT_FILE</span>=<span class="hljs-variable">$&#123;PWD&#125;</span>/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt<br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_MSPCONFIGPATH</span>=<span class="hljs-variable">$&#123;PWD&#125;</span>/organizations/peerOrganizations/org2.example.com/users/Admin@org2.example.com/msp<br><br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">CORE_PEER_ADDRESS</span>=localhost:9051<br><span class="hljs-built_in"></span><br><span class="hljs-built_in">peer </span>lifecycle chaincode install basic.tar.gz<br><br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/image-20220709214302474.png" srcset="/img/loading.gif" lazyload alt="image-20220709214302474"></p>
+<p>解决：</p>
+<p>将工作区的<code>bin</code>子目录添加到<code>PATH</code>：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$(go env GOPATH)/bin<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">GOPATH</span>=$(go env GOPATH)。<br></code></pre></td></tr></table></figure>
+
+<p>修改GOPATH</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">vim /etc<span class="hljs-built_in">/profile</span><br><span class="hljs-built_in"></span><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">GOROOT</span>=/usr/local/go  #设置为go安装的路径，有些安装包会自动设置默认的goroot<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">GOPATH</span>=<span class="hljs-variable">$HOME</span>/gocode   #默认安装包的路径<br><span class="hljs-builtin-name">export</span> <span class="hljs-attribute">PATH</span>=<span class="hljs-variable">$PATH</span>:$GOROOT/bin:$GOPATH/bin<br>source /etc/profile<br></code></pre></td></tr></table></figure>
+
+<p>然后，解决方案，到链码所在的目录下提前下载依赖包</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">cd</span> fabric-samples/asset-transfer-basic/chaincode-<span class="hljs-keyword">go</span><br><br><span class="hljs-keyword">go</span> env -<span class="hljs-keyword">w</span> GOPROXY=http<span class="hljs-variable">s:</span>//goproxy.io,direct<br><span class="hljs-keyword">go</span> env -<span class="hljs-keyword">w</span> GO111MODULE=<span class="hljs-keyword">on</span><br><span class="hljs-keyword">go</span> <span class="hljs-keyword">mod</span> vendor<br></code></pre></td></tr></table></figure>
+
+<p>再重新打包智能合约并安装链码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs javascript">peer lifecycle chaincode package basic.tar.gz --path ../asset-transfer-basic/chaincode-go/ --lang golang --label basic_1<span class="hljs-number">.0</span><br>peer lifecycle chaincode install basic.tar.gz<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Approve-chaincode"><a href="#Approve-chaincode" class="headerlink" title="Approve chaincode"></a>Approve chaincode</h3><p>查看一下chaincode是否已经安装到当前组织</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">➜  <span class="hljs-keyword">test</span>-network git:(ad8fc2f) ✗ peer lifecycle chaincode queryinstalled<br><br>Installed chaincodes <span class="hljs-keyword">on</span> peer:<br><br>Package ID: basic_1.0:950c4b082bc8229268015e94e544db76afeb7086fbb52980387bd5e1bd0b41b3, <span class="hljs-keyword">Label</span>: basic_1.0<br></code></pre></td></tr></table></figure>
+
+<p>设置<code>CC_PACKAGE_ID</code>,</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">export</span> CC_PACKAGE_ID=basic_<span class="hljs-number">1</span>.<span class="hljs-number">0</span>:<span class="hljs-number">950</span>c<span class="hljs-number">4</span>b<span class="hljs-number">082</span>bc<span class="hljs-number">8229268015</span>e<span class="hljs-number">94</span>e<span class="hljs-number">544</span>db<span class="hljs-number">76</span>afeb<span class="hljs-number">7086</span>fbb<span class="hljs-number">52980387</span>bd<span class="hljs-number">5</span>e<span class="hljs-number">1</span>bd<span class="hljs-number">0</span>b<span class="hljs-number">41</span>b<span class="hljs-number">3</span><br></code></pre></td></tr></table></figure>
+
+<p>执行（此时是在org2）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">peer lifecycle chaincode approveformyorg -o localhost:<span class="hljs-number">7050</span> --ordererTLSHostnameOverride orderer.example.com --channelID channel1 --name basic --version <span class="hljs-number">1.0</span> --package-id <span class="hljs-variable">$CC_PACKAGE_ID</span> --sequence <span class="hljs-number">1</span> --tls --cafile <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>ordererOrganizations<span class="hljs-regexp">/example.com/</span>orderers<span class="hljs-regexp">/orderer.example.com/m</span>sp<span class="hljs-regexp">/tlscacerts/</span>tlsca.example.com-cert.pem<br><br></code></pre></td></tr></table></figure>
+
+<p>切换到org1后，再次执行approve操作</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs awk">export CORE_PEER_LOCALMSPID=<span class="hljs-string">&quot;Org1MSP&quot;</span><br><br>export CORE_PEER_MSPCONFIGPATH=<span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>peerOrganizations<span class="hljs-regexp">/org1.example.com/u</span>sers<span class="hljs-regexp">/Admin@org1.example.com/m</span>sp<br><br>export CORE_PEER_TLS_ROOTCERT_FILE=<span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>peerOrganizations<span class="hljs-regexp">/org1.example.com/</span>peers<span class="hljs-regexp">/peer0.org1.example.com/</span>tls/ca.crt<br><br>export CORE_PEER_ADDRESS=localhost:<span class="hljs-number">7051</span><br><br>peer lifecycle chaincode approveformyorg -o localhost:<span class="hljs-number">7050</span> --ordererTLSHostnameOverride orderer.example.com --channelID channel1 --name basic --version <span class="hljs-number">1.0</span> --package-id <span class="hljs-variable">$CC_PACKAGE_ID</span> --sequence <span class="hljs-number">1</span> --tls --cafile <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>ordererOrganizations<span class="hljs-regexp">/example.com/</span>orderers<span class="hljs-regexp">/orderer.example.com/m</span>sp<span class="hljs-regexp">/tlscacerts/</span>tlsca.example.com-cert.pem<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="提交chaincode"><a href="#提交chaincode" class="headerlink" title="提交chaincode"></a>提交chaincode</h3><p>使用<code>checkcommitreadiness</code>查看chaincode是否已经被approve</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">➜  test-network git:(ad8fc2f) ✗ peer lifecycle chaincode checkcommitreadiness --channelID channel1 --name basic --version <span class="hljs-number">1.0</span> --sequence <span class="hljs-number">1</span> --tls --cafile <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>ordererOrganizations<span class="hljs-regexp">/example.com/</span>orderers<span class="hljs-regexp">/orderer.example.com/m</span>sp<span class="hljs-regexp">/tlscacerts/</span>tlsca.example.com-cert.pem --output json <br><br></code></pre></td></tr></table></figure>
+
+<p>执行<code>commit</code>操作</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">peer lifecycle chaincode commit -o localhost:<span class="hljs-number">7050</span> --ordererTLSHostnameOverride orderer.example.com --channelID channel1 --name basic --version <span class="hljs-number">1.0</span> --sequence <span class="hljs-number">1</span> --tls --cafile <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>ordererOrganizations<span class="hljs-regexp">/example.com/</span>orderers<span class="hljs-regexp">/orderer.example.com/m</span>sp<span class="hljs-regexp">/tlscacerts/</span>tlsca.example.com-cert.pem --peerAddresses localhost:<span class="hljs-number">7051</span> --tlsRootCertFiles <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>peerOrganizations<span class="hljs-regexp">/org1.example.com/</span>peers<span class="hljs-regexp">/peer0.org1.example.com/</span>tls<span class="hljs-regexp">/ca.crt --peerAddresses localhost:9051 --tlsRootCertFiles $&#123;PWD&#125;/</span>organizations<span class="hljs-regexp">/peerOrganizations/</span>org2.example.com<span class="hljs-regexp">/peers/</span>peer0.org2.example.com<span class="hljs-regexp">/tls/</span>ca.crt <br></code></pre></td></tr></table></figure>
+
+<p>测试chaincode是否已经成功提交到channel</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">➜  test-network git:(ad8fc2f) ✗ peer lifecycle chaincode querycommitted --channelID channel1 --name basic --cafile <span class="hljs-variable">$&#123;PWD&#125;</span><span class="hljs-regexp">/organizations/</span>ordererOrganizations<span class="hljs-regexp">/example.com/</span>orderers<span class="hljs-regexp">/orderer.example.com/m</span>sp<span class="hljs-regexp">/tlscacerts/</span>tlsca.example.com-cert.pem<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="invoke-chaincode"><a href="#invoke-chaincode" class="headerlink" title="invoke chaincode"></a>invoke chaincode</h3><p>invoke</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">peer chaincode invoke -o localhost<span class="hljs-function">:7050</span> <span class="hljs-params">--ordererTLSHostnameOverride</span> orderer.example.com <span class="hljs-params">--tls</span> <span class="hljs-params">--cafile</span> <span class="hljs-string">&quot;$&#123;PWD&#125;/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem&quot;</span> -C channel1 -n basic <span class="hljs-params">--peerAddresses</span> localhost<span class="hljs-function">:7051</span> <span class="hljs-params">--tlsRootCertFiles</span> <span class="hljs-string">&quot;$&#123;PWD&#125;/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt&quot;</span> <span class="hljs-params">--peerAddresses</span> localhost<span class="hljs-function">:9051</span> <span class="hljs-params">--tlsRootCertFiles</span> <span class="hljs-string">&quot;$&#123;PWD&#125;/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt&quot;</span> -c &#x27;&#123;<span class="hljs-string">&quot;function&quot;</span>:<span class="hljs-string">&quot;InitLedger&quot;</span>,<span class="hljs-string">&quot;Args&quot;</span>:[]&#125;&#x27;<br></code></pre></td></tr></table></figure>
+
+<p>现在可以从 CLI 查询分类帐。运行以下命令以获取已添加到您的频道分类帐的资产列表：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">peer</span> chaincode query -C channel<span class="hljs-number">1</span> -n basic -c &#x27;&#123;<span class="hljs-string">&quot;Args&quot;</span>:[<span class="hljs-string">&quot;GetAllAssets&quot;</span>]&#125;&#x27;<br></code></pre></td></tr></table></figure>
+
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p><a target="_blank" rel="noopener" href="https://github1s.com/hyperledger/fabric-samples">hyperledger/fabric-samples合约代码</a></p>
+<p>以上是自动化实现环境搭建，其中详细原理可以通过手动搭建环境来理解，参考以下文章：</p>
+<p><a target="_blank" rel="noopener" href="https://ifantasy.net/2022/03/29/hyperledger_fabric_0_test_network_explain/">Hyperledger Fabric的test-network启动过程Bash源码详解</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7035894330631913509">一篇文章上手Fabric CA的使用</a></p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7035956873224257566">Fabric CA 操作指南</a></p>
+<p>定制联盟链网络</p>
+<p><a target="_blank" rel="noopener" href="https://ifantasy.net/2022/04/01/hyperledger_fabric_1_custom_our_network/">Hyperledger Fabric定制联盟链网络工程实践</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/fabric/">#fabric</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>fabric测试环境的搭建</div>
+      <div>http://example.com/2022/07/10/fabric测试环境的搭建/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>Author</div>
+          <div>John Doe</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>Posted on</div>
+          <div>July 10, 2022</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>Licensed under</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - Attribution">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/" title="ERC20、ERC721、ERC1155标准规范">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ERC20、ERC721、ERC1155标准规范</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/04/16/Damn%20vulnerable%20defi%20v2%20wp/" title="Damn vulnerable defi v2 wp">
+                        <span class="hidden-mobile">Damn vulnerable defi v2 wp</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;Table of Contents</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">Keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">Blog works best with JavaScript enabled</div>
+  </noscript>
+</body>
+</html>
