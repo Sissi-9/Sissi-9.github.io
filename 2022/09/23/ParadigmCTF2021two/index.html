@@ -16,15 +16,15 @@
   <meta name="author" content="Sissice">
   <meta name="keywords" content="">
   
-    <meta name="description" content="[Writeup | Paradigm CTF 2021 Part Ⅰ - Sissice’s Blog](https:&#x2F;&#x2F;sissice.github.io&#x2F;2022&#x2F;09&#x2F;18&#x2F;Paradigm CTF 2021 Ⅰ&#x2F;) MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool)">
+    <meta name="description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool) &amp;#123;    return address(market).balance &#x3D;&#x3D; 0;&amp;#125;  在con">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Writeup | Paradigm CTF 2021 Part two">
 <meta property="og:url" content="http://example.com/2022/09/23/ParadigmCTF2021two/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
-<meta property="og:description" content="[Writeup | Paradigm CTF 2021 Part Ⅰ - Sissice’s Blog](https:&#x2F;&#x2F;sissice.github.io&#x2F;2022&#x2F;09&#x2F;18&#x2F;Paradigm CTF 2021 Ⅰ&#x2F;) MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool)">
+<meta property="og:description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog MARKET要解决该合约的要求是：让Market合约所有的ETH都消失 123function isSolved() external view returns (bool) &amp;#123;    return address(market).balance &#x3D;&#x3D; 0;&amp;#125;  在con">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-09-22T16:22:51.000Z">
-<meta property="article:modified_time" content="2022-09-22T16:33:58.951Z">
+<meta property="article:modified_time" content="2022-09-22T16:38:57.987Z">
 <meta property="article:author" content="Sissice">
 <meta property="article:tag" content="靶场刷题">
 <meta property="article:tag" content="Etherum">
@@ -275,7 +275,7 @@
             
               <div class="markdown-body">
                 
-                <p>[Writeup | Paradigm CTF 2021 Part Ⅰ - Sissice’s Blog](<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/18/Paradigm">https://sissice.github.io/2022/09/18/Paradigm</a> CTF 2021 Ⅰ/)</p>
+                <p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/18/ParadigmCTF2021one/">Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog</a></p>
 <h2 id="MARKET"><a href="#MARKET" class="headerlink" title="MARKET"></a>MARKET</h2><p>要解决该合约的要求是：让Market合约所有的ETH都消失</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function isSolved() external view returns (bool) &#123;<br>    return address(market).balance == 0;<br>&#125;<br></code></pre></td></tr></table></figure>
 
