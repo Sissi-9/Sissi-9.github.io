@@ -1,0 +1,688 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="交易手续费计算原理以普通用户的视角来看，对比 Uniswap v2，Uniswap v3 在手续费方面做了如下改动：  添加流动性时，手续费可以有 3个级别供选择：0.05%, 0.3% 和 1%，未来可以通过治理加入更多可选的手续费率 Uniswap v2 中手续费会在收取后自动复投称为 LP 的一部分，即每次手续费都自动变成流动性加入池子中，而 Uniswap v3 中收取的手续费不会自动复投">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uniswap Part Ⅳ | 交易手续费">
+<meta property="og:url" content="http://example.com/2022/09/29/uniswap-v3-4/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="交易手续费计算原理以普通用户的视角来看，对比 Uniswap v2，Uniswap v3 在手续费方面做了如下改动：  添加流动性时，手续费可以有 3个级别供选择：0.05%, 0.3% 和 1%，未来可以通过治理加入更多可选的手续费率 Uniswap v2 中手续费会在收取后自动复投称为 LP 的一部分，即每次手续费都自动变成流动性加入池子中，而 Uniswap v3 中收取的手续费不会自动复投">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211502549.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211529269.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211548605.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211622048.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211636485.png">
+<meta property="article:published_time" content="2022-09-29T06:25:54.000Z">
+<meta property="article:modified_time" content="2022-09-29T06:27:00.549Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/09/29/uniswap-v3-4/image-20220925211502549.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Uniswap Part Ⅳ | 交易手续费 - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Uniswap Part Ⅳ | 交易手续费"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-29 14:25" pubdate>
+          2022年9月29日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Uniswap Part Ⅳ | 交易手续费</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="交易手续费"><a href="#交易手续费" class="headerlink" title="交易手续费"></a>交易手续费</h1><h2 id="计算原理"><a href="#计算原理" class="headerlink" title="计算原理"></a>计算原理</h2><p>以普通用户的视角来看，对比 Uniswap v2，Uniswap v3 在手续费方面做了如下改动：</p>
+<ul>
+<li>添加流动性时，手续费可以有 3个级别供选择：0.05%, 0.3% 和 1%，未来可以通过治理加入更多可选的手续费率</li>
+<li>Uniswap v2 中手续费会在收取后自动复投称为 LP 的一部分，即每次手续费都自动变成流动性加入池子中，而 Uniswap v3 中收取的手续费不会自动复投（主要是为了方便合约的计算），需要手动取出手续费</li>
+<li>不同手续费级别，在添加流动性时，价格可选值的最小粒度也不一样（这个是因为 tick spacing 的影响），一般来说，手续费越低，价格可选值越精细，因此官方推荐价格波动小的交易对使用低费率（例如稳定币交易对）</li>
+</ul>
+<p>以开发者的视角来看，Uniswap v3 的手续费计算相对会比较复杂， 因为它需要针对每一个 <code>position</code> 来进行单独的计算，为了方便计算，在代码中会将手续费相关的元数据记录在 <code>position</code> 的边界 tick 上（这些 tick 上还存储了 ΔLΔL 等元数据）。</p>
+<p> 当我们计算交易的手续费时，我们需要计算如下值：</p>
+<ul>
+<li>每一个 <code>position</code> 收取的手续费（token0, token1 需要分别单独计算）</li>
+<li>用户如果提取了手续费，需要记录用户已提取的数值</li>
+</ul>
+<p>v3 中有以下几个关于手续费的变量：</p>
+<ul>
+<li>交易池中手续费的费率值，这里记录的值时以 1000000 为基数的值，例如当手续费为 0.03% 时，费率值为 300</li>
+<li>全局状态变量 <code>feeGrowthGlobal0X128</code> 和 <code>feeGrowthGlobal1X128</code> ，分别表示 token0 和 token1 所累计的手续费总额，使用了 <code>Q128.128</code> 浮点数来记录</li>
+<li>对于每个 tick，记录了 <code>feeGrowthOutside0X128</code> 和 <code>feeGrowthOutside1X128</code>，这两个变量记录了发生在此 tick 「外侧」的手续费总额，外侧指的是与当前价格所对应的 tick 相对于 tick i 的相反侧。</li>
+<li>对于每个 <code>position</code>，记录了此 <code>position</code> 内的手续费总额 <code>feeGrowthInside0LastX128</code> 和 <code>feeGrowthInside1LastX128</code>，这个值不需要每次都更新，它只会在 <code>position</code> 发生变动，或者用户提取手续费时更新</li>
+</ul>
+<p>需要注意的时，上面这些手续费状态变量都是每一份 LP 所对应的手续费，在计算真正的手续费时，需要使用 LP 数相乘来得出实际手续费数额，又因为 LP 数在不同价格可能时不同的（因为流动性深度不同），所以在计算手续费时只能针对 <code>position</code> 进行计算（同一个 <code>position</code> 内 LP 总量不变）。</p>
+<p><img src="/2022/09/29/uniswap-v3-4/image-20220925211502549.png" srcset="/img/loading.gif" lazyload alt="image-20220925211502549"></p>
+<p><img src="/2022/09/29/uniswap-v3-4/image-20220925211529269.png" srcset="/img/loading.gif" lazyload alt="image-20220925211529269"></p>
+<p><img src="/2022/09/29/uniswap-v3-4/image-20220925211548605.png" srcset="/img/loading.gif" lazyload alt="image-20220925211548605"></p>
+<p><img src="/2022/09/29/uniswap-v3-4/image-20220925211622048.png" srcset="/img/loading.gif" lazyload alt="image-20220925211622048"></p>
+<p><img src="/2022/09/29/uniswap-v3-4/image-20220925211636485.png" srcset="/img/loading.gif" lazyload alt="image-20220925211636485"></p>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><p>手续费更新的代码在前面有提到过</p>
+<p>这里看一下手续费的提取</p>
+<p>core中手续费的提取是以 <code>position</code> 为单位进行提取的。使用 <code>UniswapV3Pool.collect</code> 提取手续费：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function collect(<br>    address recipient,<br>    int24 tickLower,<br>    int24 tickUpper,<br>    uint128 amount0Requested,<br>    uint128 amount1Requested<br>) external override lock returns (uint128 amount0, uint128 amount1) &#123;<br>    // we don&#x27;t need to checkTicks here, because invalid positions will never have non-zero tokensOwed&#123;0,1&#125;<br>    // 获取 position 数据<br>    Position.Info storage position = positions.get(msg.sender, tickLower, tickUpper);<br><br>    // 根据参数调整需要提取的手续费<br>    amount0 = amount0Requested &gt; position.tokensOwed0 ? position.tokensOwed0 : amount0Requested;<br>    amount1 = amount1Requested &gt; position.tokensOwed1 ? position.tokensOwed1 : amount1Requested;<br><br>    // 将手续费发送给用户<br>    if (amount0 &gt; 0) &#123;<br>        position.tokensOwed0 -= amount0;<br>        TransferHelper.safeTransfer(token0, recipient, amount0);<br>    &#125;<br>    if (amount1 &gt; 0) &#123;<br>        position.tokensOwed1 -= amount1;<br>        TransferHelper.safeTransfer(token1, recipient, amount1);<br>    &#125;<br><br>    emit Collect(msg.sender, recipient, tickLower, tickUpper, amount0, amount1);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>但是这里 <code>posiiton</code> 中的手续费可能并不是最新的（手续费总数只会在 <code>position</code> 的流动性更新时更新）。因此在提取手续费前，需要主动触发一次手续费的更新，这些操作已经在 <code>uniswap-v3-periphery</code> 仓库中进行了封装。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function collect(CollectParams calldata params)<br>    external<br>    payable<br>    override<br>    isAuthorizedForToken(params.tokenId)<br>    returns (uint256 amount0, uint256 amount1)<br>&#123;<br>    require(params.amount0Max &gt; 0 || params.amount1Max &gt; 0);<br>    // allow collecting to the nft position manager address with address 0<br>    address recipient = params.recipient == address(0) ? address(this) : params.recipient;<br><br>    // 查询 position 信息<br>    Position storage position = _positions[params.tokenId];<br><br>    PoolAddress.PoolKey memory poolKey = _poolIdToPoolKey[position.poolId];<br><br>    IUniswapV3Pool pool = IUniswapV3Pool(PoolAddress.computeAddress(factory, poolKey));<br><br>    (uint128 tokensOwed0, uint128 tokensOwed1) = (position.tokensOwed0, position.tokensOwed1);<br><br>    // trigger an update of the position fees owed and fee growth snapshots if it has any liquidity<br>    // 这里再次更新一次手续费累积总额<br>    if (position.liquidity &gt; 0) &#123;<br>        // 使用 pool.burn() 来触发手续费的更新<br>        pool.burn(position.tickLower, position.tickUpper, 0);<br>        (, uint256 feeGrowthInside0LastX128, uint256 feeGrowthInside1LastX128, , ) =<br>            pool.positions(PositionKey.compute(address(this), position.tickLower, position.tickUpper));<br><br>        tokensOwed0 += uint128(<br>            FullMath.mulDiv(<br>                feeGrowthInside0LastX128 - position.feeGrowthInside0LastX128,<br>                position.liquidity,<br>                FixedPoint128.Q128<br>            )<br>        );<br>        tokensOwed1 += uint128(<br>            FullMath.mulDiv(<br>                feeGrowthInside1LastX128 - position.feeGrowthInside1LastX128,<br>                position.liquidity,<br>                FixedPoint128.Q128<br>            )<br>        );<br><br>        position.feeGrowthInside0LastX128 = feeGrowthInside0LastX128;<br>        position.feeGrowthInside1LastX128 = feeGrowthInside1LastX128;<br>    &#125;<br><br>    // compute the arguments to give to the pool#collect method<br>    // 提取手续费的最大值，不能超过手续费总额<br>    (uint128 amount0Collect, uint128 amount1Collect) =<br>        (<br>            params.amount0Max &gt; tokensOwed0 ? tokensOwed0 : params.amount0Max,<br>            params.amount1Max &gt; tokensOwed1 ? tokensOwed1 : params.amount1Max<br>        );<br><br>    // the actual amounts collected are returned<br>    // 调用 pool.collect 将手续费发送给 recipient<br>    (amount0, amount1) = pool.collect(<br>        recipient,<br>        position.tickLower,<br>        position.tickUpper,<br>        amount0Collect,<br>        amount1Collect<br>    );<br><br>    // sometimes there will be a few less wei than expected due to rounding down in core, but we just subtract the full amount expected<br>    // instead of the actual amount so we can burn the token<br>    (position.tokensOwed0, position.tokensOwed1) = (tokensOwed0 - amount0Collect, tokensOwed1 - amount1Collect);<br><br>    emit Collect(params.tokenId, recipient, amount0Collect, amount1Collect);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>这个函数就是先用 <code>pool.burn</code> 函数来触发 pool 中 <code>position</code> 内手续费总额的更新，使其更新为当前的最新值。调用时传入参数的 Liquidity 为 0，表示只是用来触发手续费总额的更新，并没有进行流动性的更新。更新完成后，再调用 <code>pool.collect</code> 提取手续费。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Uniswap Part Ⅳ | 交易手续费</div>
+      <div>http://example.com/2022/09/29/uniswap-v3-4/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/29/uniswap-v3-5/" title="Uniswap Part Ⅴ | 预言机">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Uniswap Part Ⅴ | 预言机</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/29/uniswap-v3-3/" title="Uniswap Part Ⅲ | 交易过程">
+                        <span class="hidden-mobile">Uniswap Part Ⅲ | 交易过程</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

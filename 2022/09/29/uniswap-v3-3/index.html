@@ -1,0 +1,714 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="交易过程 SwapRouter 合约中封装了面向用户的交易接口：  exactInput：指定交易对路径，付出的 x token 数和预期得到的最小 y token 数（x, y 可以互换） exactOutput：指定交易路径，付出的 x token 最大数和预期得到的 y token 数（x, y 可以互换）  关于 exactInput 这个接口，调用流程如下： 1234User-&gt;S">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Uniswap Part Ⅲ | 交易过程">
+<meta property="og:url" content="http://example.com/2022/09/29/uniswap-v3-3/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="交易过程 SwapRouter 合约中封装了面向用户的交易接口：  exactInput：指定交易对路径，付出的 x token 数和预期得到的最小 y token 数（x, y 可以互换） exactOutput：指定交易路径，付出的 x token 最大数和预期得到的 y token 数（x, y 可以互换）  关于 exactInput 这个接口，调用流程如下： 1234User-&gt;S">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-3/image-20220819175714261.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-3/image-20220819175735791.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-3/image-20220819175811545.png">
+<meta property="og:image" content="http://example.com/2022/09/29/uniswap-v3-3/image-20220821114016119.png">
+<meta property="article:published_time" content="2022-09-29T06:22:45.000Z">
+<meta property="article:modified_time" content="2022-09-29T06:25:40.400Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="Etherum">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/09/29/uniswap-v3-3/image-20220819175714261.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Uniswap Part Ⅲ | 交易过程 - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Uniswap Part Ⅲ | 交易过程"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-29 14:22" pubdate>
+          2022年9月29日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          19k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          160 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Uniswap Part Ⅲ | 交易过程</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="交易过程"><a href="#交易过程" class="headerlink" title="交易过程"></a>交易过程</h1><p> <code>SwapRouter</code> 合约中封装了面向用户的交易接口：</p>
+<ul>
+<li><code>exactInput</code>：指定交易对路径，付出的 x token 数和预期得到的最小 y token 数（x, y 可以互换）</li>
+<li><code>exactOutput</code>：指定交易路径，付出的 x token 最大数和预期得到的 y token 数（x, y 可以互换）</li>
+</ul>
+<p>关于 <code>exactInput</code> 这个接口，调用流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs sequence">User-&gt;SwapRouter:exactInput<br>SwapRouter-&gt;SwapRouter:exactInputInternal<br>SwapRouter-&gt;UniswapV3Pool:swap<br>UniswapV3Pool-&gt;UniswapV3Pool:computeSwapStep<br></code></pre></td></tr></table></figure>
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><img src="/2022/09/29/uniswap-v3-3/image-20220819175714261.png" srcset="/img/loading.gif" lazyload alt="image-20220819175714261"></p>
+<p>在V2中，流动性是均匀分布的，而V3中因为一个交易池中会有多个不同深度的流动池（每一个可以单独设置交易价格区间），因此一次交易的过程可能跨越多个不同的深度</p>
+<p><img src="/2022/09/29/uniswap-v3-3/image-20220819175735791.png" srcset="/img/loading.gif" lazyload alt="image-20220819175735791"></p>
+<p>以上是真实情况中的流动性分布</p>
+<p>现在假设价格处于一个持续上涨的趋势，当价格开始从左至右穿过这些价格区间时，会不断用一种资产换取另一种资产，而被换出的资产储备是不断减小的，一旦当前价格区间的某种资产被耗尽，价格会穿过当前区间，进入下一个区间，由此产生了价格的变化（因为价格右移了，变大了）。在价格移动消耗池内资产数量的过程中，输入的资产数量也会不断减少，一旦在某个区间输入资产被耗尽，那么价格就会停留在该区间内。</p>
+<p>当然只是让价格停留在区间内，是不精确的，这个时候我们就需要借助计算添加流动性推导出来的公式，去反推计算出一个精确的价格（在该价格区间内）。</p>
+<h2 id="exactInput"><a href="#exactInput" class="headerlink" title="exactInput"></a>exactInput</h2><p>exactInput函数在合约SwapRouter中，其中struct ExactInputParams写在接口ISwapRouter中</p>
+<p>这里使用一个循环遍历传入的路径，路径中包含了交易过程中所有的 token，每相邻的两个 token 组成了一个交易对。例如当需要通过 <code>ETH</code> -&gt; <code>USDC</code> -&gt; <code>DAI</code> 路径进行交易时，会经过两个池：<code>ETH/USDC</code> 和 <code>USDC/DAI</code>，最终得到 <code>DAI</code> 代币。如前所述，这里其实还包含了每个交易对所选择的费率。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct ExactInputParams &#123;<br>    bytes path; //路径<br>    address recipient; //收款地址<br>    uint256 deadline; //交易有效期<br>    uint256 amountIn; //输入的 token 数（输入的 token 地址就是 path 中的第一个地址）<br>    uint256 amountOutMinimum; //预期交易最少获得的 token 数（获得的 token 地址就是 path 中最后一个地址）<br>&#125;<br><br>function exactInput(ExactInputParams memory params)<br>    external<br>    payable<br>    override<br>    checkDeadline(params.deadline)<br>    returns (uint256 amountOut)<br>&#123;<br>    address payer = msg.sender; // msg.sender pays for the first hop<br><br>    //遍历传入的路径，进行交易<br>    while (true) &#123;<br>        bool hasMultiplePools = params.path.hasMultiplePools();<br><br>        // the outputs of prior swaps become the inputs to subsequent ones<br>        //完成当前路径的交易<br>        params.amountIn = exactInputInternal(<br>            params.amountIn,<br>            //如果是中间交易，本合约代为收取和支付中间代币<br>            //这里会判断是否是最后一次交易，当是最后一次交易时，获取的 token 的地址才是用户的指定的地址<br>            hasMultiplePools ? address(this) : params.recipient, // for intermediate swaps, this contract custodies<br>            0,<br>            //回调函数<br>            SwapCallbackData(&#123;<br>                path: params.path.getFirstPool(), // only the first pool in the path is necessary<br>                payer: payer<br>            &#125;)<br>        );<br><br>        // decide whether to continue or terminate<br>        //如果路径全部遍历完成，则退出循环，交易完成<br>        if (hasMultiplePools) &#123;<br>            payer = address(this); // at this point, the caller has paid<br>            params.path = params.path.skipToken();<br>        &#125; else &#123;<br>            amountOut = params.amountIn;<br>            break;<br>        &#125;<br>    &#125;<br><br>    //检查交易是否满足预期<br>    //如果交易的获得 token 数满足约束，则本次交易结束。<br>    require(amountOut &gt;= params.amountOutMinimum, &#x27;Too little received&#x27;);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="路径"><a href="#路径" class="headerlink" title="路径"></a>路径</h3><p>上面输入的参数中 <code>path</code> 字段是 <code>bytes</code> 类型，通过这种类型可以实现更紧凑的编码。Uniswap 会将 <code>bytes</code> 作为一个数组使用，<code>bytes</code> 类型就是一连串的 <code>byte1</code>，但是不会对每一个成员使用一个 word，因此相比普通数组其结构更加紧凑。在 Uniswap V3 中， path 内部编码结构如下图：</p>
+<img src="/2022/09/29/uniswap-v3-3/image-20220819175811545.png" srcset="/img/loading.gif" lazyload alt="image-20220819175811545" style="zoom:80%;">
+
+<p>图中展示了一个包含 2个路径（pool0, 和 pool1）的 path 编码。Uniswap 将编码解码操作封装在了 <code>Path</code> 库中，本文不再赘述其过程。每次交易时，会取出头部的 <code>tokenIn</code>, <code>tokenOut</code>, <code>fee</code>，使用这三个参数找到对应的交易池，完成交易。</p>
+<h2 id="exactInputInternal"><a href="#exactInputInternal" class="headerlink" title="exactInputInternal"></a>exactInputInternal</h2><p>单个池的交易</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function exactInputInternal(<br>    uint256 amountIn,<br>    address recipient,<br>    uint160 sqrtPriceLimitX96,<br>    SwapCallbackData memory data<br>) private returns (uint256 amountOut) &#123;<br>    // allow swapping to the router address with address 0<br>    //如果收款地址为0，则默认收款地址为本合约地址<br>    if (recipient == address(0)) recipient = address(this);<br><br>    //将 path 解码，获取头部的 tokenIn, tokenOut, fee<br>    (address tokenIn, address tokenOut, uint24 fee) = data.path.decodeFirstPool();<br><br>    //因为交易池只保存了 token x 的价格，这里我们需要知道输入的 token 是交易池 x token 还是 y token<br>    //token0/token为true，token1/token0为false<br>    bool zeroForOne = tokenIn &lt; tokenOut;<br><br>    //交易<br>    (int256 amount0, int256 amount1) =<br>        getPool(tokenIn, tokenOut, fee).swap(<br>            recipient,<br>            zeroForOne,<br>            amountIn.toInt256(),<br>            sqrtPriceLimitX96 == 0<br>                ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)<br>                : sqrtPriceLimitX96,<br>            abi.encode(data)<br>        );<br><br>    return uint256(-(zeroForOne ? amount1 : amount0));<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="swap"><a href="#swap" class="headerlink" title="swap"></a>swap</h2><p><img src="/2022/09/29/uniswap-v3-3/image-20220821114016119.png" srcset="/img/loading.gif" lazyload alt="image-20220821114016119"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function swap(<br>    address recipient, //收款地址<br>    bool zeroForOne, //代币交换方向，token0/token为true，token1/token0为false<br>    int256 amountSpecified, //交换的数量，数值可正可负<br>    uint160 sqrtPriceLimitX96, //价格平方根的Q64.96，如果是token0/token1方向的兑换，价格不能低于sqrtPriceLimitX96，如果是token1/token0方向，则不能大于<br>    bytes calldata data //回调函数的参数<br>) external override noDelegateCall returns (int256 amount0, int256 amount1) &#123;<br>	//检查交易数量是否为0<br>    require(amountSpecified != 0, &#x27;AS&#x27;);<br><br>    //将交易前的数据保存在内存中，后续的访问通过 `MLOAD` 完成，节省 gas<br>    Slot0 memory slot0Start = slot0;<br><br>    //检查是否有正在进行的token交易操作<br>    require(slot0Start.unlocked, &#x27;LOK&#x27;);<br>    //根据交易方向检查价格是否满足条件<br>    require(<br>        zeroForOne<br>            ? sqrtPriceLimitX96 &lt; slot0Start.sqrtPriceX96 &amp;&amp; sqrtPriceLimitX96 &gt; TickMath.MIN_SQRT_RATIO<br>            : sqrtPriceLimitX96 &gt; slot0Start.sqrtPriceX96 &amp;&amp; sqrtPriceLimitX96 &lt; TickMath.MAX_SQRT_RATIO,<br>        &#x27;SPL&#x27;<br>    );<br><br>     //更新slot0.unlocked的状态，防止交易过程中回调到合约中其他的函数中修改状态变量<br>    slot0.unlocked = false;<br><br>    //缓存交易数据<br>    SwapCache memory cache =<br>        SwapCache(&#123;<br>            liquidityStart: liquidity,<br>            blockTimestamp: _blockTimestamp(),<br>            feeProtocol: zeroForOne ? (slot0Start.feeProtocol % 16) : (slot0Start.feeProtocol &gt;&gt; 4),<br>            secondsPerLiquidityCumulativeX128: 0,<br>            tickCumulative: 0,<br>            computedLatestObservation: false<br>        &#125;);<br><br>    //检查交换的数量是否大于0<br>    bool exactInput = amountSpecified &gt; 0;<br><br>    //存储交易状态信息<br>    SwapState memory state =<br>        SwapState(&#123;<br>            amountSpecifiedRemaining: amountSpecified,<br>            amountCalculated: 0,<br>            sqrtPriceX96: slot0Start.sqrtPriceX96,<br>            tick: slot0Start.tick,<br>            feeGrowthGlobalX128: zeroForOne ? feeGrowthGlobal0X128 : feeGrowthGlobal1X128,<br>            protocolFee: 0,<br>            liquidity: cache.liquidityStart<br>        &#125;);<br><br>    // continue swapping as long as we haven&#x27;t used the entire input/output and haven&#x27;t reached the price limit<br>    //通过 tokenIn 是否还有余额来判断是否还需要继续循环，进入下一步的进行交易计算。当 tokenIn 全部被耗尽后，交易就结束了。<br>    while (state.amountSpecifiedRemaining != 0 &amp;&amp; state.sqrtPriceX96 != sqrtPriceLimitX96) &#123;<br>        // 交易过程每一次循环的状态变量<br>        StepComputations memory step;<br><br>        // 交易的起始价格<br>        step.sqrtPriceStartX96 = state.sqrtPriceX96;<br><br>        // 通过位图找到下一个可以选的交易价格，这里可能是下一个流动性的边界，也可能还是在本流动性中<br>        (step.tickNext, step.initialized) = tickBitmap.nextInitializedTickWithinOneWord(<br>            state.tick,<br>            tickSpacing,<br>            zeroForOne<br>        );<br><br>        // ensure that we do not overshoot the min/max tick, as the tick bitmap is not aware of these bounds<br>        if (step.tickNext &lt; TickMath.MIN_TICK) &#123;<br>            step.tickNext = TickMath.MIN_TICK;<br>        &#125; else if (step.tickNext &gt; TickMath.MAX_TICK) &#123;<br>            step.tickNext = TickMath.MAX_TICK;<br>        &#125;<br><br>        // get the price for the next tick<br>        //从 tick index 计算 sqrt(price)<br>        step.sqrtPriceNextX96 = TickMath.getSqrtRatioAtTick(step.tickNext);<br><br>        // compute values to swap to the target tick, price limit, or point where input/output amount is exhausted<br>        // 计算当价格到达下一个交易价格时，tokenIn 是否被耗尽，如果被耗尽，则交易结束，还需要重新计算出 tokenIn 耗尽时的价格<br>		// 如果没被耗尽，那么还需要继续进入下一个循环<br>		// 会返回需要的手续费<br>		// 下面有对此函数的分析<br>        (state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount) = SwapMath.computeSwapStep(<br>            state.sqrtPriceX96,<br>            (zeroForOne ? step.sqrtPriceNextX96 &lt; sqrtPriceLimitX96 : step.sqrtPriceNextX96 &gt; sqrtPriceLimitX96)<br>                ? sqrtPriceLimitX96<br>                : step.sqrtPriceNextX96,<br>            state.liquidity,<br>            state.amountSpecifiedRemaining,<br>            fee<br>        );<br><br>        // 更新 tokenIn 的余额，以及 tokenOut 数量，注意当指定 tokenIn 的数量进行交易时，这里的 tokenOut 是负数.<br>        //如果exactInput为true则表示input不为负数<br>        if (exactInput) &#123;<br>        	//amountSpecifiedRemaining：剩余期望兑换的数量<br>        	//amountCalculated：已经兑换的数量<br>            state.amountSpecifiedRemaining -= (step.amountIn + step.feeAmount).toInt256();<br>            state.amountCalculated = state.amountCalculated.sub(step.amountOut.toInt256());<br>        &#125; else &#123;<br>            state.amountSpecifiedRemaining += step.amountOut.toInt256();<br>            state.amountCalculated = state.amountCalculated.add((step.amountIn + step.feeAmount).toInt256());<br>        &#125;<br><br>        // if the protocol fee is on, calculate how much is owed, decrement feeAmount, and increment protocolFee<br>        //检查协议费用是否开启<br>        if (cache.feeProtocol &gt; 0) &#123;<br>        	//计算欠费多少<br>            uint256 delta = step.feeAmount / cache.feeProtocol;<br>            step.feeAmount -= delta;<br>            state.protocolFee += uint128(delta);<br>        &#125;<br><br>        // update global fee tracker<br>        // 更新交易的 f_g，这里需要除以流动性 L<br>        // 更新时使用此步骤的手续费总额除以此步骤的流动性 L ，以得出每一份流动性所对应的手续费数值。<br>        if (state.liquidity &gt; 0)<br>            state.feeGrowthGlobalX128 += FullMath.mulDiv(step.feeAmount, FixedPoint128.Q128, state.liquidity);<br><br>        // shift tick if we reached the next price<br>        // 按需决定是否需要更新流动性 L 的值<br>        // 当价格到达当前步骤价格区间的边界时，可能需要穿过下一个 tick<br>        if (state.sqrtPriceX96 == step.sqrtPriceNextX96) &#123;<br>            // if the tick is initialized, run the tick transition<br>            //检查 tick index 是否为另一个流动性的边界<br>            if (step.initialized) &#123;<br>                // check for the placeholder value, which we replace with the actual value the first time the swap<br>                // crosses an initialized tick<br>                if (!cache.computedLatestObservation) &#123;<br>                    (cache.tickCumulative, cache.secondsPerLiquidityCumulativeX128) = observations.observeSingle(<br>                        cache.blockTimestamp,<br>                        0,<br>                        slot0Start.tick,<br>                        slot0Start.observationIndex,<br>                        cache.liquidityStart,<br>                        slot0Start.observationCardinality<br>                    );<br>                    cache.computedLatestObservation = true;<br>                &#125;<br>                int128 liquidityNet =<br>                    // 在这里需要更新 tick 的 f_o<br>                    ticks.cross(<br>                        step.tickNext,<br>                        (zeroForOne ? state.feeGrowthGlobalX128 : feeGrowthGlobal0X128),<br>                        (zeroForOne ? feeGrowthGlobal1X128 : state.feeGrowthGlobalX128),<br>                        cache.secondsPerLiquidityCumulativeX128,<br>                        cache.tickCumulative,<br>                        cache.blockTimestamp<br>                    );<br>                // if we&#x27;re moving leftward, we interpret liquidityNet as the opposite sign<br>                // safe because liquidityNet cannot be type(int128).min<br>                // 根据价格增加/减少，即向左或向右移动，增加/减少相应的流动性<br>                if (zeroForOne) liquidityNet = -liquidityNet;<br><br>                //更新流动性<br>                state.liquidity = LiquidityMath.addDelta(state.liquidity, liquidityNet);<br>            &#125;<br><br>            //在这里更 tick 的值，使得下一次循环时让 tickBitmap 进入下一个 word 中查询<br>            state.tick = zeroForOne ? step.tickNext - 1 : step.tickNext;<br>        &#125; else if (state.sqrtPriceX96 != step.sqrtPriceStartX96) &#123;<br>            // recompute unless we&#x27;re on a lower tick boundary (i.e. already transitioned ticks), and haven&#x27;t moved<br>            //如果 tokenIn 被耗尽，那么计算当前价格对应的 tick<br>            state.tick = TickMath.getTickAtSqrtRatio(state.sqrtPriceX96);<br>        &#125;<br>    &#125;<br><br>    // update tick and write an oracle entry if the tick change<br>    //当trick改变时写入一个oracle条目<br>    if (state.tick != slot0Start.tick) &#123;<br>        (uint16 observationIndex, uint16 observationCardinality) =<br>            observations.write(<br>                slot0Start.observationIndex,<br>                cache.blockTimestamp,<br>                slot0Start.tick,<br>                cache.liquidityStart,<br>                slot0Start.observationCardinality,<br>                slot0Start.observationCardinalityNext<br>            );<br>        (slot0.sqrtPriceX96, slot0.tick, slot0.observationIndex, slot0.observationCardinality) = (<br>            state.sqrtPriceX96,<br>            state.tick,<br>            observationIndex,<br>            observationCardinality<br>        );<br>    &#125; else &#123;<br>        // otherwise just update the price<br>        //否则只更新价格<br>        slot0.sqrtPriceX96 = state.sqrtPriceX96;<br>    &#125;<br><br>    // update liquidity if it changed<br>    //如果流动性发生变化则更新流动性<br>    if (cache.liquidityStart != state.liquidity) liquidity = state.liquidity;<br><br>    // update fee growth global and, if necessary, protocol fees<br>    // overflow is acceptable, protocol has to withdraw before it hits type(uint128).max fees<br>    // 更新费用<br>    // 在交易步骤完成后，更新合约的 f_g<br>    if (zeroForOne) &#123;<br>        feeGrowthGlobal0X128 = state.feeGrowthGlobalX128;<br>        if (state.protocolFee &gt; 0) protocolFees.token0 += state.protocolFee;<br>    &#125; else &#123;<br>        feeGrowthGlobal1X128 = state.feeGrowthGlobalX128;<br>        if (state.protocolFee &gt; 0) protocolFees.token1 += state.protocolFee;<br>    &#125;<br><br>    //确定最终用户支付的 token 数和得到的 token 数<br>    (amount0, amount1) = zeroForOne == exactInput<br>        ? (amountSpecified - state.amountSpecifiedRemaining, state.amountCalculated)<br>        : (state.amountCalculated, amountSpecified - state.amountSpecifiedRemaining);<br><br>    // do the transfers and collect payment<br>    //转账和费用收取<br>    if (zeroForOne) &#123;<br>        // 将 tokenOut 支付给用户，前面说过 tokenOut 记录的是负数<br>        if (amount1 &lt; 0) TransferHelper.safeTransfer(token1, recipient, uint256(-amount1));<br><br>        uint256 balance0Before = balance0();<br>        // 还是通过回调的方式，扣除用户需要支持的 token<br>        //这里还是通过回调完成用户支付 token 的费用。因为发送用户 token 是在回调函数之前完成的，因此这个 swap 函数是可以被当作 flash swap 来使用的。<br>        IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);<br>        // 校验扣除是否成功<br>        require(balance0Before.add(uint256(amount0)) &lt;= balance0(), &#x27;IIA&#x27;);<br>    &#125; else &#123;<br>        if (amount0 &lt; 0) TransferHelper.safeTransfer(token0, recipient, uint256(-amount0));<br><br>        uint256 balance1Before = balance1();<br>        IUniswapV3SwapCallback(msg.sender).uniswapV3SwapCallback(amount0, amount1, data);<br>        require(balance1Before.add(uint256(amount1)) &lt;= balance1(), &#x27;IIA&#x27;);<br>    &#125;<br><br>    //记录日志<br>    emit Swap(msg.sender, recipient, amount0, amount1, state.sqrtPriceX96, state.liquidity, state.tick);<br>    //解除防止重入的锁<br>    slot0.unlocked = true;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>由于这里还是通过回调完成用户支付 token 的费用。因为发送用户 token 是在回调函数之前完成的，因此这个 <code>swap</code> 函数是可以被当作 <code>flash swap</code> 来使用的。</p>
+<p>需要注意，如果本次交易是交易路径中的一次中间交易，那么扣除的 token 是从 <code>SwapRouter</code> 中扣除的，交易完成获得的 token 也会发送给 <code>SwapRouter</code> 以便其进行下一步的交易</p>
+<h3 id="computeSwapStep"><a href="#computeSwapStep" class="headerlink" title="computeSwapStep"></a>computeSwapStep</h3><p>交易是否能够结束的关键计算在 <code>SwapMath.computeSwapStep</code> 中完成，这里计算了交易是否能在目标价格范围内结束，以及消耗的 <code>tokenIn</code> 和得到的 <code>tokenOut</code>.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function computeSwapStep(<br>        uint160 sqrtRatioCurrentX96,<br>        uint160 sqrtRatioTargetX96,<br>        uint128 liquidity,<br>        int256 amountRemaining,<br>        uint24 feePips<br>    )<br>        internal<br>        pure<br>        returns (<br>            uint160 sqrtRatioNextX96,<br>            uint256 amountIn,<br>            uint256 amountOut,<br>            uint256 feeAmount<br>        )<br>    &#123;<br>        // 判断交易的方向，即价格降低或升高<br>        bool zeroForOne = sqrtRatioCurrentX96 &gt;= sqrtRatioTargetX96;<br>        // 判断是否指定了精确的 tokenIn 数量<br>        bool exactIn = amountRemaining &gt;= 0;<br><br>        if (exactIn) &#123;<br>        	// 先将 tokenIn 的余额扣除掉最大所需的手续费<br>            uint256 amountRemainingLessFee = FullMath.mulDiv(uint256(amountRemaining), 1e6 - feePips, 1e6);<br>            // 通过公式计算出到达目标价所需要的 tokenIn 数量，这里对 x token 和 y token 计算的公式是不一样的<br>            amountIn = zeroForOne<br>                //getAmount0Delta和getAmount1Delta的具体实现在上一章有详细解释<br>                ? SqrtPriceMath.getAmount0Delta(sqrtRatioTargetX96, sqrtRatioCurrentX96, liquidity, true)<br>                : SqrtPriceMath.getAmount1Delta(sqrtRatioCurrentX96, sqrtRatioTargetX96, liquidity, true);<br>            // 判断余额是否充足，如果充足，那么这次交易可以到达目标交易价格，否则需要计算出当前 tokenIn 能到达的目标交易价<br>            if (amountRemainingLessFee &gt;= amountIn) sqrtRatioNextX96 = sqrtRatioTargetX96;<br>            else<br>                sqrtRatioNextX96 = SqrtPriceMath.getNextSqrtPriceFromInput(<br>                    sqrtRatioCurrentX96,<br>                    liquidity,<br>                    amountRemainingLessFee,<br>                    zeroForOne<br>                );<br>        &#125; else &#123;<br>            amountOut = zeroForOne<br>                ? SqrtPriceMath.getAmount1Delta(sqrtRatioTargetX96, sqrtRatioCurrentX96, liquidity, false)<br>                : SqrtPriceMath.getAmount0Delta(sqrtRatioCurrentX96, sqrtRatioTargetX96, liquidity, false);<br>            if (uint256(-amountRemaining) &gt;= amountOut) sqrtRatioNextX96 = sqrtRatioTargetX96;<br>            else<br>                // 当余额不充足的时候计算能够到达的目标交易价<br>                sqrtRatioNextX96 = SqrtPriceMath.getNextSqrtPriceFromOutput(<br>                    sqrtRatioCurrentX96,<br>                    liquidity,<br>                    uint256(-amountRemaining),<br>                    zeroForOne<br>                );<br>        &#125;<br><br>        // 判断是否能够到达目标价<br>        bool max = sqrtRatioTargetX96 == sqrtRatioNextX96;<br><br>        // get the input/output amounts<br>        if (zeroForOne) &#123;<br>            // 根据是否到达目标价格，计算 amountIn/amountOut 的值<br>            amountIn = max &amp;&amp; exactIn<br>                ? amountIn<br>                : SqrtPriceMath.getAmount0Delta(sqrtRatioNextX96, sqrtRatioCurrentX96, liquidity, true);<br>            amountOut = max &amp;&amp; !exactIn<br>                ? amountOut<br>                : SqrtPriceMath.getAmount1Delta(sqrtRatioNextX96, sqrtRatioCurrentX96, liquidity, false);<br>        &#125; else &#123;<br>            amountIn = max &amp;&amp; exactIn<br>                ? amountIn<br>                : SqrtPriceMath.getAmount1Delta(sqrtRatioCurrentX96, sqrtRatioNextX96, liquidity, true);<br>            amountOut = max &amp;&amp; !exactIn<br>                ? amountOut<br>                : SqrtPriceMath.getAmount0Delta(sqrtRatioCurrentX96, sqrtRatioNextX96, liquidity, false);<br>        &#125;<br><br>        // cap the output amount to not exceed the remaining output amount<br>        // 这里对 Output 进行 cap 是因为前面在计算 amountOut 时，有可能会使用 sqrtRatioNextX96 来进行计算<br>		// 而 sqrtRatioNextX96 可能被 Round 之后导致 sqrt_P 偏大，从而导致计算的 amountOut 偏大<br>        if (!exactIn &amp;&amp; amountOut &gt; uint256(-amountRemaining)) &#123;<br>            amountOut = uint256(-amountRemaining);<br>        &#125;<br><br>        // 根据交易是否移动到价格边界来计算手续费的数额<br>        if (exactIn &amp;&amp; sqrtRatioNextX96 != sqrtRatioTargetX96) &#123;<br>            // we didn&#x27;t reach the target, so take the remainder of the maximum input as fee<br>            // 如果没能到达目标价，即交易结束，剩余的 tokenIn 将全部作为手续费<br>    		// 为了不让计算进一步复杂化，这里直接将剩余的 tokenIn 将全部作为手续费<br>    		// 因此会多收取一部分手续费，即按本次交易的最大手续费收取<br>            feeAmount = uint256(amountRemaining) - amountIn;<br>        &#125; else &#123;<br>            // 当价格移动到边界时，计算相应的手续费<br>            feeAmount = FullMath.mulDivRoundingUp(amountIn, feePips, 1e6 - feePips);<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>在进行交易输入/输出的计算时，和流动性的计算一样，也会遇到 rounding 的问题，处理的原则是：</p>
+<ol>
+<li>当计算 output 时，使用 RoundDown，保证 pool 不会出现坏账</li>
+<li>当计算 input 时，使用 RoundUp，保证 pool 不会出现坏账</li>
+<li>当通过 input 计算 √P 时，如果 √P 会减少，那么使用 RoundUp，这样可以保证 √ΔP 被 RoundDown，在后续计算 output 时不会使 pool 出现坏账。反之 如果 √P 会增大， 那么使用 RoundDown</li>
+<li>当通过 output 计算 √P 时，如果 √P 会减少，那么使用 RoundDown，这样可以保证 √ΔP 被 RoundUp，在后续计算 input 时不会使 pool 出现坏账。反之 如果 √P 会增大， 那么使用 RoundUp</li>
+</ol>
+<h3 id="uniswapV3SwapCallback"><a href="#uniswapV3SwapCallback" class="headerlink" title="uniswapV3SwapCallback"></a>uniswapV3SwapCallback</h3><p>支付的回调函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function uniswapV3SwapCallback(<br>    int256 amount0Delta,<br>    int256 amount1Delta,<br>    bytes calldata _data<br>) external override &#123;<br>    require(amount0Delta &gt; 0 || amount1Delta &gt; 0); // swaps entirely within 0-liquidity regions are not supported<br>    SwapCallbackData memory data = abi.decode(_data, (SwapCallbackData));<br>    (address tokenIn, address tokenOut, uint24 fee) = data.path.decodeFirstPool();<br>    CallbackValidation.verifyCallback(factory, tokenIn, tokenOut, fee);<br><br>    // 判断函数的参数中哪个是本次支付需要支付的代币<br>    (bool isExactInput, uint256 amountToPay) =<br>        amount0Delta &gt; 0<br>            ? (tokenIn &lt; tokenOut, uint256(amount0Delta))<br>            : (tokenOut &lt; tokenIn, uint256(amount1Delta));<br>    if (isExactInput) &#123;<br>        // 调用 pay 函数支付代币<br>        pay(tokenIn, data.payer, msg.sender, amountToPay);<br>    &#125; else &#123;<br>        // either initiate the next swap or pay<br>        if (data.path.hasMultiplePools()) &#123;<br>            data.path = data.path.skipToken();<br>            exactOutputInternal(amountToPay, msg.sender, 0, data);<br>        &#125; else &#123;<br>            amountInCached = amountToPay;<br>            tokenIn = tokenOut; // swap in/out because exact output swaps are reversed<br>            pay(tokenIn, data.payer, msg.sender, amountToPay);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>回调完成后，<code>swap</code> 函数会返回本次交易得到的代币数量。<code>exactInput</code> 将判断是否进行下一个路径的交易，直至所有的交易完成，进行输入约束的检查：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lasso"><span class="hljs-keyword">require</span>(amountOut &gt;= <span class="hljs-keyword">params</span>.amountOutMinimum, <span class="hljs-string">&#x27;Too little received&#x27;</span>);<br></code></pre></td></tr></table></figure>
+
+<p>如果交易的获得 token 数满足约束，则本次交易结束。</p>
+<h1 id="交易预计算"><a href="#交易预计算" class="headerlink" title="交易预计算"></a>交易预计算</h1><p>当用户和 uniswap 前端进行交互时，前端需要预先计算出用户输入 token 能够预期得到的 token 数量。</p>
+<p>这个功能在 uniswap v2 有非常简单的<a target="_blank" rel="noopener" href="https://github.com/Uniswap/uniswap-v2-periphery/blob/dda62473e2da448bc9cb8f4514dadda4aeede5f4/contracts/libraries/UniswapV2Library.sol#L42-L59">实现</a>，只需要查询处合约中两个代币的余额就可以完成预计算。</p>
+<p>但是在 v3 版本中，由于交易的计算需要使用合约内的 tick 信息，预计算只能由 uniswap v3 pool 合约来完成，但是 pool 合约中的计算函数都是会更改合约状态的 <code>external</code> 函数，那么如何把这个函数当作 <code>view/pure</code> 函数来使用呢？uniswap v3 periphery 仓库中给出了一个非常 tricky 的实现，代码在 <code>contracts/lens/Quoter.sol</code> 中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function quoteExactInputSingle(<br>    address tokenIn,<br>    address tokenOut,<br>    uint24 fee,<br>    uint256 amountIn,<br>    uint160 sqrtPriceLimitX96<br>) public override returns (uint256 amountOut) &#123;<br>    bool zeroForOne = tokenIn &lt; tokenOut;<br><br>    try<br>        // 调用 pool 合约的 swap 接口来模拟一次真实的交易<br>        getPool(tokenIn, tokenOut, fee).swap(<br>            address(this), // address(0) might cause issues with some tokens<br>            zeroForOne,<br>            amountIn.toInt256(),<br>            sqrtPriceLimitX96 == 0<br>                ? (zeroForOne ? TickMath.MIN_SQRT_RATIO + 1 : TickMath.MAX_SQRT_RATIO - 1)<br>                : sqrtPriceLimitX96,<br>            abi.encodePacked(tokenIn, fee, tokenOut)<br>        )<br>    &#123;&#125; catch (bytes memory reason) &#123;<br>        return parseRevertReason(reason);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>函数中调用了 <code>getPool(tokenIn, tokenOut, fee).swap()</code>，即 pool 合约的真实交易函数，但是实际上我们并不想让交易发生，这个交易调用必定也会失败，因此合约使用了 <code>try/catch</code> 的方式捕获错误，并且在回调函数中获取到模拟交易的结果，存入内存中。</p>
+<p>uniswapV3SwapCallback回调函数的实现：</p>
+<p>这个回调函数主要的作用就是将 <code>swap()</code> 函数计算处的结果保存到内存中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function uniswapV3SwapCallback(<br>    int256 amount0Delta,<br>    int256 amount1Delta,<br>    bytes memory path<br>) external view override &#123;<br>    require(amount0Delta &gt; 0 || amount1Delta &gt; 0); // swaps entirely within 0-liquidity regions are not supported<br>    (address tokenIn, address tokenOut, uint24 fee) = path.decodeFirstPool();<br>    CallbackValidation.verifyCallback(factory, tokenIn, tokenOut, fee);<br><br>    (bool isExactInput, uint256 amountToPay, uint256 amountReceived) =<br>        amount0Delta &gt; 0<br>            ? (tokenIn &lt; tokenOut, uint256(amount0Delta), uint256(-amount1Delta))<br>            : (tokenOut &lt; tokenIn, uint256(amount1Delta), uint256(-amount0Delta));<br>    if (isExactInput) &#123;<br>        // 这里代码需要将结果保存在内存中<br>        assembly &#123;<br>            // 0x40 是 solidity 定义的 free memory pointer<br>            let ptr := mload(0x40)<br>            // 将结果保存起来<br>            mstore(ptr, amountReceived)<br>            // revert 掉交易，并将内存中的数据作为 revert data<br>            revert(ptr, 32)<br>        &#125;<br>    &#125; else &#123;<br>        // if the cache has been populated, ensure that the full output amount has been received<br>        if (amountOutCached != 0) require(amountReceived == amountOutCached);<br>        assembly &#123;<br>            let ptr := mload(0x40)<br>            mstore(ptr, amountToPay)<br>            revert(ptr, 32)<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>将结果保存到内存中时候就将交易 <code>revert</code> 掉，然后在 <code>quoteExactInputSingle</code> 中捕获这个错误，并将内存中的信息读取出来，返回给调用者：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/// @dev Parses a revert reason that should contain the numeric quote<br>function parseRevertReason(bytes memory reason) private pure returns (uint256) &#123;<br>    if (reason.length != 32) &#123; // swap 函数正常 revert 的情况<br>        if (reason.length &lt; 68) revert(&#x27;Unexpected error&#x27;);<br>        assembly &#123;<br>            reason := add(reason, 0x04)<br>        &#125;<br>        revert(abi.decode(reason, (string)));<br>    &#125;<br>    return abi.decode(reason, (uint256)); // 这里捕获前面回调函数保存在内存中的结果。<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>总结：通过 <code>try/catch</code> 结合回调函数，模拟计算结果，实现了交易预计算的功能，这样 uniswap 前端就能够在获取用户输入后进行交易的预计算了，这部分前端的实现在<a target="_blank" rel="noopener" href="https://github.com/Uniswap/uniswap-interface/blob/3aa045303a4aeefe4067688e3916ecf36b2f7f75/src/hooks/useBestV3Trade.ts#L36">这里</a>。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Uniswap Part Ⅲ | 交易过程</div>
+      <div>http://example.com/2022/09/29/uniswap-v3-3/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/09/29/uniswap-v3-4/" title="Uniswap Part Ⅳ | 交易手续费">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Uniswap Part Ⅳ | 交易手续费</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/23/ParadigmCTF2021two/" title="Writeup | Paradigm CTF 2021 Part two">
+                        <span class="hidden-mobile">Writeup | Paradigm CTF 2021 Part two</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
