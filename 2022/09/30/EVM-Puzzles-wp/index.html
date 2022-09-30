@@ -1,0 +1,870 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="EVM-Puzzles挑战仓库地址 EVM操作码 准备工作：  安装hardhat  克隆仓库，进入仓库根目录 准备环境：npm install yarn 开始挑战：npx hardhat play  Puzzle 11234567891011121314151617############# Puzzle 1 #############00      34      CALLVALUE01">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Writeup | EVM-Puzzles">
+<meta property="og:url" content="http://example.com/2022/09/30/EVM-Puzzles-wp/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="EVM-Puzzles挑战仓库地址 EVM操作码 准备工作：  安装hardhat  克隆仓库，进入仓库根目录 准备环境：npm install yarn 开始挑战：npx hardhat play  Puzzle 11234567891011121314151617############# Puzzle 1 #############00      34      CALLVALUE01">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-09-30T12:25:00.000Z">
+<meta property="article:modified_time" content="2022-09-30T12:26:09.667Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="靶场刷题">
+<meta property="article:tag" content="EVM">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Writeup | EVM-Puzzles - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Writeup | EVM-Puzzles"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-09-30 20:25" pubdate>
+          2022年9月30日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          62 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Writeup | EVM-Puzzles</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="EVM-Puzzles"><a href="#EVM-Puzzles" class="headerlink" title="EVM-Puzzles"></a>EVM-Puzzles</h1><p><a target="_blank" rel="noopener" href="https://github.com/fvictorio/evm-puzzles?ref=hackernoon.com">挑战仓库地址</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com">EVM操作码</a></p>
+<p>准备工作：</p>
+<ul>
+<li>安装hardhat </li>
+<li>克隆仓库，进入仓库根目录</li>
+<li>准备环境：npm install yarn</li>
+<li>开始挑战：npx hardhat play</li>
+</ul>
+<h2 id="Puzzle-1"><a href="#Puzzle-1" class="headerlink" title="Puzzle 1"></a>Puzzle 1</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">1</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">34</span>      CALLVALUE<br><span class="hljs-number">01</span>      <span class="hljs-number">56</span>      JUMP<br><span class="hljs-number">02</span>      FD      REVERT<br><span class="hljs-number">03</span>      FD      REVERT<br><span class="hljs-number">04</span>      FD      REVERT<br><span class="hljs-number">05</span>      FD      REVERT<br><span class="hljs-number">06</span>      FD      REVERT<br><span class="hljs-number">07</span>      FD      REVERT<br><span class="hljs-number">08</span>      <span class="hljs-number">5</span>B      JUMPDEST<br><span class="hljs-number">09</span>      <span class="hljs-number">00</span>      STOP<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>首先，我们需要知道 <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#34"><strong>CALLVALUE</strong></a> 的作用。此操作码获取 wei 中当前调用的值（即事务值），并将该值推送到堆栈的顶部。</p>
+<p>即如果我们输入4，堆栈会发生如下变化</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br>---&gt;<br>[4<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p>接下来，我们需要知道 <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#56"><strong>JUMP</strong></a> 指令的作用。此操作码消耗堆栈上的顶部值，并跳转到序列中的第 th 条指令。</p>
+<p>即如果我们输入4，那么将会执行位于04的操作码</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">04 </span>     FD      REVERT<br></code></pre></td></tr></table></figure>
+
+<p>执行REVERT，运行失败</p>
+<p>因此我们输入8，将会执行JUMPDEST，跳过所有指令</p>
+<h2 id="Puzzle-2"><a href="#Puzzle-2" class="headerlink" title="Puzzle 2"></a>Puzzle 2</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">2</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">34</span>      CALLVALUE<br><span class="hljs-number">01</span>      <span class="hljs-number">38</span>      CODESIZE<br><span class="hljs-number">02</span>      <span class="hljs-number">03</span>      SUB<br><span class="hljs-number">03</span>      <span class="hljs-number">56</span>      JUMP<br><span class="hljs-number">04</span>      FD      REVERT<br><span class="hljs-number">05</span>      FD      REVERT<br><span class="hljs-number">06</span>      <span class="hljs-number">5</span>B      JUMPDEST<br><span class="hljs-number">07</span>      <span class="hljs-number">00</span>      STOP<br><span class="hljs-number">08</span>      FD      REVERT<br><span class="hljs-number">09</span>      FD      REVERT<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br></code></pre></td></tr></table></figure>
+
+<p>我们的目标是使栈顶的值为6，使程序跳过所有REVERT</p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#38"><strong>CODESIZE</strong></a> 获取在当前环境中运行的代码的大小，并入栈。在此示例中，我们可以通过查看序列中有多少操作码来手动检查代码的大小。每个操作码是1个字节，在这个谜题中，我们有10个操作码，这意味着代码的大小是10个字节。注意，EVM 使用十六进制数来表示字节码。所以这里是0a</p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#03"><strong>SUB</strong></a> 会把第一个堆栈元素减去第二个堆栈元素，并将结果推送到堆栈的顶部。</p>
+<p>此时的堆栈情况</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[input 0a<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p>即 0a - input = 6</p>
+<p>所以输入4</p>
+<h2 id="Puzzle-3"><a href="#Puzzle-3" class="headerlink" title="Puzzle 3"></a>Puzzle 3</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">3</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">36</span>      CALLDATASIZE<br><span class="hljs-number">01</span>      <span class="hljs-number">56</span>      JUMP<br><span class="hljs-number">02</span>      FD      REVERT<br><span class="hljs-number">03</span>      FD      REVERT<br><span class="hljs-number">04</span>      <span class="hljs-number">5</span>B      JUMPDEST<br><span class="hljs-number">05</span>      <span class="hljs-number">00</span>      STOP<br><br>? Enter the calldata:<br><br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#36"><strong>CALLDATASIZE</strong></a> 会获取调用数据的大小（以字节为单位），并将其推送到堆栈上。</p>
+<p>并且题目要求我们输入calldata</p>
+<p>所以我们输入四个指令的字节码，使 CALLDATASIZE 指令在堆栈上推送4</p>
+<p>这里我输入了 0x5B5B5B5B</p>
+<h2 id="Puzzle-4"><a href="#Puzzle-4" class="headerlink" title="Puzzle 4"></a>Puzzle 4</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">4</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">34</span>      CALLVALUE<br><span class="hljs-number">01</span>      <span class="hljs-number">38</span>      CODESIZE<br><span class="hljs-number">02</span>      <span class="hljs-number">18</span>      XOR<br><span class="hljs-number">03</span>      <span class="hljs-number">56</span>      JUMP<br><span class="hljs-number">04</span>      FD      REVERT<br><span class="hljs-number">05</span>      FD      REVERT<br><span class="hljs-number">06</span>      FD      REVERT<br><span class="hljs-number">07</span>      FD      REVERT<br><span class="hljs-number">08</span>      FD      REVERT<br><span class="hljs-number">09</span>      FD      REVERT<br><span class="hljs-number">0</span>A      <span class="hljs-number">5</span>B      JUMPDEST<br><span class="hljs-number">0</span>B      <span class="hljs-number">00</span>      STOP<br><br></code></pre></td></tr></table></figure>
+
+<p>这里的 CODESIZE 为12，即0c</p>
+<p>此时堆栈状态</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0c input<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#18"><strong>XOR</strong></a> 以二进制表示形式计算两个数字，两者相等为0，不等为1</p>
+<p>假设我们在堆栈的顶部有两个数字。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[5<span class="hljs-number"> 3 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p>在执行 <strong>XOR</strong> 指令时，我们可以想象二进制表示中的两个数字是这样的。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs">00000000000000000000000000000101<br>00000000000000000000000000000011<br></code></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs">00000000000000000000000000000110<br></code></pre></td></tr></table></figure>
+
+<p>而要想通过，我们需要得到0a</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-number">0</span>c   <span class="hljs-keyword">XOR</span> <span class="hljs-keyword">input</span> = <span class="hljs-number">0</span>a<br><span class="hljs-symbol">1100 </span><span class="hljs-keyword">XOR</span> <span class="hljs-keyword">input</span> = <span class="hljs-number">1010</span><br></code></pre></td></tr></table></figure>
+
+<p>所以输入0110，即6</p>
+<h2 id="Puzzle-5"><a href="#Puzzle-5" class="headerlink" title="Puzzle 5"></a>Puzzle 5</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">5</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">34</span>          CALLVALUE<br><span class="hljs-number">01</span>      <span class="hljs-number">80</span>          DUP1<br><span class="hljs-number">02</span>      <span class="hljs-number">02</span>          MUL<br><span class="hljs-number">03</span>      <span class="hljs-number">610100</span>      PUSH2 <span class="hljs-number">0100</span><br><span class="hljs-number">06</span>      <span class="hljs-number">14</span>          EQ<br><span class="hljs-number">07</span>      <span class="hljs-number">600</span>C        PUSH1 <span class="hljs-number">0</span>C<br><span class="hljs-number">09</span>      <span class="hljs-number">57</span>          JUMPI<br><span class="hljs-number">0</span>A      FD          REVERT<br><span class="hljs-number">0</span>B      FD          REVERT<br><span class="hljs-number">0</span>C      <span class="hljs-number">5</span>B          JUMPDEST<br><span class="hljs-number">0</span>D      <span class="hljs-number">00</span>          STOP<br><span class="hljs-number">0</span>E      FD          REVERT<br><span class="hljs-number">0</span>F      FD          REVERT<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#80"><strong>DUP1</strong></a> 会把堆栈上的第一个位置上的值复制，并将副本推送到堆栈的顶部。</p>
+<p>所以现在在前两条指令之后，我们的堆栈看起来像这样。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[input input<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#02"><strong>MUL</strong></a> 获取堆栈上的前两个值，将它们相乘，然后将结果推送到堆栈的顶部。</p>
+<p>因此，在本例中，MUL以后生成的堆栈如下所示。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[mulResult<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p> <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#61"><strong>PUSH2</strong></a> 会将指定的 2 字节值推送到堆栈的顶部。这里指定了0100（十六进制）</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0100 mulResult<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#14"><strong>EQ</strong></a> 会获取堆栈上的前两个值，将其进行比较并将结果推送到堆栈顶部。如果前两个值相等，则为1，否则为0。</p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#57"><strong>JUMPI</strong></a> 将有条件地更改程序计数器。此指令查看第二个堆栈元素以了解它是否应该跳转，具体取决于第二个堆栈元素是 1 还是 0 。然后使用第一个堆栈元素来知道要跳转到哪个位置。</p>
+<p>因此此时我们的堆栈应该是这样</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0c<span class="hljs-number"> 1 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p>即跳转到第12条命令，通过挑战</p>
+<p>所以为了使 EQ 的结果为1，我们需要使 input * input 的结果等于十六进制的0100，也就是256</p>
+<p>所以输入16</p>
+<h2 id="Puzzle-6"><a href="#Puzzle-6" class="headerlink" title="Puzzle 6"></a>Puzzle 6</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">6</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">02</span>      <span class="hljs-number">35</span>        CALLDATALOAD<br><span class="hljs-number">03</span>      <span class="hljs-number">56</span>        JUMP<br><span class="hljs-number">04</span>      FD        REVERT<br><span class="hljs-number">05</span>      FD        REVERT<br><span class="hljs-number">06</span>      FD        REVERT<br><span class="hljs-number">07</span>      FD        REVERT<br><span class="hljs-number">08</span>      FD        REVERT<br><span class="hljs-number">09</span>      FD        REVERT<br><span class="hljs-number">0</span>A      <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-number">0</span>B      <span class="hljs-number">00</span>        STOP<br><br>? Enter the calldata:<br><br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/#35"><strong>CALLDATALOAD</strong></a> 从调用数据的给定偏移量开始的 32 字节值，不足 32 bytes 的自动补0</p>
+<p>例如</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">calldata</span> <span class="hljs-number">0</span>xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF<br><span class="hljs-attribute">i</span> <span class="hljs-number">31</span><br><span class="hljs-attribute">output</span> <span class="hljs-number">0</span>xFF<span class="hljs-number">00000000000000000000000000000000000000000000000000000000000000</span><br></code></pre></td></tr></table></figure>
+
+<p>而如果输入 0x0A 会变成 0A00000000000000000000000000000000000000000000000000000000000000</p>
+<p>所以应该输入0x000000000000000000000000000000000000000000000000000000000000000a</p>
+<h2 id="Puzzle-7"><a href="#Puzzle-7" class="headerlink" title="Puzzle 7"></a>Puzzle 7</h2><figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-comment">############</span><br><span class="hljs-comment"># Puzzle 7 #</span><br><span class="hljs-comment">############</span><br><br><span class="hljs-attribute">00</span>      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-attribute">01</span>      <span class="hljs-number">6000</span>      PUSH<span class="hljs-number">1</span> <span class="hljs-number">00</span><br><span class="hljs-attribute">03</span>      <span class="hljs-number">80</span>        DUP<span class="hljs-number">1</span><br><span class="hljs-attribute">04</span>      <span class="hljs-number">37</span>        CALLDATACOPY<br><span class="hljs-attribute">05</span>      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-attribute">06</span>      <span class="hljs-number">6000</span>      PUSH<span class="hljs-number">1</span> <span class="hljs-number">00</span><br><span class="hljs-attribute">08</span>      <span class="hljs-number">6000</span>      PUSH<span class="hljs-number">1</span> <span class="hljs-number">00</span><br><span class="hljs-attribute">0A</span>      F<span class="hljs-number">0</span>        CREATE<br><span class="hljs-attribute">0B</span>      <span class="hljs-number">3</span>B        EXTCODESIZE<br><span class="hljs-attribute">0C</span>      <span class="hljs-number">6001</span>      PUSH<span class="hljs-number">1</span> <span class="hljs-number">01</span><br><span class="hljs-attribute">0E</span>      <span class="hljs-number">14</span>        EQ<br><span class="hljs-attribute">0F</span>      <span class="hljs-number">6013</span>      PUSH<span class="hljs-number">1</span> <span class="hljs-number">13</span><br><span class="hljs-attribute">11</span>      <span class="hljs-number">57</span>        JUMPI<br><span class="hljs-attribute">12</span>      FD        REVERT<br><span class="hljs-attribute">13</span>      <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-attribute">14</span>      <span class="hljs-number">00</span>        STOP<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>CALLDATASIZE</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><strong>PUSH1 00</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><strong>DUP1</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0<span class="hljs-number"> 0 </span>calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/#37"><strong>CALLDATACOPY</strong></a> <strong>destOffset offset size</strong></p>
+<p>从第 offset 的位置复制长度为 size 的 calldata，并从 destOffset 写进 memory。</p>
+<p>在此过程将消耗堆栈上的所有三个顶部元素</p>
+<p>运行后的结果和之前没有变化</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0<span class="hljs-number"> 0 </span>calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><strong>CALLDATASIZE</strong></p>
+<p><strong>PUSH1 00</strong></p>
+<p><strong>PUSH1 00</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[0<span class="hljs-number"> 0 </span>calldatasize<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/#f0"><strong>CREATE</strong></a> <strong>value offset size</strong></p>
+<p>建立（部署）新合约，会开启子 context 并执行初始化 code，执行完后会继续 context。</p>
+<p>如果部署成功，新地址的 code 会是执行初始化 code 的回传结果。</p>
+<p>合约地址的计算公式：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-selector-tag">address</span> = keccak256(rlp(<span class="hljs-selector-attr">[sender_address,sender_nonce]</span>))<span class="hljs-selector-attr">[12:]</span><br></code></pre></td></tr></table></figure>
+
+<p>value</p>
+<p>发送给合约的 value。</p>
+<p>offset｜size</p>
+<p>将 memory 里第 offset 长度为 size 的资料作为初始化 code 赋给 EVM 执行。</p>
+<p>因此运行结果</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[address_deployed<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p> <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#3b"><strong>EXTCODESIZE</strong></a> 会将堆栈顶部的地址的代码大小返回</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[address_code_size<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><strong>PUSH1</strong> <strong>01</strong></p>
+<p><strong>EQ</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[1 address_code_size<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>]<br></code></pre></td></tr></table></figure>
+
+<p>然后比较01和address_code_size是否相等</p>
+<p>若相等则可以成功跳转至第13条命令，通过挑战</p>
+<p>因此现在的目标是使输入的calldata的calldatasize为1</p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/#f3"><strong>RETURN</strong></a> 的作用：从堆栈中弹出 2 个值以将它们用作以下操作的输入</p>
+<ul>
+<li>offset：从哪里开始读取的内存偏移量</li>
+<li>size：要读取和返回的内存大小（以字节为单位）</li>
+</ul>
+<p>因此，无论它在内存中是什么，我们都只想返回 1 条 1 字节的指令。我们的目标是执行<code>RETURN(offset=0, size=1)</code>。</p>
+<p>所以一个简单的智能合约</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">6000</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">00</span> // <span class="hljs-number">00</span> 是 STOP <br><span class="hljs-attribute">6000</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">00</span> // 这将被用作 MSTORE<span class="hljs-number">8</span> 的偏移量，在内存中存储 STOP<br><span class="hljs-attribute">53</span>    MSTORE<span class="hljs-number">8</span>   // 将从偏移量 <span class="hljs-number">0</span> 开始在内存中存储 `<span class="hljs-number">00</span>` 值（来自第一个 PUSH<span class="hljs-number">1</span>）<br><span class="hljs-attribute">6001</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">01</span> // 必须返回 <span class="hljs-number">1</span> 字节<br><span class="hljs-attribute">6000</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">00</span> // 从 <span class="hljs-number">0</span> 返回这些字节<br><span class="hljs-attribute">F3</span>    RETURN<br></code></pre></td></tr></table></figure>
+
+<p>翻译为字节码即为 600060005360016000F3</p>
+<h2 id="Puzzle-8"><a href="#Puzzle-8" class="headerlink" title="Puzzle 8"></a>Puzzle 8</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">8</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-number">01</span>      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">03</span>      <span class="hljs-number">80</span>        DUP1<br><span class="hljs-number">04</span>      <span class="hljs-number">37</span>        CALLDATACOPY<br><span class="hljs-number">05</span>      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-number">06</span>      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">08</span>      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">0</span>A      F0        CREATE<br><span class="hljs-number">0</span>B      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">0</span>D      <span class="hljs-number">80</span>        DUP1<br><span class="hljs-number">0</span>E      <span class="hljs-number">80</span>        DUP1<br><span class="hljs-number">0</span>F      <span class="hljs-number">80</span>        DUP1<br><span class="hljs-number">10</span>      <span class="hljs-number">80</span>        DUP1<br><span class="hljs-number">11</span>      <span class="hljs-number">94</span>        SWAP5<br><span class="hljs-number">12</span>      <span class="hljs-number">5</span>A        GAS<br><span class="hljs-number">13</span>      F1        CALL<br><span class="hljs-number">14</span>      <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-number">16</span>      <span class="hljs-number">14</span>        EQ<br><span class="hljs-number">17</span>      <span class="hljs-number">601</span>B      PUSH1 <span class="hljs-number">1</span>B<br><span class="hljs-number">19</span>      <span class="hljs-number">57</span>        JUMPI<br><span class="hljs-number">1</span>A      FD        REVERT<br><span class="hljs-number">1</span>B      <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-number">1</span>C      <span class="hljs-number">00</span>        STOP<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p>前面都和第七题一样</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs tap">00     <span class="hljs-number"> 36 </span>       CALLDATASIZE<br>01     <span class="hljs-number"> 6000 </span>     PUSH1 00<br>03     <span class="hljs-number"> 80 </span>       DUP1<br>04     <span class="hljs-number"> 37 </span>       CALLDATACOPY<br>05     <span class="hljs-number"> 36 </span>       CALLDATASIZE<br>06     <span class="hljs-number"> 6000 </span>     PUSH1 00<br>08     <span class="hljs-number"> 6000 </span>     PUSH1 00<br>0A      F0        CREATE<br><br>[address_deployed<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p>接下来的几条指令</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs tap">0B     <span class="hljs-number"> 6000 </span>     PUSH1 00<br>0D     <span class="hljs-number"> 80 </span>       DUP1<br>0E     <span class="hljs-number"> 80 </span>       DUP1<br>0F     <span class="hljs-number"> 80 </span>       DUP1<br>10     <span class="hljs-number"> 80 </span>       DUP1<br><br>[0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 address_deployed<span class="hljs-number"> 0 </span>0 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p> <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#94"><strong>SWAP5</strong></a> 用于交换第 1 个和第 6 个堆栈项。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[address_deployed<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?fork=grayGlacier"><strong>GAS</strong></a> 会返回仍然可用的总气体量</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[gas address_deployed<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p>以上基本是为 <a target="_blank" rel="noopener" href="https://www.evm.codes/#f1?fork=grayGlacier"><strong>CALL</strong></a> 做准备，如果调用失败，则操作码将 0 压入堆栈，否则为 1。</p>
+<p><strong>注意：</strong>如果被调用的账户没有代码，它会返回成功为<code>true</code>。</p>
+<p>堆栈参数依次为</p>
+<ol>
+<li><code>gas</code>：要发送到子上下文以执行的 gas 量。</li>
+<li><code>address</code>：要执行的上下文的帐户。</li>
+<li><code>value</code>：wei 中的值发送到该地址</li>
+<li><code>argsOffset</code>：内存中的字节偏移量，以字节数表示</li>
+<li><code>argsSize</code>：使用先前指定的偏移量从内存中复制的字节大小</li>
+<li><code>retOffset</code>：内存中的字节偏移量（以字节为单位），用于存储子上下文的返回数据。</li>
+<li><code>retSize</code>：要复制的字节大小（返回数据的大小）。</li>
+</ol>
+<p>而后续需要使 <strong>CALL</strong> 结果等于 00</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">14 </span>     <span class="hljs-number">6000</span>      PUSH1 <span class="hljs-number">00</span><br><span class="hljs-symbol">16 </span>     <span class="hljs-number">14</span>        EQ<br><span class="hljs-symbol">17 </span>     <span class="hljs-number">601</span>B      PUSH1 <span class="hljs-number">1</span>B<br><span class="hljs-symbol">19 </span>     <span class="hljs-number">57</span>        JUMPI<br></code></pre></td></tr></table></figure>
+
+<p>因此我们需要使合约调用失败，即 <strong>REVERT</strong></p>
+<p>可以再次构造一个 REVERT 的合约</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">60FD</span>  PUSH<span class="hljs-number">1</span>  FD // FD 是 REVERT <br><span class="hljs-attribute">6000</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">00</span> // 这将被用作 MSTORE<span class="hljs-number">8</span> 的偏移量，在内存中存储 REVERT<br><span class="hljs-attribute">53</span>    MSTORE<span class="hljs-number">8</span>   // 将从偏移量 <span class="hljs-number">0</span> 开始在内存中存储 `FD` 值（来自第一个 PUSH<span class="hljs-number">1</span>）<br><span class="hljs-attribute">6001</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">01</span> // 必须返回 <span class="hljs-number">1</span> 字节<br><span class="hljs-attribute">6000</span>  PUSH<span class="hljs-number">1</span>  <span class="hljs-number">00</span> // 从 <span class="hljs-number">0</span> 返回这些字节<br><span class="hljs-attribute">F3</span>    RETURN<br></code></pre></td></tr></table></figure>
+
+<p>即 0x60FD60005360016000F3</p>
+<h2 id="Puzzle-9"><a href="#Puzzle-9" class="headerlink" title="Puzzle 9"></a>Puzzle 9</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs clean">############<br># Puzzle <span class="hljs-number">9</span> #<br>############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-number">01</span>      <span class="hljs-number">6003</span>      PUSH1 <span class="hljs-number">03</span><br><span class="hljs-number">03</span>      <span class="hljs-number">10</span>        LT<br><span class="hljs-number">04</span>      <span class="hljs-number">6009</span>      PUSH1 <span class="hljs-number">09</span><br><span class="hljs-number">06</span>      <span class="hljs-number">57</span>        JUMPI<br><span class="hljs-number">07</span>      FD        REVERT<br><span class="hljs-number">08</span>      FD        REVERT<br><span class="hljs-number">09</span>      <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-number">0</span>A      <span class="hljs-number">34</span>        CALLVALUE<br><span class="hljs-number">0</span>B      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-number">0</span>C      <span class="hljs-number">02</span>        MUL<br><span class="hljs-number">0</span>D      <span class="hljs-number">6008</span>      PUSH1 <span class="hljs-number">08</span><br><span class="hljs-number">0</span>F      <span class="hljs-number">14</span>        EQ<br><span class="hljs-number">10</span>      <span class="hljs-number">6014</span>      PUSH1 <span class="hljs-number">14</span><br><span class="hljs-number">12</span>      <span class="hljs-number">57</span>        JUMPI<br><span class="hljs-number">13</span>      FD        REVERT<br><span class="hljs-number">14</span>      <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-number">15</span>      <span class="hljs-number">00</span>        STOP<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br>? Enter the calldata: <br><br></code></pre></td></tr></table></figure>
+
+<p><strong>CALLDATASIZE</strong></p>
+<p><strong>PUSH1 03</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[03 calldatasize<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#10"><strong>LT</strong></a> 对前两个堆栈值运行比较，以查看第一个堆栈元素是否小于第二个堆栈元素。如果计算结果为 true，则在堆栈上推送1，否则改为推送0。</p>
+<p>由于这里我们需要得到一个为 1 的结果，所以 calldatasize &gt; 3</p>
+<p>随后运行以下指令</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">09 </span>     <span class="hljs-number">5</span>B        JUMPDEST<br><span class="hljs-number">0</span>A      <span class="hljs-number">34</span>        CALLVALUE<br><span class="hljs-number">0</span>B      <span class="hljs-number">36</span>        CALLDATASIZE<br><span class="hljs-number">0</span>C      <span class="hljs-number">02</span>        MUL<br><span class="hljs-number">0</span>D      <span class="hljs-number">6008</span>      PUSH1 <span class="hljs-number">08</span><br><span class="hljs-number">0</span>F      <span class="hljs-number">14</span>        EQ<br><span class="hljs-symbol">10 </span>     <span class="hljs-number">6014</span>      PUSH1 <span class="hljs-number">14</span><br><span class="hljs-symbol">12 </span>     <span class="hljs-number">57</span>        JUMPI<br></code></pre></td></tr></table></figure>
+
+<p>也就是说需要满足以下条件</p>
+<figure class="highlight objectivec"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs objectivec"><span class="hljs-built_in">CALLDATASIZE</span> &gt; <span class="hljs-number">3</span><br><span class="hljs-built_in">CALLVALUE</span> * <span class="hljs-built_in">CALLDATASIZE</span> == <span class="hljs-number">8</span><br></code></pre></td></tr></table></figure>
+
+<p>这里我输入的是</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">? Enter <span class="hljs-keyword">the</span> <span class="hljs-built_in">value</span> <span class="hljs-built_in">to</span> <span class="hljs-built_in">send</span>: <span class="hljs-number">2</span><br>? Enter <span class="hljs-keyword">the</span> calldata: <span class="hljs-number">0x00000001</span><br></code></pre></td></tr></table></figure>
+
+<h2 id="Puzzle-10"><a href="#Puzzle-10" class="headerlink" title="Puzzle 10"></a>Puzzle 10</h2><figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs clean">#############<br># Puzzle <span class="hljs-number">10</span> #<br>#############<br><br><span class="hljs-number">00</span>      <span class="hljs-number">38</span>          CODESIZE<br><span class="hljs-number">01</span>      <span class="hljs-number">34</span>          CALLVALUE<br><span class="hljs-number">02</span>      <span class="hljs-number">90</span>          SWAP1<br><span class="hljs-number">03</span>      <span class="hljs-number">11</span>          GT<br><span class="hljs-number">04</span>      <span class="hljs-number">6008</span>        PUSH1 <span class="hljs-number">08</span><br><span class="hljs-number">06</span>      <span class="hljs-number">57</span>          JUMPI<br><span class="hljs-number">07</span>      FD          REVERT<br><span class="hljs-number">08</span>      <span class="hljs-number">5</span>B          JUMPDEST<br><span class="hljs-number">09</span>      <span class="hljs-number">36</span>          CALLDATASIZE<br><span class="hljs-number">0</span>A      <span class="hljs-number">610003</span>      PUSH2 <span class="hljs-number">0003</span><br><span class="hljs-number">0</span>D      <span class="hljs-number">90</span>          SWAP1<br><span class="hljs-number">0</span>E      <span class="hljs-number">06</span>          MOD<br><span class="hljs-number">0</span>F      <span class="hljs-number">15</span>          ISZERO<br><span class="hljs-number">10</span>      <span class="hljs-number">34</span>          CALLVALUE<br><span class="hljs-number">11</span>      <span class="hljs-number">600</span>A        PUSH1 <span class="hljs-number">0</span>A<br><span class="hljs-number">13</span>      <span class="hljs-number">01</span>          ADD<br><span class="hljs-number">14</span>      <span class="hljs-number">57</span>          JUMPI<br><span class="hljs-number">15</span>      FD          REVERT<br><span class="hljs-number">16</span>      FD          REVERT<br><span class="hljs-number">17</span>      FD          REVERT<br><span class="hljs-number">18</span>      FD          REVERT<br><span class="hljs-number">19</span>      <span class="hljs-number">5</span>B          JUMPDEST<br><span class="hljs-number">1</span>A      <span class="hljs-number">00</span>          STOP<br><br>? Enter the value to send: (<span class="hljs-number">0</span>)<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>CODESIZE</strong></p>
+<p><strong>CALLVALUE</strong></p>
+<p><strong>SWAP1</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[1b callvalue<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0]<br></code></pre></td></tr></table></figure>
+
+<p> <a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#11"><strong>GT</strong></a> 用来计算大于</p>
+<p>因此需要满足 callvalue &lt; 1b，即十进制中的27</p>
+<p>接下来执行以下指令</p>
+<figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs basic"><span class="hljs-symbol">08 </span>     <span class="hljs-number">5</span>B          JUMPDEST<br><span class="hljs-symbol">09 </span>     <span class="hljs-number">36</span>          CALLDATASIZE<br><span class="hljs-number">0</span>A      <span class="hljs-number">610003</span>      PUSH2 <span class="hljs-number">0003</span><br><span class="hljs-number">0</span>D      <span class="hljs-number">90</span>          SWAP1<br><span class="hljs-number">0</span>E      <span class="hljs-number">06</span>          <span class="hljs-keyword">MOD</span><br><span class="hljs-number">0</span>F      <span class="hljs-number">15</span>          ISZERO<br><span class="hljs-symbol">10 </span>     <span class="hljs-number">34</span>          CALLVALUE<br><span class="hljs-symbol">11 </span>     <span class="hljs-number">600</span>A        PUSH1 <span class="hljs-number">0</span>A<br><span class="hljs-symbol">13 </span>     <span class="hljs-number">01</span>          ADD<br><span class="hljs-symbol">14 </span>     <span class="hljs-number">57</span>          JUMPI<br></code></pre></td></tr></table></figure>
+
+<p><strong>CALLDATASIZE</strong></p>
+<p><strong>PUSH2 0003</strong></p>
+<p><strong>SWAP1</strong></p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[calldatasize<span class="hljs-number"> 3 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#06"><strong>MOD</strong></a> 用于计算第一个堆栈元素和第二个堆栈元素的模，即 a % b</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[calldatasize%3<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#15"><strong>ISZERO</strong></a>，如果堆栈上的最高值为 0 ，则该指令将推送 1 到堆栈上。如果任何其他数字位于堆栈顶部，则将推送 0 到堆栈。</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs tap">[ISZERO(calldatasize%3)<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0<span class="hljs-number"> 0 </span>0 0]<br></code></pre></td></tr></table></figure>
+
+<p><strong>CALLVALUE</strong></p>
+<p><strong>PUSH1 0A</strong></p>
+<p><a target="_blank" rel="noopener" href="https://www.evm.codes/?ref=hackernoon.com#01"><strong>ADD</strong></a> 前两个值相加</p>
+<p>然后需要跳转到 0x19 处，也就是说需要满足条件</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">calldatasize</span> % <span class="hljs-number">3</span> == <span class="hljs-number">0</span><br><span class="hljs-attribute">0x0a</span> + callvalue = <span class="hljs-number">0</span>x<span class="hljs-number">19</span> // <span class="hljs-number">10</span> + <span class="hljs-number">15</span> = <span class="hljs-number">25</span><br></code></pre></td></tr></table></figure>
+
+<p>所以我输入</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">? Enter <span class="hljs-keyword">the</span> <span class="hljs-built_in">value</span> <span class="hljs-built_in">to</span> <span class="hljs-built_in">send</span>: <span class="hljs-number">15</span><br>? Enter <span class="hljs-keyword">the</span> calldata: <span class="hljs-number">0x000000</span><br></code></pre></td></tr></table></figure>
+
+<p>至此，所有 Puzzle 都完成了</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E9%9D%B6%E5%9C%BA%E5%88%B7%E9%A2%98/">#靶场刷题</a>
+      
+        <a href="/tags/EVM/">#EVM</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Writeup | EVM-Puzzles</div>
+      <div>http://example.com/2022/09/30/EVM-Puzzles-wp/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年9月30日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/09/29/uniswap-v3-6/" title="Uniswap Part Ⅵ | 闪电贷">
+                        <span class="hidden-mobile">Uniswap Part Ⅵ | 闪电贷</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
