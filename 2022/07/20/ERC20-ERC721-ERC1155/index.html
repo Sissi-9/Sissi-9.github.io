@@ -19,20 +19,22 @@
     <meta name="description" content="ERC是由Etherum开发人员为以太坊社区编写的。为了创建一个以太坊平台的标准，开发人员应当提交了一个以太坊改进方案（EIP，Ethereum Improvement Protocol），改进方案中包括协议规范和合约标准。一旦EIP被委员会批准并最终确定，它就成为ERC。 由于这些标准，智能合同和令牌交互更加容易，因此开发人员可以在以太坊子上创建 dapps。你会听到一个常见的类比来解释这个好处">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ERC20、ERC721、ERC1155标准规范">
-<meta property="og:url" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/index.html">
+<meta property="og:url" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
 <meta property="og:description" content="ERC是由Etherum开发人员为以太坊社区编写的。为了创建一个以太坊平台的标准，开发人员应当提交了一个以太坊改进方案（EIP，Ethereum Improvement Protocol），改进方案中包括协议规范和合约标准。一旦EIP被委员会批准并最终确定，它就成为ERC。 由于这些标准，智能合同和令牌交互更加容易，因此开发人员可以在以太坊子上创建 dapps。你会听到一个常见的类比来解释这个好处">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710192753893.png">
-<meta property="og:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710223711603.png">
-<meta property="og:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710223726455.png">
-<meta property="og:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710232011444.png">
-<meta property="og:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710232024558.png">
+<meta property="og:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710192753893.png">
+<meta property="og:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710223711603.png">
+<meta property="og:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710223726455.png">
+<meta property="og:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710232011444.png">
+<meta property="og:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710232024558.png">
 <meta property="article:published_time" content="2022-07-20T15:04:54.000Z">
-<meta property="article:modified_time" content="2022-09-18T08:19:36.506Z">
+<meta property="article:modified_time" content="2022-10-31T14:09:36.971Z">
 <meta property="article:author" content="Sissice">
+<meta property="article:tag" content="Etherum">
+<meta property="article:tag" content="EIP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710192753893.png">
+<meta name="twitter:image" content="http://example.com/2022/07/20/ERC20-ERC721-ERC1155/image-20220710192753893.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -321,7 +323,7 @@
 <li>查询总量：获取网络上可用代币的总供应量</li>
 <li>代币授权：批准一个帐户中一定的代币金额由第三方帐户使用</li>
 </ul>
-<p><img src="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710192753893.png" srcset="/img/loading.gif" lazyload alt="image-20220710192753893"></p>
+<p><img src="/2022/07/20/ERC20-ERC721-ERC1155/image-20220710192753893.png" srcset="/img/loading.gif" lazyload alt="image-20220710192753893"></p>
 <p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol">ERC-20</a>具体实现了以上<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol">IERC-20</a>接口</p>
 <h2 id="基本变量"><a href="#基本变量" class="headerlink" title="基本变量"></a>基本变量</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">uint256 private _totalSupply;			//发行总量<br>string private _name;					//代币名称<br>string private _symbol;					//代币标识符<br></code></pre></td></tr></table></figure>
 
@@ -360,8 +362,8 @@
 <li>查询总量：获取整个网络的可用代币总供应量；</li>
 <li>代币授权：批准帐户中一定数量的代币可以被第三方帐户转移。</li>
 </ul>
-<p><img src="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710223711603.png" srcset="/img/loading.gif" lazyload alt="image-20220710223711603"></p>
-<p><img src="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710223726455.png" srcset="/img/loading.gif" lazyload alt="image-20220710223726455"></p>
+<p><img src="/2022/07/20/ERC20-ERC721-ERC1155/image-20220710223711603.png" srcset="/img/loading.gif" lazyload alt="image-20220710223711603"></p>
+<p><img src="/2022/07/20/ERC20-ERC721-ERC1155/image-20220710223726455.png" srcset="/img/loading.gif" lazyload alt="image-20220710223726455"></p>
 <h2 id="基本变量-1"><a href="#基本变量-1" class="headerlink" title="基本变量"></a>基本变量</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// Token name<br>string private _name;<br><br>// Token symbol<br>string private _symbol;<br><br>// Mapping from token ID to owner address<br>mapping(uint256 =&gt; address) private _owners;<br><br>// Mapping owner address to token count<br>mapping(address =&gt; uint256) private _balances;<br><br>// Mapping from token ID to approved address<br>mapping(uint256 =&gt; address) private _tokenApprovals;<br><br>// Mapping from owner to operator approvals<br>mapping(address =&gt; mapping(address =&gt; bool)) private _operatorApprovals;<br></code></pre></td></tr></table></figure>
 
 <h2 id="构造函数-1"><a href="#构造函数-1" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/**<br> * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.<br> */<br>constructor(string memory name_, string memory symbol_) &#123;<br>    _name = name_;<br>    _symbol = symbol_;<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -427,8 +429,8 @@
 <p>​            （2）_ ids的长度与_values的长度不同；</p>
 <p>​            （3）_ ids中代币持有者的任何余额低于发送给接收者的相应_value金额；</p>
 <p>​            （4）出现任何其他错误。</p>
-<p><img src="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710232011444.png" srcset="/img/loading.gif" lazyload alt="image-20220710232011444"></p>
-<p><img src="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/image-20220710232024558.png" srcset="/img/loading.gif" lazyload alt="image-20220710232024558"></p>
+<p><img src="/2022/07/20/ERC20-ERC721-ERC1155/image-20220710232011444.png" srcset="/img/loading.gif" lazyload alt="image-20220710232011444"></p>
+<p><img src="/2022/07/20/ERC20-ERC721-ERC1155/image-20220710232024558.png" srcset="/img/loading.gif" lazyload alt="image-20220710232024558"></p>
 <h2 id="基本变量-2"><a href="#基本变量-2" class="headerlink" title="基本变量"></a>基本变量</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// Mapping from token ID to account balances<br>   mapping(uint256 =&gt; mapping(address =&gt; uint256)) private _balances;<br><br>   // Mapping from account to operator approvals<br>   mapping(address =&gt; mapping(address =&gt; bool)) private _operatorApprovals;<br><br>   // Used as the URI for all token types by relying on ID substitution, e.g. https://token-cdn-domain/&#123;id&#125;.json<br>   string private _uri;<br></code></pre></td></tr></table></figure>
 
 <h2 id="构造函数-2"><a href="#构造函数-2" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/**<br> * @dev See &#123;_setURI&#125;.<br> */<br>constructor(string memory uri_) &#123;<br>    _setURI(uri_);<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -477,6 +479,15 @@
               <div class="post-metas my-3">
   
   
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+        <a href="/tags/EIP/">#EIP</a>
+      
+    </div>
+  
 </div>
 
 
@@ -486,7 +497,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>ERC20、ERC721、ERC1155标准规范</div>
-      <div>http://example.com/2022/07/20/ERC20、ERC721、ERC1155标准规范/</div>
+      <div>http://example.com/2022/07/20/ERC20-ERC721-ERC1155/</div>
     </div>
     <div class="license-meta">
       
@@ -530,9 +541,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/08/06/%E5%85%B1%E8%AF%86%E7%AE%97%E6%B3%95%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/" title="共识算法学习记录">
+                      <a href="/2022/07/20/ERC20%E3%80%81ERC721%E3%80%81ERC1155%E6%A0%87%E5%87%86%E8%A7%84%E8%8C%83/" title="ERC20、ERC721、ERC1155标准规范">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">共识算法学习记录</span>
+                        <span class="hidden-mobile">ERC20、ERC721、ERC1155标准规范</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -540,8 +551,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/07/20/ERC20-ERC721-ERC1155/" title="ERC20、ERC721、ERC1155标准规范">
-                        <span class="hidden-mobile">ERC20、ERC721、ERC1155标准规范</span>
+                      <a href="/2022/07/10/fabric%E6%B5%8B%E8%AF%95%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/" title="fabric测试环境的搭建">
+                        <span class="hidden-mobile">fabric测试环境的搭建</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
