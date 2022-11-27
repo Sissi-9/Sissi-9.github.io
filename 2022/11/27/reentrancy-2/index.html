@@ -1,0 +1,698 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#957174">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="解释并复现了ERC20、ERC223、ERC777中的重入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ERC中的重入">
+<meta property="og:url" content="http://example.com/2022/11/27/reentrancy-2/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="解释并复现了ERC20、ERC223、ERC777中的重入">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111656516.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111744129.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125183759655.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125190825762.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125192416343.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125200526963.png">
+<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125193047131.png">
+<meta property="article:published_time" content="2022-11-27T07:18:30.000Z">
+<meta property="article:modified_time" content="2022-11-27T07:25:05.769Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111656516.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>ERC中的重入 - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/part1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="ERC中的重入"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-11-27 15:18" pubdate>
+          2022年11月27日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          15 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ERC中的重入</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>所有重入的本质都是不可控的外部调用</p>
+<p>注意：0.8.0 版本以后或使用了 SafeMath 的合约，重入时不能选择状态变量更改为 -= 的模式，否则会因为下溢而 revert</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function withdraw(uint256 amount) public &#123;<br>    require(balanceOf[msg.sender] &gt;= amount);<br>    require(token.transfer(msg.sender, amount));<br>    balanceOf[msg.sender] -= amount;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>比如以上模式就不能重入，只能提取自己真正拥有的代币</p>
+<h1 id="ERC20"><a href="#ERC20" class="headerlink" title="ERC20"></a>ERC20</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>ERC20 中的重入也就是最基础的重入，发生在 ETH 和 ERC20 代币的交换过程中，使用 call 低级调用，并未遵守检查-生效-交互模式，攻击者可以通过重写 fallback 或者 receive 函数来进行重入</p>
+<p>详情见以前的<a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">博客</a></p>
+<h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc20">reentrancy-exp/contracts/erc20</a></p>
+<p>运行命令</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc20_test<br></code></pre></td></tr></table></figure>
+
+<h1 id="ERC223"><a href="#ERC223" class="headerlink" title="ERC223"></a>ERC223</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>ERC223 相对于 ERC20，增加了 tokenReceived 函数，本意是防止意外发送的代币被合约接受（并卡在合约的余额中），但是增加了重入风险</p>
+<p>黑客可以利用该函数调用原合约中的问题函数（如未遵守检查-生效-交互模式的函数），多次重入</p>
+<h2 id="复现-1"><a href="#复现-1" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc223">reentrancy-exp/contracts/erc223</a></p>
+<p>运行命令</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc223_test<br></code></pre></td></tr></table></figure>
+
+<h2 id="相关事件"><a href="#相关事件" class="headerlink" title="相关事件"></a>相关事件</h2><h3 id="CTF-Tokenbank"><a href="#CTF-Tokenbank" class="headerlink" title="CTF-Tokenbank"></a>CTF-Tokenbank</h3><p>[capture the ether - Token-bank](<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/04/02/capture">https://sissice.github.io/2022/04/02/capture</a> the ether wp/#Token-bank)</p>
+<h1 id="ERC777中的重入"><a href="#ERC777中的重入" class="headerlink" title="ERC777中的重入"></a>ERC777中的重入</h1><h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/10/31/erc777/">ERC777 标准解析</a></p>
+<p>ERC777 引入了“钩子”的概念，以解决 ERC20 的一些缺陷。使用挂钩让合约知道它正在接收或发送资金并允许它采取行动。</p>
+<p>增加了两个需要用户自己实现的函数：tokensToSend 和 tokensReceived</p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221122111656516.png" srcset="/img/loading.gif" lazyload alt="image-20221122111656516"></p>
+<p>使用挂钩，接收联系人可以在收到令牌时执行操作，例如，如果向其发送了错误类型的令牌，则取消交易。所以 Tokenlon 似乎做出了正确的选择：所有 ERC20 的优点加上一些额外的很酷的功能。然而，正如他们沮丧地发现的那样，ERC777 钩子也为一些严重的攻击打开了大门！</p>
+<p>如上所示，ERC777 挂钩允许合约在接收或发送资金时执行附加功能。然而，这个功能可能被滥用，允许恶意合约对毫无戒心的调用合约的问题函数，执行重入攻击。</p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221122111744129.png" srcset="/img/loading.gif" lazyload alt="image-20221122111744129"></p>
+<p>可以重入的场景：</p>
+<ol>
+<li>在余额更新之前在转账功能中向收件人（或攻击者控制的任何其他帐户）进行外部调用。</li>
+<li>在更新余额之前或之后在transferFrom函数中对令牌花费者（或攻击者控制的任何其他帐户）进行外部调用。重要的是要注意所有的transferFrom函数总是以交易所作为接收者来调用，因此在不同的 ERC20 扩展中常见的对接收者的回调并不危险。</li>
+</ol>
+<h2 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc777">reentrancy-exp/contracts/erc777</a></p>
+<p>运行命令</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc777_test<br></code></pre></td></tr></table></figure>
+
+<h2 id="相关事件-1"><a href="#相关事件-1" class="headerlink" title="相关事件"></a>相关事件</h2><p><a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/exploiting-uniswap-from-reentrancy-to-actual-profit/">利用 Uniswap：从重入到实际盈利</a></p>
+<h3 id="imBTC"><a href="#imBTC" class="headerlink" title="imBTC"></a>imBTC</h3><p>2020 年 4 月 18 日 imBTC Uniswap 池被<a target="_blank" rel="noopener" href="https://twitter.com/tokenlon/status/1251423721476116480?s=20">黑客攻击并耗尽</a>了价值 30 万的代币</p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221125183759655.png" srcset="/img/loading.gif" lazyload alt="image-20221125183759655"></p>
+<p>问题主要是<a target="_blank" rel="noopener" href="https://github.com/ConsenSys/Uniswap-audit-report-2018-12#31-liquidity-pool-can-be-stolen-in-some-tokens-eg-erc-777-29">在uniswap中ERC777会发生重入</a></p>
+<p>攻击交易：<a target="_blank" rel="noopener" href="https://tx.eth.samczsun.com/ethereum/0x32c83905db61047834f29385ff8ce8cb6f3d24f97e24e6101d8301619efee96e">0x32c83905db61047834f29385ff8ce8cb6f3d24f97e24e6101d8301619efee96e</a></p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221125190825762.png" srcset="/img/loading.gif" lazyload alt="image-20221125190825762"></p>
+<h3 id="Cream-Finance"><a href="#Cream-Finance" class="headerlink" title="Cream Finance"></a>Cream Finance</h3><p>2021 年 8 月 30 日， <a target="_blank" rel="noopener" href="https://twitter.com/creamdotfinance/status/1432909467281080323">Cream Finance</a> 遭遇闪电贷攻击，攻击者利用漏洞共计获利5890ETH（约合1880万美元）。</p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221125192416343.png" srcset="/img/loading.gif" lazyload alt="image-20221125192416343"></p>
+<p>由于 AMP 支持类似 ERC-777 的代币标准，而它的特性与某些协议不相兼容，此次 Cream.Finance 的重入攻击正是操纵了此漏洞。</p>
+<p>这里在更新存储之前进行了转移贷款的操作</p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221125200526963.png" srcset="/img/loading.gif" lazyload alt="image-20221125200526963"></p>
+<p><a target="_blank" rel="noopener" href="https://medium.com/cream-finance/c-r-e-a-m-finance-post-mortem-amp-exploit-6ceb20a630c5">官方解释</a></p>
+<p>攻击交易：<a target="_blank" rel="noopener" href="https://tx.eth.samczsun.com/ethereum/0xc90468d698700757f33543039c7cb10d4ca49d57b5417789e7656e73019de674">0xc90468d698700757f33543039c7cb10d4ca49d57b5417789e7656e73019de674</a></p>
+<p><img src="/2022/11/27/reentrancy-2/image-20221125193047131.png" srcset="/img/loading.gif" lazyload alt="image-20221125193047131"></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%BC%8F%E6%B4%9E/">#漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>ERC中的重入</div>
+      <div>http://example.com/2022/11/27/reentrancy-2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年11月27日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/11/13/upgradeable/" title="代理合约学习笔记">
+                        <span class="hidden-mobile">代理合约学习笔记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
