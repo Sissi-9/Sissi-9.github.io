@@ -16,32 +16,26 @@
   <meta name="author" content="Sissice">
   <meta name="keywords" content="">
   
-    <meta name="description" content="解释并复现了ERC20、ERC223、ERC777中的重入">
+    <meta name="description" content="据 REKT 网络攻击数据库统计，自 2012 年以来因欺诈、黑客攻击等非法原因，DeFi 项目总共损失了 723 亿美元。在这损失的 723 亿美元中，仅 59 亿美元被归还。非法分子对 DeFi 项目的网络攻击层出不穷，本份研究报告将对一些常用攻击与欺诈手法做明确的分析报告，愿各位读者能够从中获益，避免经济损失。  目录 私钥泄露 原理 私钥是什么？ 泄露风险   相关事件 Wintermut">
 <meta property="og:type" content="article">
-<meta property="og:title" content="ERC中的重入">
-<meta property="og:url" content="http://example.com/2022/11/27/reentrancy-2/index.html">
+<meta property="og:title" content="DeFi 常用攻击手法研究报告">
+<meta property="og:url" content="http://example.com/2022/11/30/DefiHack/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
-<meta property="og:description" content="解释并复现了ERC20、ERC223、ERC777中的重入">
+<meta property="og:description" content="据 REKT 网络攻击数据库统计，自 2012 年以来因欺诈、黑客攻击等非法原因，DeFi 项目总共损失了 723 亿美元。在这损失的 723 亿美元中，仅 59 亿美元被归还。非法分子对 DeFi 项目的网络攻击层出不穷，本份研究报告将对一些常用攻击与欺诈手法做明确的分析报告，愿各位读者能够从中获益，避免经济损失。  目录 私钥泄露 原理 私钥是什么？ 泄露风险   相关事件 Wintermut">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111656516.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111744129.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125183759655.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125190825762.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125192416343.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125200526963.png">
-<meta property="og:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221125193047131.png">
-<meta property="article:published_time" content="2022-11-27T07:18:30.000Z">
-<meta property="article:modified_time" content="2022-11-27T07:25:05.769Z">
+<meta property="og:image" content="http://example.com/2022/11/30/DefiHack/image-1-1024x608.png">
+<meta property="article:published_time" content="2022-11-30T10:19:57.000Z">
+<meta property="article:modified_time" content="2022-11-30T10:52:00.045Z">
 <meta property="article:author" content="Sissice">
 <meta property="article:tag" content="漏洞">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2022/11/27/reentrancy-2/image-20221122111656516.png">
+<meta name="twitter:image" content="http://example.com/2022/11/30/DefiHack/image-1-1024x608.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>ERC中的重入 - Sissice&#39;s Blog</title>
+  <title>DeFi 常用攻击手法研究报告 - Sissice&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +191,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="ERC中的重入"></span>
+            <span id="subtitle" data-typed-text="DeFi 常用攻击手法研究报告"></span>
           
         </div>
 
@@ -208,8 +202,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-27 15:18" pubdate>
-          2022年11月27日 下午
+        <time datetime="2022-11-30 18:19" pubdate>
+          2022年11月30日 晚上
         </time>
       </span>
     
@@ -220,7 +214,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.7k 字
+          423 字
         
       </span>
     
@@ -231,7 +225,7 @@
         
         
         
-          15 分钟
+          4 分钟
         
       </span>
     
@@ -277,59 +271,109 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">ERC中的重入</h1>
+            <h1 style="display: none">DeFi 常用攻击手法研究报告</h1>
             
             
               <div class="markdown-body">
                 
-                <p>所有重入的本质都是不可控的外部调用</p>
-<p>注意：0.8.0 版本以后或使用了 SafeMath 的合约，重入时不能选择状态变量更改为 -= 的模式，否则会因为下溢而 revert</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function withdraw(uint256 amount) public &#123;<br>    require(balanceOf[msg.sender] &gt;= amount);<br>    require(token.transfer(msg.sender, amount));<br>    balanceOf[msg.sender] -= amount;<br>&#125;<br></code></pre></td></tr></table></figure>
-
-<p>比如以上模式就不能重入，只能提取自己真正拥有的代币</p>
-<h1 id="ERC20"><a href="#ERC20" class="headerlink" title="ERC20"></a>ERC20</h1><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>ERC20 中的重入也就是最基础的重入，发生在 ETH 和 ERC20 代币的交换过程中，使用 call 低级调用，并未遵守检查-生效-交互模式，攻击者可以通过重写 fallback 或者 receive 函数来进行重入</p>
-<p>详情见以前的<a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">博客</a></p>
-<h2 id="复现"><a href="#复现" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc20">reentrancy-exp/contracts/erc20</a></p>
-<p>运行命令</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc20_test<br></code></pre></td></tr></table></figure>
-
-<h1 id="ERC223"><a href="#ERC223" class="headerlink" title="ERC223"></a>ERC223</h1><h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>ERC223 相对于 ERC20，增加了 tokenReceived 函数，本意是防止意外发送的代币被合约接受（并卡在合约的余额中），但是增加了重入风险</p>
-<p>黑客可以利用该函数调用原合约中的问题函数（如未遵守检查-生效-交互模式的函数），多次重入</p>
-<h2 id="复现-1"><a href="#复现-1" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc223">reentrancy-exp/contracts/erc223</a></p>
-<p>运行命令</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc223_test<br></code></pre></td></tr></table></figure>
-
-<h2 id="相关事件"><a href="#相关事件" class="headerlink" title="相关事件"></a>相关事件</h2><h3 id="CTF-Tokenbank"><a href="#CTF-Tokenbank" class="headerlink" title="CTF-Tokenbank"></a>CTF-Tokenbank</h3><p>[capture the ether - Token-bank](<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/04/02/capture">https://sissice.github.io/2022/04/02/capture</a> the ether wp/#Token-bank)</p>
-<h1 id="ERC777中的重入"><a href="#ERC777中的重入" class="headerlink" title="ERC777中的重入"></a>ERC777中的重入</h1><h2 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/10/31/erc777/">ERC777 标准解析</a></p>
-<p>ERC777 引入了“钩子”的概念，以解决 ERC20 的一些缺陷。使用挂钩让合约知道它正在接收或发送资金并允许它采取行动。</p>
-<p>增加了两个需要用户自己实现的函数：tokensToSend 和 tokensReceived</p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221122111656516.png" srcset="/img/loading.gif" lazyload alt="image-20221122111656516"></p>
-<p>使用挂钩，接收联系人可以在收到令牌时执行操作，例如，如果向其发送了错误类型的令牌，则取消交易。所以 Tokenlon 似乎做出了正确的选择：所有 ERC20 的优点加上一些额外的很酷的功能。然而，正如他们沮丧地发现的那样，ERC777 钩子也为一些严重的攻击打开了大门！</p>
-<p>如上所示，ERC777 挂钩允许合约在接收或发送资金时执行附加功能。然而，这个功能可能被滥用，允许恶意合约对毫无戒心的调用合约的问题函数，执行重入攻击。</p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221122111744129.png" srcset="/img/loading.gif" lazyload alt="image-20221122111744129"></p>
-<p>可以重入的场景：</p>
-<ol>
-<li>在余额更新之前在转账功能中向收件人（或攻击者控制的任何其他帐户）进行外部调用。</li>
-<li>在更新余额之前或之后在transferFrom函数中对令牌花费者（或攻击者控制的任何其他帐户）进行外部调用。重要的是要注意所有的transferFrom函数总是以交易所作为接收者来调用，因此在不同的 ERC20 扩展中常见的对接收者的回调并不危险。</li>
-</ol>
-<h2 id="复现-2"><a href="#复现-2" class="headerlink" title="复现"></a>复现</h2><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/reentrancy-exp/tree/main/contracts/erc777">reentrancy-exp/contracts/erc777</a></p>
-<p>运行命令</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs js">npx hardhat test test/erc777_test<br></code></pre></td></tr></table></figure>
-
-<h2 id="相关事件-1"><a href="#相关事件-1" class="headerlink" title="相关事件"></a>相关事件</h2><p><a target="_blank" rel="noopener" href="https://blog.openzeppelin.com/exploiting-uniswap-from-reentrancy-to-actual-profit/">利用 Uniswap：从重入到实际盈利</a></p>
-<h3 id="imBTC"><a href="#imBTC" class="headerlink" title="imBTC"></a>imBTC</h3><p>2020 年 4 月 18 日 imBTC Uniswap 池被<a target="_blank" rel="noopener" href="https://twitter.com/tokenlon/status/1251423721476116480?s=20">黑客攻击并耗尽</a>了价值 30 万的代币</p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221125183759655.png" srcset="/img/loading.gif" lazyload alt="image-20221125183759655"></p>
-<p>问题主要是<a target="_blank" rel="noopener" href="https://github.com/ConsenSys/Uniswap-audit-report-2018-12#31-liquidity-pool-can-be-stolen-in-some-tokens-eg-erc-777-29">在uniswap中ERC777会发生重入</a></p>
-<p>攻击交易：<a target="_blank" rel="noopener" href="https://tx.eth.samczsun.com/ethereum/0x32c83905db61047834f29385ff8ce8cb6f3d24f97e24e6101d8301619efee96e">0x32c83905db61047834f29385ff8ce8cb6f3d24f97e24e6101d8301619efee96e</a></p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221125190825762.png" srcset="/img/loading.gif" lazyload alt="image-20221125190825762"></p>
-<h3 id="Cream-Finance"><a href="#Cream-Finance" class="headerlink" title="Cream Finance"></a>Cream Finance</h3><p>2021 年 8 月 30 日， <a target="_blank" rel="noopener" href="https://twitter.com/creamdotfinance/status/1432909467281080323">Cream Finance</a> 遭遇闪电贷攻击，攻击者利用漏洞共计获利5890ETH（约合1880万美元）。</p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221125192416343.png" srcset="/img/loading.gif" lazyload alt="image-20221125192416343"></p>
-<p>由于 AMP 支持类似 ERC-777 的代币标准，而它的特性与某些协议不相兼容，此次 Cream.Finance 的重入攻击正是操纵了此漏洞。</p>
-<p>这里在更新存储之前进行了转移贷款的操作</p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221125200526963.png" srcset="/img/loading.gif" lazyload alt="image-20221125200526963"></p>
-<p><a target="_blank" rel="noopener" href="https://medium.com/cream-finance/c-r-e-a-m-finance-post-mortem-amp-exploit-6ceb20a630c5">官方解释</a></p>
-<p>攻击交易：<a target="_blank" rel="noopener" href="https://tx.eth.samczsun.com/ethereum/0xc90468d698700757f33543039c7cb10d4ca49d57b5417789e7656e73019de674">0xc90468d698700757f33543039c7cb10d4ca49d57b5417789e7656e73019de674</a></p>
-<p><img src="/2022/11/27/reentrancy-2/image-20221125193047131.png" srcset="/img/loading.gif" lazyload alt="image-20221125193047131"></p>
+                <p>据 <a target="_blank" rel="noopener" href="https://defiyield.app/rekt-database">REKT 网络攻击数据库</a>统计，自 2012 年以来因欺诈、黑客攻击等非法原因，DeFi 项目总共损失了 723 亿美元。在这损失的 723 亿美元中，仅 59 亿美元被归还。非法分子对 DeFi 项目的网络攻击层出不穷，本份研究报告将对一些常用攻击与欺诈手法做明确的分析报告，愿各位读者能够从中获益，避免经济损失。</p>
+<p><img src="/2022/11/30/DefiHack/image-1-1024x608.png" srcset="/img/loading.gif" lazyload alt="DeFi 常用攻击手法研究报告：总损失达 723 亿美元，仅 59 亿美元被归还-Web3Caff Research"></p>
+<h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul>
+<li>私钥泄露<ul>
+<li>原理<ul>
+<li>私钥是什么？</li>
+<li>泄露风险</li>
+</ul>
+</li>
+<li>相关事件<ul>
+<li>Wintermute</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>Rug pull<ul>
+<li>原理</li>
+<li>相关事件<ul>
+<li>Thodex</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>闪电贷攻击<ul>
+<li>原理<ul>
+<li>闪电贷是什么？</li>
+<li>闪电贷攻击如何运作的？</li>
+</ul>
+</li>
+<li>相关事件<ul>
+<li>Beanstalk</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>重入漏洞<ul>
+<li>原理</li>
+<li>相关事件<ul>
+<li>Fei Rari</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>鉴权<ul>
+<li>原理<ul>
+<li>权限控制</li>
+<li>鉴权</li>
+</ul>
+</li>
+<li>相关事件<ul>
+<li>MonoX Finance</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>操纵预言机<ul>
+<li>原理<ul>
+<li>预言机（Oracle）</li>
+<li>操纵预言机</li>
+</ul>
+</li>
+<li>相关事件<ul>
+<li>Inverse Finance</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>逻辑校验漏洞<ul>
+<li>原理</li>
+<li>相关事件<ul>
+<li>Team Finance</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>跨链桥<ul>
+<li>原理<ul>
+<li>跨链</li>
+</ul>
+</li>
+<li>相关事件<ul>
+<li>Ronin Network</li>
+</ul>
+</li>
+<li>防范措施</li>
+</ul>
+</li>
+<li>总结</li>
+<li>参考文献</li>
+</ul>
+<p>全文请见 <a target="_blank" rel="noopener" href="https://research.web3caff.com/zh/archives/4507">Web3Caff Research</a></p>
 
                 
               </div>
@@ -354,8 +398,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>ERC中的重入</div>
-      <div>http://example.com/2022/11/27/reentrancy-2/</div>
+      <div>DeFi 常用攻击手法研究报告</div>
+      <div>http://example.com/2022/11/30/DefiHack/</div>
     </div>
     <div class="license-meta">
       
@@ -367,7 +411,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月27日</div>
+          <div>2022年11月30日</div>
         </div>
       
       
@@ -399,18 +443,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/11/30/DefiHack/" title="DeFi 常用攻击手法研究报告">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">DeFi 常用攻击手法研究报告</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/11/13/upgradeable/" title="代理合约学习笔记">
-                        <span class="hidden-mobile">代理合约学习笔记</span>
+                      <a href="/2022/11/27/reentrancy-2/" title="ERC中的重入">
+                        <span class="hidden-mobile">ERC中的重入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

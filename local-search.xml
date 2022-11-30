@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>DeFi 常用攻击手法研究报告</title>
+    <link href="/2022/11/30/DefiHack/"/>
+    <url>/2022/11/30/DefiHack/</url>
+    
+    <content type="html"><![CDATA[<p>据 <a href="https://defiyield.app/rekt-database">REKT 网络攻击数据库</a>统计，自 2012 年以来因欺诈、黑客攻击等非法原因，DeFi 项目总共损失了 723 亿美元。在这损失的 723 亿美元中，仅 59 亿美元被归还。非法分子对 DeFi 项目的网络攻击层出不穷，本份研究报告将对一些常用攻击与欺诈手法做明确的分析报告，愿各位读者能够从中获益，避免经济损失。</p><p><img src="/2022/11/30/DefiHack/image-1-1024x608.png" alt="DeFi 常用攻击手法研究报告：总损失达 723 亿美元，仅 59 亿美元被归还-Web3Caff Research"></p><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul><li>私钥泄露<ul><li>原理<ul><li>私钥是什么？</li><li>泄露风险</li></ul></li><li>相关事件<ul><li>Wintermute</li></ul></li><li>防范措施</li></ul></li><li>Rug pull<ul><li>原理</li><li>相关事件<ul><li>Thodex</li></ul></li><li>防范措施</li></ul></li><li>闪电贷攻击<ul><li>原理<ul><li>闪电贷是什么？</li><li>闪电贷攻击如何运作的？</li></ul></li><li>相关事件<ul><li>Beanstalk</li></ul></li><li>防范措施</li></ul></li><li>重入漏洞<ul><li>原理</li><li>相关事件<ul><li>Fei Rari</li></ul></li><li>防范措施</li></ul></li><li>鉴权<ul><li>原理<ul><li>权限控制</li><li>鉴权</li></ul></li><li>相关事件<ul><li>MonoX Finance</li></ul></li><li>防范措施</li></ul></li><li>操纵预言机<ul><li>原理<ul><li>预言机（Oracle）</li><li>操纵预言机</li></ul></li><li>相关事件<ul><li>Inverse Finance</li></ul></li><li>防范措施</li></ul></li><li>逻辑校验漏洞<ul><li>原理</li><li>相关事件<ul><li>Team Finance</li></ul></li><li>防范措施</li></ul></li><li>跨链桥<ul><li>原理<ul><li>跨链</li></ul></li><li>相关事件<ul><li>Ronin Network</li></ul></li><li>防范措施</li></ul></li><li>总结</li><li>参考文献</li></ul><p>全文请见 <a href="https://research.web3caff.com/zh/archives/4507">Web3Caff Research</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>漏洞</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>ERC中的重入</title>
     <link href="/2022/11/27/reentrancy-2/"/>
     <url>/2022/11/27/reentrancy-2/</url>
