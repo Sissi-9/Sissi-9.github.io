@@ -16,24 +16,35 @@
   <meta name="author" content="Sissice">
   <meta name="keywords" content="">
   
-    <meta name="description" content="思路 监听 uniswap 中的 pending 交易 找到契合的交易后，提高 gasPrice，进行抢跑，提前买入 token 在进行 approve 后，再将对应的代币进行售卖  相关地址在 goerli uniswap：0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D TUSD：0x60450439A3d91958E9Dae0918FC4e0d59a77f">
+    <meta name="description" content="事件背景2022 年 12 月 23 日，AVAX 上的 Defrost Finance 项目发生了重入攻击（V2），黑客获得了 173,000 美元。紧接着，在2022 年 12 月 24 日，项目方进行了 rugpull（V1），损失估计超过 1200 万美元。 12 月 26 日，Defrost Finance 称参与 V1 黑客攻击（rugpull）的黑客已经退还了资金。 攻击地址交易信息">
 <meta property="og:type" content="article">
-<meta property="og:title" content="抢跑机器人的简单实现">
-<meta property="og:url" content="http://example.com/2022/12/03/uniswap-front-running/index.html">
+<meta property="og:title" content="Defrost Finance 攻击事件分析">
+<meta property="og:url" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
-<meta property="og:description" content="思路 监听 uniswap 中的 pending 交易 找到契合的交易后，提高 gasPrice，进行抢跑，提前买入 token 在进行 approve 后，再将对应的代币进行售卖  相关地址在 goerli uniswap：0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D TUSD：0x60450439A3d91958E9Dae0918FC4e0d59a77f">
+<meta property="og:description" content="事件背景2022 年 12 月 23 日，AVAX 上的 Defrost Finance 项目发生了重入攻击（V2），黑客获得了 173,000 美元。紧接着，在2022 年 12 月 24 日，项目方进行了 rugpull（V1），损失估计超过 1200 万美元。 12 月 26 日，Defrost Finance 称参与 V1 黑客攻击（rugpull）的黑客已经退还了资金。 攻击地址交易信息">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-12-03T14:37:55.000Z">
-<meta property="article:modified_time" content="2022-12-03T14:41:49.739Z">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-167237032720110.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272001.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272002.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272003.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272014.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272015.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272016.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272017.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272018.png">
+<meta property="og:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-16723703272019.png">
+<meta property="article:published_time" content="2022-12-27T03:17:14.000Z">
+<meta property="article:modified_time" content="2022-12-30T03:20:03.396Z">
 <meta property="article:author" content="Sissice">
-<meta property="article:tag" content="js">
+<meta property="article:tag" content="事件分析">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2022/12/27/DefrostFinanceAnalyse/-167237032720110.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>抢跑机器人的简单实现 - Sissice&#39;s Blog</title>
+  <title>Defrost Finance 攻击事件分析 - Sissice&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -189,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="抢跑机器人的简单实现"></span>
+            <span id="subtitle" data-typed-text="Defrost Finance 攻击事件分析"></span>
           
         </div>
 
@@ -200,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-12-03 22:37" pubdate>
-          2022年12月3日 晚上
+        <time datetime="2022-12-27 11:17" pubdate>
+          2022年12月27日 上午
         </time>
       </span>
     
@@ -212,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          311 字
+          1.4k 字
         
       </span>
     
@@ -223,7 +234,7 @@
         
         
         
-          3 分钟
+          12 分钟
         
       </span>
     
@@ -269,25 +280,48 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">抢跑机器人的简单实现</h1>
+            <h1 style="display: none">Defrost Finance 攻击事件分析</h1>
             
             
               <div class="markdown-body">
                 
-                <h1 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h1><ol>
-<li>监听 uniswap 中的 pending 交易</li>
-<li>找到契合的交易后，提高 gasPrice，进行抢跑，提前买入 token</li>
-<li>在进行 approve 后，再将对应的代币进行售卖</li>
+                <h2 id="事件背景"><a href="#事件背景" class="headerlink" title="事件背景"></a><strong>事件背景</strong></h2><p>2022 年 12 月 23 日，AVAX 上的 Defrost Finance 项目发生了重入攻击（V2），黑客获得了 173,000 美元。紧接着，在2022 年 12 月 24 日，项目方进行了 rugpull（V1），损失估计超过 1200 万美元。</p>
+<p>12 月 26 日，Defrost Finance 称参与 V1 黑客攻击（rugpull）的黑客已经退还了资金。</p>
+<h2 id="攻击地址交易信息"><a href="#攻击地址交易信息" class="headerlink" title="攻击地址交易信息"></a><strong>攻击地址交易信息</strong></h2><h3 id="重入"><a href="#重入" class="headerlink" title="重入"></a><strong>重入</strong></h3><p>攻击交易：<a target="_blank" rel="noopener" href="https://snowtrace.io/tx/0xc6fb8217e45870a93c25e2098f54f6e3b24674a3083c30664867de474bf0212d">0xc6fb8217e45870a93c25e2098f54f6e3b24674a3083c30664867de474bf0212d</a></p>
+<p>攻击者地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0x7373dca267bdc623dfba228696c9d4e8234469f6">0x7373Dca267bdC623dfBA228696C9d4E8234469f6</a></p>
+<p>攻击合约地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0x792e8f3727cad6e00c58d478798f0907c4cec340">0x792E8f3727cad6e00c58d478798F0907c4cEC340</a></p>
+<p>受害者合约地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0xff152e21c5a511c478ed23d1b89bb9391be6de96#code">0xfF152e21C5A511c478ED23D1b89Bb9391bE6de96</a></p>
+<h3 id="rugpull"><a href="#rugpull" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><p>修改预言机交易之一：<a target="_blank" rel="noopener" href="https://snowtrace.io/tx/0x6307fdc4c7cce0c06a477db59a6ad378eb674cf1c902bd1b3748408926b2582d">0x6307fdc4c7cce0c06a477db59a6ad378eb674cf1c902bd1b3748408926b2582d</a></p>
+<p>铸币交易：<a target="_blank" rel="noopener" href="https://snowtrace.io/tx/0x69e9088b9fa395e8a4fca360c74ea86039510422a0fbbb98cae6872da14e8de2">0x69e9088b9fa395e8a4fca360c74ea86039510422a0fbbb98cae6872da14e8de2</a></p>
+<p>开发人员地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0x3cd5854fe3a13707b7882d8290d3cae793a7751a">0x3cd5854fe3a13707b7882d8290d3cae793a7751a</a></p>
+<p>清算者地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0x6f31eb634aba6921fbf15fc9aa6e08f11348f64f">0x6F31EB634ABa6921fBf15fc9aA6E08f11348f64f</a></p>
+<p>项目方合约地址：<a target="_blank" rel="noopener" href="https://snowtrace.io/address/0x5a733eb741bc080abae9bf3adaed9400416932f0">0x5a733eb741bc080abae9bf3adaed9400416932f0</a></p>
+<h2 id="攻击详细过程"><a href="#攻击详细过程" class="headerlink" title="攻击详细过程"></a><strong>攻击详细过程</strong></h2><h3 id="重入-1"><a href="#重入-1" class="headerlink" title="重入"></a><strong>重入</strong></h3><ol>
+<li>攻击者部署攻击合约，利用 JoePair 中的 swap 函数，自行传入 calldata 来对 LSWUSDC 的 flashloan 进行调用</li>
+<li>在攻击合约中重写 onFlashLoan 函数，并在其中对 LSWUSDC 的 deposit 进行调用，重复铸币</li>
+<li> 将两次铸币的金额全部取出，归还闪贷的金额后，剩下的 173,637 为收益</li>
 </ol>
-<h1 id="相关地址"><a href="#相关地址" class="headerlink" title="相关地址"></a>相关地址</h1><p>在 goerli</p>
-<p>uniswap：0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D</p>
-<p>TUSD：0x60450439A3d91958E9Dae0918FC4e0d59a77f896</p>
-<p>WETH：0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6</p>
-<h1 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h1><ul>
-<li>出售代币需要先进行approve</li>
-<li>可以提高滑点，防止失败</li>
-</ul>
-<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><p><a target="_blank" rel="noopener" href="https://github.com/Sissice/frontRunningBot">https://github.com/Sissice/frontRunningBot</a></p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-167237032720110.png" srcset="/img/loading.gif" lazyload alt="img"><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272001.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="rugpull-1"><a href="#rugpull-1" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><ol>
+<li>项目方调用 setOracleAddress 函数，为大量代币的 Collateral Vault 手动设置恶意预言机</li>
+<li>调用 joinAndMint 函数，铸造假的抵押代币</li>
+<li>恶意清算</li>
+</ol>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272002.png" srcset="/img/loading.gif" lazyload alt="img"><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272003.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="攻击原因分析"><a href="#攻击原因分析" class="headerlink" title="攻击原因分析"></a><strong>攻击原因分析</strong></h2><h3 id="重入-2"><a href="#重入-2" class="headerlink" title="重入"></a><strong>重入</strong></h3><p>在代码中，由于deposit 和 flashloan 函数缺少防止重入的措施，导致了攻击者可以通过onFlashLoan进行重入：攻击者通过恶意合约重入到了deposit，而_deposit 函数和 flashloan 函数中都会对 onDeposit 函数进行调用，而这个函数会进行铸币操作，也就导致了攻击者可以重复铸币，获取超额利润</p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272014.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272015.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272016.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h3 id="rugpull-2"><a href="#rugpull-2" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><p>项目方发现了攻击发生后，意外的修改预言机地址，而清算逻辑是依托预言机来获取价格，这就导致了项目方使用liquidate函数进行了恶意清算</p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272017.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>setOracleAddress 函数中，使用完全中心化的方法（多重签名）来判断是否可以更改预言机</p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272018.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272019.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a><strong>参考链接</strong></h2><ol>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/DefiyieldSec/status/1607070666897129473">https://twitter.com/DefiyieldSec/status/1607070666897129473</a></li>
+<li><a target="_blank" rel="noopener" href="https://twitter.com/peckshield/status/1606767457099993088">https://twitter.com/peckshield/status/1606767457099993088</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/@Defrost_Finance/hacked-funds-returned-to-defrost-71b9d2d1b458">https://medium.com/@Defrost_Finance/hacked-funds-returned-to-defrost-71b9d2d1b458</a></li>
+</ol>
 
                 
               </div>
@@ -300,7 +334,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/js/">#js</a>
+        <a href="/tags/%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90/">#事件分析</a>
       
     </div>
   
@@ -312,8 +346,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>抢跑机器人的简单实现</div>
-      <div>http://example.com/2022/12/03/uniswap-front-running/</div>
+      <div>Defrost Finance 攻击事件分析</div>
+      <div>http://example.com/2022/12/27/DefrostFinanceAnalyse/</div>
     </div>
     <div class="license-meta">
       
@@ -325,7 +359,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年12月3日</div>
+          <div>2022年12月27日</div>
         </div>
       
       
@@ -357,18 +391,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/12/27/DefrostFinanceAnalyse/" title="Defrost Finance 攻击事件分析">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Defrost Finance 攻击事件分析</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/12/02/monitor/" title="链上监听">
-                        <span class="hidden-mobile">链上监听</span>
+                      <a href="/2022/12/03/uniswap-front-running/" title="抢跑机器人的简单实现">
+                        <span class="hidden-mobile">抢跑机器人的简单实现</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

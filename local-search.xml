@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>Defrost Finance 攻击事件分析</title>
+    <link href="/2022/12/27/DefrostFinanceAnalyse/"/>
+    <url>/2022/12/27/DefrostFinanceAnalyse/</url>
+    
+    <content type="html"><![CDATA[<h2 id="事件背景"><a href="#事件背景" class="headerlink" title="事件背景"></a><strong>事件背景</strong></h2><p>2022 年 12 月 23 日，AVAX 上的 Defrost Finance 项目发生了重入攻击（V2），黑客获得了 173,000 美元。紧接着，在2022 年 12 月 24 日，项目方进行了 rugpull（V1），损失估计超过 1200 万美元。</p><p>12 月 26 日，Defrost Finance 称参与 V1 黑客攻击（rugpull）的黑客已经退还了资金。</p><h2 id="攻击地址交易信息"><a href="#攻击地址交易信息" class="headerlink" title="攻击地址交易信息"></a><strong>攻击地址交易信息</strong></h2><h3 id="重入"><a href="#重入" class="headerlink" title="重入"></a><strong>重入</strong></h3><p>攻击交易：<a href="https://snowtrace.io/tx/0xc6fb8217e45870a93c25e2098f54f6e3b24674a3083c30664867de474bf0212d">0xc6fb8217e45870a93c25e2098f54f6e3b24674a3083c30664867de474bf0212d</a></p><p>攻击者地址：<a href="https://snowtrace.io/address/0x7373dca267bdc623dfba228696c9d4e8234469f6">0x7373Dca267bdC623dfBA228696C9d4E8234469f6</a></p><p>攻击合约地址：<a href="https://snowtrace.io/address/0x792e8f3727cad6e00c58d478798f0907c4cec340">0x792E8f3727cad6e00c58d478798F0907c4cEC340</a></p><p>受害者合约地址：<a href="https://snowtrace.io/address/0xff152e21c5a511c478ed23d1b89bb9391be6de96#code">0xfF152e21C5A511c478ED23D1b89Bb9391bE6de96</a></p><h3 id="rugpull"><a href="#rugpull" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><p>修改预言机交易之一：<a href="https://snowtrace.io/tx/0x6307fdc4c7cce0c06a477db59a6ad378eb674cf1c902bd1b3748408926b2582d">0x6307fdc4c7cce0c06a477db59a6ad378eb674cf1c902bd1b3748408926b2582d</a></p><p>铸币交易：<a href="https://snowtrace.io/tx/0x69e9088b9fa395e8a4fca360c74ea86039510422a0fbbb98cae6872da14e8de2">0x69e9088b9fa395e8a4fca360c74ea86039510422a0fbbb98cae6872da14e8de2</a></p><p>开发人员地址：<a href="https://snowtrace.io/address/0x3cd5854fe3a13707b7882d8290d3cae793a7751a">0x3cd5854fe3a13707b7882d8290d3cae793a7751a</a></p><p>清算者地址：<a href="https://snowtrace.io/address/0x6f31eb634aba6921fbf15fc9aa6e08f11348f64f">0x6F31EB634ABa6921fBf15fc9aA6E08f11348f64f</a></p><p>项目方合约地址：<a href="https://snowtrace.io/address/0x5a733eb741bc080abae9bf3adaed9400416932f0">0x5a733eb741bc080abae9bf3adaed9400416932f0</a></p><h2 id="攻击详细过程"><a href="#攻击详细过程" class="headerlink" title="攻击详细过程"></a><strong>攻击详细过程</strong></h2><h3 id="重入-1"><a href="#重入-1" class="headerlink" title="重入"></a><strong>重入</strong></h3><ol><li>攻击者部署攻击合约，利用 JoePair 中的 swap 函数，自行传入 calldata 来对 LSWUSDC 的 flashloan 进行调用</li><li>在攻击合约中重写 onFlashLoan 函数，并在其中对 LSWUSDC 的 deposit 进行调用，重复铸币</li><li> 将两次铸币的金额全部取出，归还闪贷的金额后，剩下的 173,637 为收益</li></ol><p><img src="/2022/12/27/DefrostFinanceAnalyse/-167237032720110.png" alt="img"><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272001.png" alt="img"></p><h3 id="rugpull-1"><a href="#rugpull-1" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><ol><li>项目方调用 setOracleAddress 函数，为大量代币的 Collateral Vault 手动设置恶意预言机</li><li>调用 joinAndMint 函数，铸造假的抵押代币</li><li>恶意清算</li></ol><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272002.png" alt="img"><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272003.png" alt="img"></p><h2 id="攻击原因分析"><a href="#攻击原因分析" class="headerlink" title="攻击原因分析"></a><strong>攻击原因分析</strong></h2><h3 id="重入-2"><a href="#重入-2" class="headerlink" title="重入"></a><strong>重入</strong></h3><p>在代码中，由于deposit 和 flashloan 函数缺少防止重入的措施，导致了攻击者可以通过onFlashLoan进行重入：攻击者通过恶意合约重入到了deposit，而_deposit 函数和 flashloan 函数中都会对 onDeposit 函数进行调用，而这个函数会进行铸币操作，也就导致了攻击者可以重复铸币，获取超额利润</p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272014.png" alt="img"></p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272015.png" alt="img"></p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272016.png" alt="img"></p><h3 id="rugpull-2"><a href="#rugpull-2" class="headerlink" title="rugpull"></a><strong>rugpull</strong></h3><p>项目方发现了攻击发生后，意外的修改预言机地址，而清算逻辑是依托预言机来获取价格，这就导致了项目方使用liquidate函数进行了恶意清算</p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272017.png" alt="img"></p><p>setOracleAddress 函数中，使用完全中心化的方法（多重签名）来判断是否可以更改预言机</p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272018.png" alt="img"></p><p><img src="/2022/12/27/DefrostFinanceAnalyse/-16723703272019.png" alt="img"></p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a><strong>参考链接</strong></h2><ol><li><a href="https://twitter.com/DefiyieldSec/status/1607070666897129473">https://twitter.com/DefiyieldSec/status/1607070666897129473</a></li><li><a href="https://twitter.com/peckshield/status/1606767457099993088">https://twitter.com/peckshield/status/1606767457099993088</a></li><li><a href="https://medium.com/@Defrost_Finance/hacked-funds-returned-to-defrost-71b9d2d1b458">https://medium.com/@Defrost_Finance/hacked-funds-returned-to-defrost-71b9d2d1b458</a></li></ol>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>事件分析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>抢跑机器人的简单实现</title>
     <link href="/2022/12/03/uniswap-front-running/"/>
     <url>/2022/12/03/uniswap-front-running/</url>
@@ -53,6 +72,8 @@
     <tags>
       
       <tag>漏洞</tag>
+      
+      <tag>事件分析</tag>
       
     </tags>
     
