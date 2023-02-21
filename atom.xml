@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-02-21T11:55:34.864Z</updated>
+  <updated>2023-02-21T12:02:08.268Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,29 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>智能合约安全分析工具赛道研究报告：不止面向开发者，触角更是抵达 C 端用户</title>
+    <link href="http://example.com/2023/02/21/SmartContractSecurityAnalysisTool/"/>
+    <id>http://example.com/2023/02/21/SmartContractSecurityAnalysisTool/</id>
+    <published>2023-02-21T12:00:06.000Z</published>
+    <updated>2023-02-21T12:02:08.268Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>根据慢雾科技发布的《<a href="https://web3caff.com/zh/archives/47144">2022 区块链安全与反洗钱分析年度回顾</a>》报告，2022 年安全事件共 303 件，损失高达 37.77 亿美元。虽然今年的安全事件损失金额相比 2021 年的 97.95 亿美元下降约 61%。但是在被攻击事件中，智能合约漏洞仍然是重灾区，原因是智能合约具有一旦部署上线，便立即生效，不能随意改变的特性。因此智能合约审计，是每个项目上线前都需要进行的流程操作，即使是上线后，项目方也需要不断监测项目情况，以便对意外情况及时做出反应，减少损失。</p><p>因为区块链的黑暗森林法则，区块链安全赛道也成为了资本重点关注的方向，同时智能合约安全分析工具这个分支赛道已经成为安全解决方案公司的竞争重点，比如近期 MetaTrust 就刚完成了约一千万美元的种子轮融资，旨在为用户提供全智能合约自动扫描服务。由此可见，整个区块链安全市场都在朝着工具扫描与人工审计相结合的方向前进。那么智能合约安全分析工具当前赛道的发展现状如何，这些项目有哪些特性，当前存在哪些问题，未来发展如何演变 … 带着这些问题，本份研报为你逐项论述。</p></blockquote><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul><li>传统安全和 Web3 安全的区别</li><li>为什么需要进行智能合约审计</li><li>智能合约审计的流程</li><li>智能合约分析工具的利弊</li><li>智能合约部署前的安全分析<ul><li>自动分析方法<ul><li>静态分析</li><li>模糊测试</li><li>符号执行</li><li>形式化验证</li></ul></li><li>开源工具<ul><li>Slither</li><li>Echidna</li><li>Manticore</li></ul></li><li>安全服务公司<ul><li>Certik</li><li>ConsenSys Dilligence</li><li>Quantstamp</li><li>成都链安</li></ul></li></ul></li><li>智能合约部署后的安全分析<ul><li>Certik</li><li>Tenderly</li><li>Harpie</li><li>Go Plus</li><li>MistTrack</li></ul></li><li>未来展望</li><li>参考文献</li></ul><p>阅读全文：<a href="https://research.web3caff.com/zh/archives/6144">https://research.web3caff.com/zh/archives/6144</a></p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;根据慢雾科技发布的《&lt;a href=&quot;https://web3caff.com/zh/archives/47144&quot;&gt;2022 区块链安全与反洗钱分析年度回顾&lt;/a&gt;》报告，2022 年安全事件共 303 件，损失高达 37.77 亿美元。虽然今年</summary>
+      
+    
+    
+    
+    
+    <category term="事件分析" scheme="http://example.com/tags/%E4%BA%8B%E4%BB%B6%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>ThreeBodyOF 攻击事件分析</title>
@@ -451,28 +474,6 @@
     
     
     <category term="Etherum" scheme="http://example.com/tags/Etherum/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>合约基础漏洞</title>
-    <link href="http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/"/>
-    <id>http://example.com/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/</id>
-    <published>2022-08-17T13:58:37.000Z</published>
-    <updated>2022-11-13T09:14:06.669Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="整数溢出"><a href="#整数溢出" class="headerlink" title="整数溢出"></a>整数溢出</h1><h2 id="原理简介"><a href="#原理简介" class="headerlink" title="原理简介"></a>原理简介</h2><p>通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：</p><ul><li>乘法溢出</li><li>加法溢出</li><li>减法溢出</li></ul><p>在Solidity语言中，变量支持的整数类型步长以8递增，支持从uint8到uint256，以及int8到int256。例如，一个 uint8类型 ，只能存储在范围 0到2^8-1，也就是[0,255] 的数字，一个 uint256类型 ，只能存储在范围 0到2^256-1的数字。</p><p>在以太坊虚拟机（EVM）中为整数指定固定大小的数据类型，而且是无符号的，这意味着在以太坊虚拟机中一个整型变量只能有一定范围的数字表示，不能超过这个制定的范围。</p><p>如果试图存储 256这个数字 到一个 uint8类型中，这个256数字最终将变成 0，所以整数溢出的原理其实很简单，为了说明整数溢出原理，这里以 8 (uint8)位无符整型为例，8 位整型可表示的范围为 [0, 255]，255 在内存中存储按位存储的形式为下图所示：</p><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png" alt="img"></p><p>8 位无符整数 255 在内存中占据了 8bit 位置，若再加上 1 整体会因为进位而导致整体翻转为 0，最后导致原有的 8bit 表示的整数变为 0。</p><p>上图即说明了智能合约中整数上溢的原理，同样整数下溢也是一样，如 <code>(uint8)0 - 1 = (uint8)255</code>。</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.12;<br>contract POC&#123;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br>    //加法溢出<br>    //如果uint256 类型的变量达到了它的最大值(2**256 - 1)，如果在加上一个大于0的值便会变成0<br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    //减法溢出<br>    //如果uint256 类型的变量达到了它的最小值(0)，如果在减去一个小于0的值便会变成2**256-1(uin256类型的最大值)<br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    //乘法溢出<br>    //如果uint256 类型的变量超过了它的最大值(2**256 - 1)，最后它的值就会回绕变成0<br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220806235658226.png" alt="image-20220806235658226"></p><h2 id="防御方式"><a href="#防御方式" class="headerlink" title="防御方式"></a>防御方式</h2><p>为了防止整数溢出的发生，一方面可以在算术逻辑前后进行验证，另一方面可以直接使用 OpenZeppelin 维护的一套智能合约函数库中的 <a href="https://docs.openzeppelin.com/contracts/4.x/api/utils#SafeMath">SafeMath</a> 来处理算术逻辑。</p><p>注意：0.8版本的solidity默认使用 SafeMath，一旦溢出直接回退</p><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.8.0;<br>import &quot;@openzeppelin/contracts/utils/math/SafeMath.sol&quot;;<br>contract safe&#123;<br>    using SafeMath for uint256;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br><br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure><p>此时将调用失败</p><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220807000410789.png" alt="image-20220807000410789"></p><h2 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h2><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 5.Token</a></p><h1 id="重入攻击"><a href="#重入攻击" class="headerlink" title="重入攻击"></a>重入攻击</h1><p>之前的文章 <a href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">智能合约重入漏洞</a></p><h1 id="随机数漏洞"><a href="#随机数漏洞" class="headerlink" title="随机数漏洞"></a>随机数漏洞</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>之前的文章 <a href="https://sissice.github.io/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/">智能合约错误随机性</a></p><h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p>block.blockhash(block.number-1)：<a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 3.Coin Flip</a></p><h1 id="tx-origin"><a href="#tx-origin" class="headerlink" title="tx.origin"></a>tx.origin</h1><h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>tx.origin和msg.sender很直观的区别</p><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814210003053.png" alt="image-20220814210003053"></p><p>tx.origin 不应用于授权。例如，如果所有者设置为</p><figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">address owner = msg.sender<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure><p>但是函数的访问检查是用</p><figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">require(owner == tx.origin)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure><p>这可能会被利用。</p><h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 4.Telephone</a></p><h1 id="call调用"><a href="#call调用" class="headerlink" title="call调用"></a>call调用</h1><h2 id="原理简介-1"><a href="#原理简介-1" class="headerlink" title="原理简介"></a>原理简介</h2><p>call</p><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213108897.png" alt="image-20220814213108897"></p><p>delegateCall</p><p><img src="/2022/08/17/%E5%90%88%E7%BA%A6%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/image-20220814213131853.png" alt="image-20220814213131853"></p><h2 id="案例分析-1"><a href="#案例分析-1" class="headerlink" title="案例分析"></a>案例分析</h2><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 6.Delegation</a></p><p><a href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 16. Preservation</a></p><h1 id="合约变量存储机制"><a href="#合约变量存储机制" class="headerlink" title="合约变量存储机制"></a>合约变量存储机制</h1><p>之前的文章 <a href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">合约变量存储机制</a></p>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;h1 id=&quot;整数溢出&quot;&gt;&lt;a href=&quot;#整数溢出&quot; class=&quot;headerlink&quot; title=&quot;整数溢出&quot;&gt;&lt;/a&gt;整数溢出&lt;/h1&gt;&lt;h2 id=&quot;原理简介&quot;&gt;&lt;a href=&quot;#原理简介&quot; class=&quot;headerlink&quot; title=&quot;原理简介&quot;&gt;&lt;/a</summary>
-      
-    
-    
-    
-    
-    <category term="漏洞" scheme="http://example.com/tags/%E6%BC%8F%E6%B4%9E/"/>
     
   </entry>
   

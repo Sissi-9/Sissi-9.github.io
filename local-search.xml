@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>智能合约安全分析工具赛道研究报告：不止面向开发者，触角更是抵达 C 端用户</title>
+    <link href="/2023/02/21/SmartContractSecurityAnalysisTool/"/>
+    <url>/2023/02/21/SmartContractSecurityAnalysisTool/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>根据慢雾科技发布的《<a href="https://web3caff.com/zh/archives/47144">2022 区块链安全与反洗钱分析年度回顾</a>》报告，2022 年安全事件共 303 件，损失高达 37.77 亿美元。虽然今年的安全事件损失金额相比 2021 年的 97.95 亿美元下降约 61%。但是在被攻击事件中，智能合约漏洞仍然是重灾区，原因是智能合约具有一旦部署上线，便立即生效，不能随意改变的特性。因此智能合约审计，是每个项目上线前都需要进行的流程操作，即使是上线后，项目方也需要不断监测项目情况，以便对意外情况及时做出反应，减少损失。</p><p>因为区块链的黑暗森林法则，区块链安全赛道也成为了资本重点关注的方向，同时智能合约安全分析工具这个分支赛道已经成为安全解决方案公司的竞争重点，比如近期 MetaTrust 就刚完成了约一千万美元的种子轮融资，旨在为用户提供全智能合约自动扫描服务。由此可见，整个区块链安全市场都在朝着工具扫描与人工审计相结合的方向前进。那么智能合约安全分析工具当前赛道的发展现状如何，这些项目有哪些特性，当前存在哪些问题，未来发展如何演变 … 带着这些问题，本份研报为你逐项论述。</p></blockquote><h3 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h3><ul><li>传统安全和 Web3 安全的区别</li><li>为什么需要进行智能合约审计</li><li>智能合约审计的流程</li><li>智能合约分析工具的利弊</li><li>智能合约部署前的安全分析<ul><li>自动分析方法<ul><li>静态分析</li><li>模糊测试</li><li>符号执行</li><li>形式化验证</li></ul></li><li>开源工具<ul><li>Slither</li><li>Echidna</li><li>Manticore</li></ul></li><li>安全服务公司<ul><li>Certik</li><li>ConsenSys Dilligence</li><li>Quantstamp</li><li>成都链安</li></ul></li></ul></li><li>智能合约部署后的安全分析<ul><li>Certik</li><li>Tenderly</li><li>Harpie</li><li>Go Plus</li><li>MistTrack</li></ul></li><li>未来展望</li><li>参考文献</li></ul><p>阅读全文：<a href="https://research.web3caff.com/zh/archives/6144">https://research.web3caff.com/zh/archives/6144</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>事件分析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>ThreeBodyOF 攻击事件分析</title>
     <link href="/2023/01/14/ThreeBodyOFAnalyse/"/>
     <url>/2023/01/14/ThreeBodyOFAnalyse/</url>
