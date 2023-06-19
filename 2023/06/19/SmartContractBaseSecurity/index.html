@@ -1,0 +1,925 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/tou.png">
+  <link rel="icon" href="/img/tou.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#957174">
+  <meta name="author" content="Sissice">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="概述智能合约安全主要关注智能合约及其与区块链内部要素交互过程中的安全性，如智能合约架构设计安全、代码安全、运行安全等。本小节将简要介绍基于以太坊智能合约 Solidity 目前主要的安全问题以及解决方案。 Ethereum平台及Solidity语言的安全漏洞，基于语言本身、执行环境以及系统可以分为3个级别：Solidity、EVM 和 blockchain。  Solidity 级别的漏洞主要涵盖">
+<meta property="og:type" content="article">
+<meta property="og:title" content="智能合约常见漏洞">
+<meta property="og:url" content="http://example.com/2023/06/19/SmartContractBaseSecurity/index.html">
+<meta property="og:site_name" content="Sissice&#39;s Blog">
+<meta property="og:description" content="概述智能合约安全主要关注智能合约及其与区块链内部要素交互过程中的安全性，如智能合约架构设计安全、代码安全、运行安全等。本小节将简要介绍基于以太坊智能合约 Solidity 目前主要的安全问题以及解决方案。 Ethereum平台及Solidity语言的安全漏洞，基于语言本身、执行环境以及系统可以分为3个级别：Solidity、EVM 和 blockchain。  Solidity 级别的漏洞主要涵盖">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230618195016791.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220806235658226.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220807000410789.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230619114938489.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814210003053.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230619144835429.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814213108897.png">
+<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814213131853.png">
+<meta property="article:published_time" content="2023-06-19T08:57:02.000Z">
+<meta property="article:modified_time" content="2023-06-19T08:59:22.165Z">
+<meta property="article:author" content="Sissice">
+<meta property="article:tag" content="漏洞">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230618195016791.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>智能合约常见漏洞 - Sissice&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 5.4.0"><link rel="alternate" href="/atom.xml" title="Sissice's Blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Sissice&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/part1.jpg') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="智能合约常见漏洞"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-06-19 16:57" pubdate>
+          2023年6月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          21k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          175 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">智能合约常见漏洞</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>智能合约安全主要关注智能合约及其与区块链内部要素交互过程中的安全性，如智能合约架构设计安全、代码安全、运行安全等。本小节将简要介绍基于以太坊智能合约 Solidity 目前主要的安全问题以及解决方案。</p>
+<p>Ethereum平台及Solidity语言的安全漏洞，基于语言本身、执行环境以及系统可以分为3个级别：<strong>Solidity</strong>、<strong>EVM</strong> 和 <strong>blockchain</strong>。</p>
+<ul>
+<li>Solidity 级别的漏洞主要涵盖调用不明确（call to unkown）、没有足够的 Gas 发送（gasless send）、异常障碍（exception disorder）、类型转换（type cast）、重入攻击（reentrancy）和保密（keeping secret）；</li>
+<li>EVM级别的漏洞主要包括传输过程中网络数据丢失（ether lost in transfer）和堆栈容量限制（stack size limit）等</li>
+<li>Blockchain级别的漏洞主要涉及不可预测的状态（unpredictable state）、产生随机性（generating randomness）和时间限制（time constraint）。</li>
+</ul>
+<p>智能合约的典型安全属性主要包含以下几个类别：</p>
+<ul>
+<li><strong>调用完整性（call integrity）</strong>智能合约调用完整性可以防止重入攻击和调用不明确等安全问题。</li>
+<li><strong>原子性（atomicity）</strong>当智能合约不满足原子性时，将出现不可预知异常（mishandled exceptions）等类型的安全问题。</li>
+<li><strong>可变账户状态的独立性（independence of mutable account state）</strong>当智能合约不满足可变账户状态的独立性时，将出现交易顺序依赖（transaction order dependency）和不可预测状态等类型的安全问题</li>
+<li><strong>交易环境独立性（independence of transaction environment）</strong>当智能合约不满足交易环境独立性时，将出现时间戳依赖（timestamp dependency）、时间限制（time constraints）和产生随机性等类型的安全问题</li>
+</ul>
+<p>基于开发设计模式安全，为了解决Ethereum和Solidity相关的安全性问题，社区和开发人员提出了<strong>检查效果交互（CEI， checks-effect-interaction）、紧急停止（emergency stop）、减速带（speed bump）、速率限制（rate limit）、互斥（mutex）和余额限制（balance limit）</strong> 6 种设计模式用于处理开发智能合约过程中的典型安全问题和漏洞。</p>
+<ul>
+<li>检查效果交互模式通过一定的代码顺序，在最后一步调用外部智能合约，阻止外部智能合约发动重复调用攻击，解决恶意代码劫持控制流的漏洞。</li>
+<li>紧急停止模式将紧急停止功能集成到智能合约代码中，由认证方触发以禁用某些敏感功能。</li>
+<li>减速带模式通过延长执行敏感任务的智能合约的完成时间，解决短时间内某项任务请求执行频率过高的问题。</li>
+<li>速率限制模式通过降低智能合约一段时间内的执行速率，缓解任务请求繁忙状况，实现智能合约正常运行。</li>
+<li>互斥模式利用互斥死锁阻止外部调用重新输入调用方函数，防止重入攻击。</li>
+<li>余额限制模式通过限制智能合约中风险资金的最高金额，降低智能合约受到攻击后造成的金融风险。</li>
+</ul>
+<h1 id="访问控制权限"><a href="#访问控制权限" class="headerlink" title="访问控制权限"></a>访问控制权限</h1><p>合约没有设置合理的访问控制模型，没有对合约方法进行有效的校验。主要体现在以下方面：</p>
+<ul>
+<li><strong>函数和变量可见性：</strong>未能合理限制其所能被修改或调用的作用域</li>
+<li><strong>权限漏洞：</strong>指应用在检查授权时存在纰漏（甚至漏写检查），使得攻击者在获得低权限用户账户后，利用一些方式绕过权限检查，访问或者操作其他用户或者更高权限。</li>
+</ul>
+<h2 id="可见性"><a href="#可见性" class="headerlink" title="可见性"></a>可见性</h2><p><strong>Solidity的函数和状态变量有四种可见性：public、external、internal、private</strong>。函数的可见性在0.5.0以前默认是public，之后被强制要求声明可见性，不允许留空否则会编译报错。</p>
+<blockquote>
+<p><strong>public:</strong> 其修饰的函数对所有智能合约可见，可以被外部调用也可以被内部调用；</p>
+<p><strong>external:</strong> 其修饰的函数智能被外部合约调用，不允许内部调用（不能使用this.a()在同一个合约内调用）；</p>
+<p><strong>internal:</strong> 其修饰的函数只允许被本合约和派生合约内部调用；</p>
+<p><strong>private：</strong>其修饰的函数只允许被当前合约调用，其派生合约不可见。</p>
+</blockquote>
+<h2 id="函数修饰器"><a href="#函数修饰器" class="headerlink" title="函数修饰器"></a>函数修饰器</h2><p>修饰器是合约的可继承属性，可以被派生合约覆盖，但前提是它们被标记为<code>virtual</code>（早期版本没有virtual修饰符不需要声明为virtual）</p>
+<h1 id="浮点数和精度"><a href="#浮点数和精度" class="headerlink" title="浮点数和精度"></a>浮点数和精度</h1><p><strong>目前 Solidity 对浮点的支持并不好，需要借助整型来实现浮点运算。</strong></p>
+<h2 id="定长浮点型"><a href="#定长浮点型" class="headerlink" title="定长浮点型"></a>定长浮点型</h2><p>目前 Solidity <strong>还没有完全支持定长浮点型</strong>，可以声明定长浮点型的变量，但不能给它们赋值或把它们赋值给其他变量。定长浮点型的关键字是 fixed/ufixed，表示各种大小的有符号和无符号的定长浮点型。</p>
+<p>在关键字 ufixedMxN 和 fixedMxN 中，<strong>“M”</strong> 表示该类型占用的位数，<strong>“N”</strong> 表示可用的小数位数。<strong>“M”</strong> 必须能整除8，即8位到256位。<strong>“N”</strong> 则可以是从0到80之间的任意数。ufixed 和 fixed 分别是 ufixed128x18 和 fixed128x18 的别名。</p>
+<p>主流的合约方案如solidity是禁止使用浮点数的。</p>
+<h2 id="通过整型实现"><a href="#通过整型实现" class="headerlink" title="通过整型实现"></a>通过整型实现</h2><p>如果使用不当，会导致意想不到的漏洞</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.8.7;<br><br>contract FunWithNumbers &#123;<br><br>    uint  public tknPerEther = 10;<br>    uint  public weiPerEther = 1e18;<br>    <br>    mapping(address =&gt; uint) public balance;<br><br>    function buyToken() external payable &#123;<br>        // converting wei to eth, then multiplying by the token rate<br>        // 如果msg.value小于 1 个以太币，无论它多么接近 1 个以太币，在除以weiPerEther后都会得到 0。<br>        uint token = msg.value/weiPerEther*tknPerEther;<br>        balance[msg.sender] += token;<br>    &#125;<br>    function sellTokens(uint tokens) public &#123;<br>        require(balance[msg.sender] &gt;= tokens);<br>        // 任何小于10的tokens的数值都将导致eth为0<br>        uint eth = tokens/tknPerEther;<br>        balance[msg.sender] -= tokens;<br>        payable (msg.sender).transfer(eth*weiPerEther);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="防御措施"><a href="#防御措施" class="headerlink" title="防御措施"></a>防御措施</h2><ol>
+<li><p>注意操作顺序的区别，如果除法无法避免，乘法一定要在除法前，以避免精度丢失。在上面的示例中，可以修改为 <code>msg.value*tknPerEth/weiPerEther </code> 结果会更加精确。</p>
+</li>
+<li><p>最好在执行任何必要的数学运算之前将值转换为更高的精度，最终转换回输出所需的精度。</p>
+</li>
+<li><p>最好在 Solidity 中保持所有变量的高精度，并在第三方应用程序中将它们转换回较低的精度。</p>
+</li>
+</ol>
+<p><strong>成熟的开源的浮点运算库：</strong></p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230618195016791.png" srcset="/img/loading.gif" lazyload alt="image-20230618195016791"></p>
+<h1 id="合约变量存储机制"><a href="#合约变量存储机制" class="headerlink" title="合约变量存储机制"></a>合约变量存储机制</h1><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">合约变量存储机制</a></p>
+<h1 id="溢出"><a href="#溢出" class="headerlink" title="溢出"></a>溢出</h1><h2 id="整型溢出"><a href="#整型溢出" class="headerlink" title="整型溢出"></a>整型溢出</h2><h3 id="原理简介"><a href="#原理简介" class="headerlink" title="原理简介"></a>原理简介</h3><p>通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：</p>
+<ul>
+<li>乘法溢出</li>
+<li>加法溢出</li>
+<li>减法溢出</li>
+</ul>
+<p>在Solidity语言中，变量支持的整数类型步长以8递增，支持从uint8到uint256，以及int8到int256。例如，一个 uint8类型 ，只能存储在范围 0到2^8-1，也就是[0,255] 的数字，一个 uint256类型 ，只能存储在范围 0到2^256-1的数字。</p>
+<p>在以太坊虚拟机（EVM）中为整数指定固定大小的数据类型，而且是无符号的，这意味着在以太坊虚拟机中一个整型变量只能有一定范围的数字表示，不能超过这个制定的范围。</p>
+<p>如果试图存储 256这个数字 到一个 uint8类型中，这个256数字最终将变成 0，所以整数溢出的原理其实很简单，为了说明整数溢出原理，这里以 8 (uint8)位无符整型为例，8 位整型可表示的范围为 [0, 255]，255 在内存中存储按位存储的形式为下图所示：</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>8 位无符整数 255 在内存中占据了 8bit 位置，若再加上 1 整体会因为进位而导致整体翻转为 0，最后导致原有的 8bit 表示的整数变为 0。</p>
+<p>上图即说明了智能合约中整数上溢的原理，同样整数下溢也是一样，如 <code>(uint8)0 - 1 = (uint8)255</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.6.12;<br>contract POC&#123;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br>    //加法溢出<br>    //如果uint256 类型的变量达到了它的最大值(2**256 - 1)，如果在加上一个大于0的值便会变成0<br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    //减法溢出<br>    //如果uint256 类型的变量达到了它的最小值(0)，如果在减去一个小于0的值便会变成2**256-1(uin256类型的最大值)<br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    //乘法溢出<br>    //如果uint256 类型的变量超过了它的最大值(2**256 - 1)，最后它的值就会回绕变成0<br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220806235658226.png" srcset="/img/loading.gif" lazyload alt="image-20220806235658226"></p>
+<h3 id="防御方式"><a href="#防御方式" class="headerlink" title="防御方式"></a>防御方式</h3><p>为了防止整数溢出的发生，一方面可以在算术逻辑前后进行验证，另一方面可以直接使用 OpenZeppelin 维护的一套智能合约函数库中的 <a target="_blank" rel="noopener" href="https://docs.openzeppelin.com/contracts/4.x/api/utils#SafeMath">SafeMath</a> 来处理算术逻辑。</p>
+<p>注意：0.8版本的solidity默认使用 SafeMath，一旦溢出直接回退</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.8.0;<br>import &quot;@openzeppelin/contracts/utils/math/SafeMath.sol&quot;;<br>contract safe&#123;<br>    using SafeMath for uint256;<br>    uint256 public add = 2**256 - 1;<br>    uint256 public sub = 0;<br>    uint256 public mul = 2**255;<br><br>    function add_overflow() public view returns (uint256) &#123;<br>        return add + 1;<br>    &#125;<br><br>    function sub_underflow() public view returns (uint256) &#123;<br>        return sub - 1;<br>    &#125;<br>    <br>    function mul_overflow()public view returns (uint256) &#123;<br>        return mul * 2;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>此时将调用失败</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220807000410789.png" srcset="/img/loading.gif" lazyload alt="image-20220807000410789"></p>
+<h3 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h3><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 5.Token</a></p>
+<h2 id="数组溢出"><a href="#数组溢出" class="headerlink" title="数组溢出"></a>数组溢出</h2><p>数组数据位于起始位置 <code>keccak256(p)</code>，其布局方式与静态大小的数组数据相同：一个元素接一个元素，如果元素不超过 16 字节，则可能共享存储槽。动态数组的动态数组递归地应用此规则。</p>
+<p>理论上数组长度是不受限制的，我们可以不断向a、b添加元素。然而EVM存储空间不是无限的，只有2**256-1个slot，所以当动态数组下标是用户可控的且数组长度不受限的情况下，攻击者可以根据虚拟机的插槽深度构造对应的参数，使得参数指向虚拟机中的任意内存位置，从而修改对应插槽的状态变量，这是相当危险的。</p>
+<h2 id="类型混淆导致的溢出"><a href="#类型混淆导致的溢出" class="headerlink" title="类型混淆导致的溢出"></a>类型混淆导致的溢出</h2><p>Solidity允许类型之间进行相互转换，转换时必须符合一定条件，不能导致信息丢失。例如，uint8可以转换为uint16，但是int8不可以转换为uint256，因为int8可以包含uint256中不允许的负值。</p>
+<p>在0.7.0版本之前，将对常量使用移位或指数运算是，会使用非常量的类型(例如：250 &lt;&lt; x，或者250 ** x中，其结果是x的类型)；而在0.7.0版本之后，将使用常量的类型来操作</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.4.23;<br>contract DemoContract1 &#123;<br>		uint8 x = 2;<br>		uint public shift = 250 &lt;&lt; x; // result: 232.<br>		uint public exp = 250 ** x; // result: 36.<br><br>&#125;<br><br>pragma solidity ^0.7.0;<br>contract DemoContract2 &#123;<br>		uint8 x = 2;<br>		uint public shift = 250 &lt;&lt; x; // result: 1000.<br>		uint public exp = 250 ** x; // result: 62500.<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>在solidity中位运算的最大值为256，超过256的位运算将返回0，且即使在0.8.0以上的版本都不会报错</strong></p>
+<h1 id="拒绝服务攻击"><a href="#拒绝服务攻击" class="headerlink" title="拒绝服务攻击"></a>拒绝服务攻击</h1><p><strong>攻击者试图通过暂时或无限期地中断连接到网络的主机的服务，使其目标用户无法使用机器或网络资源。</strong>换句话说，系统无法处理用户需要的正常服务请求。例如，当计算机系统崩溃或带宽耗尽或硬盘已满而无法提供正常服务时，就构成了DoS。</p>
+<p><strong>在以太坊智能合约中，DoS 漏洞可以简单理解为“不可恢复的恶意操纵或不受控制的无限资源消耗”</strong>，即对以太坊合约进行 DoS 攻击，可能导致大量消耗 Ether 和 Gas，甚至导致异常的合约逻辑。</p>
+<h2 id="利用非预期的回滚的-DoS"><a href="#利用非预期的回滚的-DoS" class="headerlink" title="利用非预期的回滚的 DoS"></a>利用非预期的回滚的 DoS</h2><h3 id="依赖外部调用状态"><a href="#依赖外部调用状态" class="headerlink" title="依赖外部调用状态"></a>依赖外部调用状态</h3><ol>
+<li><p>在 fallback 函数中简单的通过 revert 函数回滚</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Auction &#123;<br>    address currentLeader;<br>    uint highestBid;<br><br>    function bid() payable &#123;<br>        require(msg.value &gt; highestBid);<br><br>        require(currentLeader.send(highestBid)); // Refund the old leader, if it fails then revert<br><br>        currentLeader = msg.sender;<br>        highestBid = msg.value;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>一个合约通过一个数组遍历来向用户支付，如果其中任何一个支付失败，将导致整个支付回滚，这个循环永远不会遍历完，没有任何人能够从中得到应有的付款。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">address[] private refundAddresses;<br>mapping (address =&gt; uint) public refunds;<br><br>// bad<br>function refundAll() public &#123;<br>    for(uint x; x &lt; refundAddresses.length; x++) &#123; // arbitrary length iteration based on how many addresses participated<br>        require(refundAddresses[x].send(refunds[refundAddresses[x]])) // doubly bad, now a single failure on send will hold up all funds<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="权限操作"><a href="#权限操作" class="headerlink" title="权限操作"></a>权限操作</h3><p>在智能合约中，有一些特权的地址是很常见的，比如  <strong>owner</strong>  地址，它负责管理合约的参数调整、紧急关停等敏感操作。如果  owner  地址丢失或无法正常工作（如私钥丢失），则会导致整个合约无法运行，从而导致非主观的 DoS 攻击。</p>
+<h2 id="利用区块-Gas-Limit-的-DoS"><a href="#利用区块-Gas-Limit-的-DoS" class="headerlink" title="利用区块 Gas Limit 的 DoS"></a>利用区块 Gas Limit 的 DoS</h2><p>每个区块都有可以消耗的 gas 上限（Gas Limit），这是Block Gas Limit。如果消耗的 gas 超过此限制，交易将失败。</p>
+<h3 id="不受控制的操作在合约层进行"><a href="#不受控制的操作在合约层进行" class="headerlink" title="不受控制的操作在合约层进行"></a>不受控制的操作在合约层进行</h3><p>如果数组的大小不受控制，在一个函数中一次性向所有人进行支付，可能会遇到区块 gas 上限的限制，导致整个交易无法完成。</p>
+<p>尝试控制数组的大小，或将<strong>对它的遍历分到多个区块进行执行</strong>（使用一个变量来跟踪当前的进度，并从该点继续）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct Payee &#123;<br>    address addr;<br>    uint256 value;<br>&#125;<br><br>Payee[] payees;<br>uint256 nextPayeeIndex;<br><br>function payOut() &#123;<br>    uint256 i = nextPayeeIndex;<br>    while (i &lt; payees.length &amp;&amp; gasleft() &gt; 200000) &#123;<br>      payees[i].addr.send(payees[i].value);<br>      i++;<br>    &#125;<br>    nextPayeeIndex = i;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p><strong>在两次</strong>  <strong>payOut</strong>  <strong>函数执行的间隔时间内，该合约其他交易的执行不会受到这个模式带来的负面影响</strong>。因此，仅在绝对必要时，使用此模式。</p>
+<h3 id="通过区块填充在网络层进行"><a href="#通过区块填充在网络层进行" class="headerlink" title="通过区块填充在网络层进行"></a>通过区块填充在网络层进行</h3><p>即使你的合约中不包含无限循坏，攻击者也可以通过以足够高的 Gas Price 广播计算密集型交易来阻止其他交易被包含在区块链中几个区块。为此，攻击者可以发出多个交易，这些交易将消耗整个Block GasLimit，并在下一个区块被打包时立即给出足够高的 Gas Price。当然，没有一个固定的 Gas Price 值能够保证你的交易被包含在区块中，但GasPrice 越大，机会就越大。</p>
+<p>如果攻击成功的话，则该区块无法包含除攻击者的交易以外的其他交易，一般来说，这用于在特定时间之前阻止对特定合约的交易。</p>
+<p>简单来说，就是填充足够多的垃圾交易，消耗区块的gas，使得正常交易无法在此区块内进行</p>
+<h2 id="预防-DoS-攻击"><a href="#预防-DoS-攻击" class="headerlink" title="预防 DoS 攻击"></a>预防 DoS 攻击</h2><ol>
+<li><p>pull payment system</p>
+<p>外部调用可能会意外或故意的失败，因此，<strong>为了最大限度地减少此类故障造成的损害，通常最好将每个外部调用隔离到它自己的交易中</strong>，该交易可以由调用的接收者启动。尤其是在支付相关的场景，最好让用户自己提取资金而不是自动将资金支付给他们（这也减少了gas limit 出现问题的可能性）。避免在单个交易中合并多个转账操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract auction &#123;<br>	address highestBidder;<br>  uint highestBid;<br>  mapping(address =&gt; uint) refunds;<br><br>  function bid() payable external &#123;<br>        require(msg.value &gt;= highestBid);<br><br>        if (highestBidder != address(0)) &#123;<br>            refunds[highestBidder] += highestBid; // 记录需要退款的金额<br>        &#125;<br><br>        highestBidder = msg.sender;<br>        highestBid = msg.value;<br>    &#125;<br><br>    // 用户自行提取退款<br>    function withdrawRefund() external &#123;<br>        uint refund = refunds[msg.sender];<br>        refunds[msg.sender] = 0;<br>        (bool success, ) = msg.sender.call.value(refund)(&quot;&quot;);<br>        require(success);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure></li>
+<li><p>避免单点故障</p>
+<ul>
+<li>特权地址<strong>不要单纯使用外部拥有地址</strong>（EOA），而<strong>使用多签钱包地址或 DAO 地址</strong>来代替。</li>
+<li><strong>预留备用方案，来避免单点故障</strong>。</li>
+</ul>
+</li>
+</ol>
+<h1 id="未初始化的storage变量"><a href="#未初始化的storage变量" class="headerlink" title="未初始化的storage变量"></a>未初始化的storage变量</h1><p>代码中的数据存储是实现一些代码功能不可或缺的流程，智能合约也不例外，但是如果存储数据时不细心，就可能会造成未初始化的存储指针漏洞，该漏洞产生的主要原因是没有对存储变量进行初始化，造成之前位置的数据被意外覆盖。</p>
+<p>Solidity目前对复杂的数据类型或者说是引用类型有array数组和struct（结构体）以及mapping（映射），在函数中作为局部变量时，会默认储存在Storage当中。Solidity 允许定义一个指向外部存储 storage 的指针（引用），这个引用在未初始化的情况下等于 <strong>0</strong>，而在 storage 地址为 <strong>0</strong> 的位置存放着有意义的数据因为Solidity对于状态变量的存储次序一般是按照出现的先后顺序依次排列的。如果此时直接对「未初始化的 storage 引用」进行赋值，那么就会错误覆盖合约存储在 storage 上面的状态变量。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct BorrowAgreement &#123; //为初始化的<br>   address lender;<br>   address borrower;<br>   uint256 tokenAmount;<br>   uint256 collateralAmount;<br>   uint32 collateralRatio;  // Extra collateral, in integer percent.<br>   uint expiration;<br> &#125;<br><br> IERC20Token constant public bancorToken =<br>     IERC20Token(0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C);<br> BancorChanger constant public bancorChanger =<br>     BancorChanger(0xb72A0Fa1E537c956DFca72711c468EfD81270468);<br> BorrowAgreement[] public agreements; //数组<br><br>function isCollateralWithinMargin(<br>     uint256 tokenAmount, uint256 collateralAmount, uint32 collateralRatio)<br> returns(bool) &#123;<br>   IERC20Token etherToken = bancorChanger.getQuickBuyEtherToken();<br>   uint256 collateralInTokens =<br>       bancorChanger.getPurchaseReturn(etherToken, collateralAmount);<br>   uint256 minCollateral = tokenAmount * (100 + collateralRatio) / 100;<br>   return (collateralInTokens &gt; minCollateral);<br> &#125;<br><br> function offerToLend(<br>     uint256 _amount, uint256 _collataral_ratio, uint _expiration) &#123;<br>   assert(bancorToken.transferFrom(msg.sender, this, _amount));<br>   BorrowAgreement agreement; //agreements 变量占据了 storage 的开始位置（slot 0x00），并按照动态数组的规则存放在 storage 上。<br>   agreement.lender = msg.sender; //slot 0x00 处原本存储数组大小的值被设为 msg.sender<br>   agreement.borrower = 0;<br>   agreement.tokenAmount = _amount;<br>   agreement.expiration = _expiration;<br>   agreements.push(agreement);<br> &#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="蜜罐"><a href="#蜜罐" class="headerlink" title="蜜罐"></a>蜜罐</h2><p><strong>蜜罐合约是开发者故意利用各种技巧使代码部分特殊用途不易被参与者发现，利用当中的信息不对称，使参与者产生错误判断，从而被骗取本金。</strong>未初始化的 storage 指针正是“蜜罐合约”部署者最常用的一种技巧。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Honeypot &#123;<br>	uint256 luckyNum = 42;<br>	uint256 public last;<br>	struct Game &#123;<br>		address player;<br>		uint256 number;<br>	&#125;<br>	Game[] public gameHistory;<br>	address owner = msg.sender;<br>	<br>	function guess(uint256 _number) public payable &#123;<br>		Game game;<br>		game.player = msg.sender;<br>		game.number = _number;<br>		gameHistory.push(game);<br>		if (_number == luckyNum) &#123;<br>		   msg.sender.transfer(msg.value * 2);<br>		&#125;<br>		last = now;<br>	&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>应该填入调用者自己的地址</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230619114938489.png" srcset="/img/loading.gif" lazyload alt="image-20230619114938489"></p>
+<h1 id="call调用"><a href="#call调用" class="headerlink" title="call调用"></a>call调用</h1><h2 id="原理简介-1"><a href="#原理简介-1" class="headerlink" title="原理简介"></a>原理简介</h2><p><strong>call 与 static call 是 EVM 中合约内调用其他合约的两个方式</strong>，其对应的底层操作码是  <strong>CALL</strong>  和 <strong>STATICCALL</strong> <strong>。</strong> <strong>CALL</strong> 是在被调用者的上下文中执行，只能修改被调用者的状态。 <strong>STATICCALL</strong> 与 <strong>CALL</strong>  类似，但它不会修改被调用者的。</p>
+<h2 id="未检查的调用返回值"><a href="#未检查的调用返回值" class="headerlink" title="未检查的调用返回值"></a>未检查的调用返回值</h2><p>适用于call、send、transfer等底层消息调用</p>
+<p>call</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.4.25;<br><br>contract ReturnValue &#123;<br><br>  function callchecked(address callee) public &#123;<br>    require(callee.call());<br>  &#125;<br><br>  function callnotchecked(address callee) public &#123;<br>    callee.call(); // 没有检查返回值，将导致代码会继续执行，即便被调用的  callee 合约中发生了 revert  <br>    // do something<br>  &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>send、transfer</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.8.18;<br><br>contract Receiver1 &#123;<br>    receive() external payable &#123;&#125;<br><br>    function balance() public view returns(uint) &#123; return address(this).balance; &#125;<br>&#125;<br><br>contract Receiver2 &#123;<br>    receive() external payable &#123; revert(); &#125;<br><br>    function balance() public view returns(uint) &#123; return address(this).balance; &#125;<br><br>    function test() public &#123; revert(); &#125;<br>&#125;<br><br>contract EtherTransfer &#123;<br>    address r1;<br>    address r2;<br><br>    constructor() &#123;<br>        r1 = address(new Receiver1());<br>        r2 = address(new Receiver2());<br>    &#125;<br><br>    function bal1() public view returns(uint) &#123;<br>        return r1.balance;<br>    &#125;<br><br>    function bal2() public view returns(uint) &#123;<br>        return r2.balance;<br>    &#125;<br><br>    modifier ethersRequired() &#123;<br>        require(msg.value &gt; 0, &quot;ethers required&quot;);<br>        _;<br>    &#125;<br><br>    function testSuccessOnTransfer() public payable ethersRequired &#123;<br>        payable(r1).transfer(msg.value);<br>    &#125;<br><br>    // 会停止执行并抛出异常<br>    function testFailureOnTransfer() public payable ethersRequired &#123;<br>        payable(r2).transfer(msg.value);<br>    &#125;<br><br>    function testSuccessOnSend() public payable ethersRequired &#123;<br>        payable(r1).send(msg.value);<br>    &#125;<br><br>    // 即使send调用失败也会成功执行<br>    function testFailureOnSend() public payable ethersRequired &#123;<br>        payable(r2).send(msg.value);<br>    &#125;<br><br>    //正确处理方法<br>    function testFailureOnSendWithRecommendedPattern() public payable ethersRequired &#123;<br>        bool sucess = payable(r2).send(msg.value);<br>        if (!sucess) &#123; revert(&quot;send failed&quot;); &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<h2 id="调用深度限制"><a href="#调用深度限制" class="headerlink" title="调用深度限制"></a>调用深度限制</h2><p>消息调用的深度被限制在1024，这意味着对于更复杂的操作，循环应该优先于递归调用。在 EIP150 应用前，存在<strong>调用深度攻击</strong></p>
+<blockquote>
+<p><strong>在EIP150中，对消息调用时使用的 gas 做了更新：在消息调用中只能转发当前可用 gas 的 63/64 用于子调用（在 EIP150 提出）。实际上最大调用栈深度限制在 ~340（低于 ~1024），但1024的调用栈深度限制仍然存在。</strong></p>
+<p>解决了两个问题：</p>
+<p>调用深度攻击</p>
+<p>减轻依赖调用的任何进一步潜在的 DoS 攻击所造成的危害</p>
+</blockquote>
+<h2 id="Call方法注入漏洞"><a href="#Call方法注入漏洞" class="headerlink" title="Call方法注入漏洞"></a>Call方法注入漏洞</h2><p><strong>Call方法注入漏洞，顾名思义就是外界可以直接控制合约中的call方法调用的参数，按照注入位置可以分为以下三个场景：</strong></p>
+<ol>
+<li>参数列表可控</li>
+</ol>
+<p> <code> &lt;address&gt;.call(bytes4 selection, arg1, arg2, ...)</code></p>
+<ol start="2">
+<li>函数选择器可控</li>
+</ol>
+<p><code>  &lt;address&gt;.call(bytes4selection, arg1, arg2, ...)</code></p>
+<ol start="3">
+<li>Bytes可控</li>
+</ol>
+<p><code>  &lt;address&gt;.call(bytesdata)</code></p>
+<p><code>  &lt;address&gt;.call(msg.data)</code></p>
+<p>例如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity 0.4.24;<br><br>contract ContractA &#123;<br>    uint public a;<br>    function doSomething(bytes memory data) public &#123;<br>        address(this).call(data);<br>    &#125;<br><br>    function doSomething2(string memory func_name) public &#123;<br>        address(this).call(bytes4(keccak256(func_name)), 888);<br>    &#125;<br><br>    function sensitiveOperation(uint _a) public &#123;<br>        require(msg.sender == address(this));<br>        a = _a;<br>    &#125;<br><br>    function attack() public returns(bytes memory) &#123;<br>        bytes memory payload = abi.encodeWithSignature(&quot;sensitiveOperation(uint256)&quot;, 666);<br>        doSomething(payload);<br>    &#125;<br><br>    function attack2() public returns(bytes memory) &#123;<br>        doSomething2(&quot;sensitiveOperation(uint256)&quot;);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>预防：</p>
+<ol>
+<li><p>可以指定函数选择器字符串，避免直接使用 bytes 进行底层的 call 调用。</p>
+</li>
+<li><p>对于包含特权地址判断的敏感操作，不要轻易将合约自身的地址作为可信地址。</p>
+</li>
+</ol>
+<h2 id="案例分析-1"><a href="#案例分析-1" class="headerlink" title="案例分析"></a>案例分析</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 6.Delegation</a></p>
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 16. Preservation</a></p>
+<h1 id="重入攻击"><a href="#重入攻击" class="headerlink" title="重入攻击"></a>重入攻击</h1><h2 id="单函数重入"><a href="#单函数重入" class="headerlink" title="单函数重入"></a>单函数重入</h2><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">智能合约重入漏洞</a></p>
+<h2 id="跨函数重入"><a href="#跨函数重入" class="headerlink" title="跨函数重入"></a>跨函数重入</h2><p>当一个易受攻击的函数与一个可被攻击者利用的函数共享状态时，就会发生跨函数重入。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs solidity">enum ProposalStatu &#123;<br>	Pending,<br>	Success<br>&#125;<br><br>mapping (uint256 =&gt; ProposalStatu) proposalStatus;<br>mapping (address =&gt; uint256) public balance:<br>mapping (address =&gt; uint256) public weight;<br>mapping (uint256 =&gt; uint256) public votes;<br>mapping (address =&gt; bool) public isStake;<br><br>function vote(uint256 _proposalId, uint256 _valve) external &#123;<br>	require (proposalStatus[_proposalId] == Pending);<br>	require (weight[msg.sender] &gt;= _value);<br>	votes[_proposalid] += _value;<br>	weight[msg.sender] -= _value;<br>&#125;<br><br>function stake() public payable &#123;<br>	require(isStake[msg.sender] == false);<br>	balance[msg.senderl = msg.value;<br>	weight[msg.sender] += msg.value;<br>&#125;<br><br>function unstake(uint256 _value) external &#123;<br>	require(balance[msg.senderl &gt;= _value &amp;&amp; weight[msg.sender) &gt;= _value);<br>	// 触发重入调用vote将其weight减为0,前面做的eight[msg.sender] &gt;= _value`检查将不起作用<br>	msg.sender.call(value: _value) (&quot;&quot;); // send eth to user <br>	balance[msg.sender] -= _value; <br>	weight[msa.sender] -= _value; //使这里发生下溢<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="跨合约重入"><a href="#跨合约重入" class="headerlink" title="跨合约重入"></a>跨合约重入</h2><p>跨函数重入和单函数重入在同一个合约中，也有不在同一个合约，重入可以发生在跨多个合约，便是多个合约共享同一个状态。当一个合约中的一个状态在另一个合约中使用，但在被调用之前未完全更新时，可能会发生跨合约重入。</p>
+<h1 id="tx-origin与msg-sender"><a href="#tx-origin与msg-sender" class="headerlink" title="tx.origin与msg.sender"></a>tx.origin与msg.sender</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>tx.origin 目前仅适用于校验 msg.sender 是否是 EOA 地址，不适用于做权限的校验，需要使用 msg.sender 来进行权限校验。</p>
+<p>tx.origin和msg.sender很直观的区别</p>
+<p><strong>tx.origin 指的是创建初始交易的 EOA。这个全局值通过不同的函数调用传递给其他合约。</strong></p>
+<p><strong>msg.sender 指我们调用函数的最后一个实例。</strong></p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814210003053.png" srcset="/img/loading.gif" lazyload alt="image-20220814210003053"></p>
+<p>tx.origin 不应用于授权。例如，如果所有者设置为</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">address owner = msg.sender<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>但是函数的访问检查是用</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">require(owner == tx.origin)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>这可能会被利用。</p>
+<h2 id="钓鱼"><a href="#钓鱼" class="headerlink" title="钓鱼"></a>钓鱼</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">// SPDX-License-Identifier: MITpragma <br>solidity ^0.8.13;<br>contract Wallet &#123;    address public owner;<br>    constructor() payable &#123;        <br>    	owner = msg.sender;    <br>    &#125;<br>    function transfer(address payable _to, uint _amount) public &#123;        			 require(tx.origin == owner, &quot;Not owner&quot;);<br>			(bool sent, ) = _to.call&#123;value: _amount&#125;(&quot;&quot;);        						    			require(sent, &quot;Failed to send Ether&quot;);    <br>		&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到， Wallet 合约是一个合约钱包，创建者可以在部署合约时将自己的以太转入合约中。当你想花钱的时候可以调用 Wallet.transfer() 将任意数量的存款转移。当然，钱包里的钱并不是任何人都能碰的，所以这里需要通过 tx.origin == owner 的检查才能转账。问题也就出现在这里，前置知识中说到 tx.origin 会读取启动交易的原始地址，所以我们可以伪造一个钓鱼合约来欺骗受害者发起交易从而窃取他的身份转走他的以太。接下来我们看看攻击合约是如何完成身份窃取的。</p>
+<p>Tips：这里还存在重入漏洞。被 fallback 回调函数调用时 tx.origin 依然是最初调用者的 EOA 地址。</p>
+<p><strong>攻击合约</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Attack &#123;    <br>	address payable public owner;    <br>	Wallet wallet;<br>  constructor(Wallet _wallet) &#123;        <br>  	wallet = Wallet(_wallet);        <br>  	owner = payable(msg.sender);    <br>  &#125;<br>  function attack() public &#123;        <br>    wallet.transfer(owner, address(wallet).balance);    <br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>攻击流程：</p>
+<ol>
+<li><p>Alice 部署了 Wallet 合约并向合约中转入十个以太将该合约作为自己的钱包合约。</p>
+</li>
+<li><p>Eve 发现 Wallet 合约中有钱，部署 Attack 合约并在构造函数中传入 Wallet 合约的地址。</p>
+</li>
+<li><p>Eve 通过社会工程学调查到 Alice 特别喜欢网购包包，部署一个假的购物网站并将链接发送至 Alice 的邮箱。</p>
+</li>
+<li><p>Alice 收到邮箱好奇心驱使她点开链接，发现里面有自己喜欢的包包并且价格很低，一时心动就准备购买，但是购买的时候发现需要连接钱包完成签名才能注册成功，Alice 觉得这个网站非常棒很 Web3 ，想都没想直接签名了这笔交易。</p>
+</li>
+<li><p>签名成功后 Alice 发现自己在 Wallet 合约中的所有以太已经被转移。</p>
+</li>
+</ol>
+<p>Alice 在注册时的签名并不是用于注册的，而是签名了调用 Attack.attack() 这笔交易。Attack.attack() 调用了 Wallet.transfer() 并传入 owner 也就是 Eve 的 EOA 地址，以及 Wallet 合约中的以太余额。因为签名这笔交易的地址为 Alice 的 EOA 地址，所以对于 Wallet 合约来说 tx.origin 就是 Alice 的 EOA 地址，所以 Eve 成功利用钓鱼伪造了 Alice 的身份，通过了权限检查并成功将 Wallet 合约中的以太转移到了自己的账户中。</p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 4.Telephone</a></p>
+<h1 id="随机数漏洞"><a href="#随机数漏洞" class="headerlink" title="随机数漏洞"></a>随机数漏洞</h1><p>一般情况下智能合约获取随机数有两种方式：通过<strong>链上信息生成</strong>或者通过<strong>链下喂养</strong>。</p>
+<h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
+<p>* block.coinbase 当前区块的矿工地址</p>
+<p>* block.difficulty 当前区块的挖掘难度（其值由上一个区块产生的时间，上一个区块的难度以及当前区块产生的时间、当前区块的高度决定）</p>
+<p>* block.gaslimit  区块内交易的最大限制燃气消耗量 </p>
+<p>* block.number  当前区块高度</p>
+<p>* block.basefee  gas的基础费用（basefee是动态变化的，其值由和之前区块的gas实际消耗以及gas target值（gasLimit / ELASTICITY_MULTIPLIER 乘数）决定）</p>
+<p>* block.timestamp 当前区块挖掘时间</p>
+<p>* block.blockhash(block.number) ：当前区块的区块哈希[在EVM中本值为0，区块上链后才会赋值]</p>
+</blockquote>
+<p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/">智能合约错误随机性</a></p>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><p>block.blockhash(block.number-1)：<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 3.Coin Flip</a></p>
+<h1 id="delegatecall"><a href="#delegatecall" class="headerlink" title="delegatecall"></a>delegatecall</h1><p>委托调用(delegatecall)是一个低级函数，其功能与call类似，区别在于delegatecall是使用指定地址的代码，而其他信息(存储数据)则是使用当前合约。</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20230619144835429.png" srcset="/img/loading.gif" lazyload alt="image-20230619144835429"></p>
+<p>call</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814213108897.png" srcset="/img/loading.gif" lazyload alt="image-20220814213108897"></p>
+<p>delegateCall</p>
+<p><img src="/2023/06/19/SmartContractBaseSecurity/zhangmingqian/work/blog/source/_posts/SmartContractBaseSecurity/image-20220814213131853.png" srcset="/img/loading.gif" lazyload alt="image-20220814213131853"></p>
+<p>代理合约的简单实现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Flag &#123;<br>    bool public flag;<br>    address public sender;<br>    function setFlag() public &#123;<br>        flag = true;<br>        sender = msg.sender;<br>        &#125;<br>&#125;<br><br>contract Delegate &#123;<br>    bool public flag;<br>    address public sender;<br>	<br>    function setFlagByDelegatecall (address addr) public &#123;<br>        (bool success, bytes memory data) = addr.delegatetcall(abi.encodeWithDignature(&quot;setFlag()&quot;));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/11/13/upgradeable/">更多可升级合约知识</a></p>
+<h2 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h2><ol>
+<li>大多数时候我们使用代理的入口是在<strong>fallback</strong>函数，我们看下面的代码片段，直接调用delegatecall，其返回值data其实是无法返回给外部调用者的</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs solidity">fallback () external payable (<br>	(bool success, bytes memory data) = processor.delegatecall(msg.data);<br>	require(success,&quot;error&quot;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>因此，通常我们使用的解决方法是利用汇编重写一个_delegate函数</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs solidity">/**<br> * @dev Delegates the current call to `implementation`.<br> *<br> * This function does not return to its internal call site, it will return directly to the external caller.<br> */<br>function _delegate(address implementation) internal virtual &#123;<br>    assembly &#123;<br>        // Copy msg.data. We take full control of memory in this inline assembly<br>        // block because it will not return to Solidity code. We overwrite the<br>        // Solidity scratch pad at memory position 0.<br>        calldatacopy(0, 0, calldatasize())<br><br>        // Call the implementation.<br>        // out and outsize are 0 because we don&#x27;t know the size yet.<br>        let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)<br><br>        // Copy the returned data.<br>        returndatacopy(0, 0, returndatasize())<br><br>        switch result<br>        // delegatecall returns 0 on error.<br>        case 0 &#123;<br>            revert(0, returndatasize())<br>        &#125;<br>        default &#123;<br>            return(0, returndatasize())<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>合约初始化问题</p>
+<p>在代理模式中，由于<strong>逻辑合约并不具备构造函数的功能</strong>，所以<strong>实现函数一般都含有initialize函数用于初始化基本参数，并且保证该函数只能被调用一次</strong>。</p>
+<p>目前比较常见的三方库实现了initializer修饰器来限制此函数，保证该函数只能被调用一次。但即使这样也是可能出现问题的（initializer修饰器是否通过检查的关键在于关键bool型变量的值，但如果代理合约对应bool型变量的存储位被其他变量所覆盖，那么可能导致initializer修饰器检查失效）</p>
+</li>
+<li><p>存储冲突</p>
+<p>代理模式是将实现合约的代码拉取到代理合约中执行，存储数据是使用的代理合约的，在实际业务中，甚至存在多个逻辑合约共用一个代理合约的情况。如果代理合约和逻辑合约存储结构设计不合理，并且在逻辑合约升级后新增了变量，就会可能导致变量存储冲突，使得变量被覆盖，存储数据错乱。</p>
+</li>
+<li><p>函数选择器冲突</p>
+<p>通常的代理模式中，调用代理合约函数时，会率先根据调用数据的函数选择器进行查询，如果是代理合约接口，那么就直接执行call调用；但如果是对应的函数选择器在代理合约并未找到，那么将进行fallback函数中，执行delegatacall操作。因此，如果逻辑合约中函数选择器和代理合约一致，那么将始终调用代理合约，而不能进入逻辑合约中(如：transferOwnership)。</p>
+</li>
+<li><p>自毁</p>
+<p>由于delegatecall在调用合约时，如果目标合约地址不存在，也会顺利调用返回。如果逻辑合约被通过selfdestruct指令清除，在代理合约层面delegatecall会继续顺利调用，但是合约已经被销毁，逻辑合约应该禁止使用自毁函数。另外如果用于管理升级的逻辑位于逻辑合约中而不位于代理合约中(如使用了UUPS代理模式)，则实际上会导致再也无法使用代理。</p>
+</li>
+</ol>
+<h1 id="中心化应用引入的安全隐患"><a href="#中心化应用引入的安全隐患" class="headerlink" title="中心化应用引入的安全隐患"></a>中心化应用引入的安全隐患</h1><p>虽然我们已经迎来了划时代的区块链以及智能合约技术，但是交易吞吐量、开发容易程度、以及使用体验等方面仍然需要提高，因此在系统的一部分引入中心化的组件是很常见的做法，但也引入了一些安全隐患。很多做智能合约对接的开发者不一定对智能合约很熟悉，智能合约开发者在开发合约时可能也没有考虑到对接时的风险，因此合约在集成进整个系统时可能会出现一些安全隐患。我们识别，并在开发时时刻提醒自己，做到防患于未然。</p>
+<p><strong>短地址攻击</strong>与<strong>假充值</strong>就是其中最著名的两个中心化应用引入的漏洞。</p>
+<h2 id="短地址攻击"><a href="#短地址攻击" class="headerlink" title="短地址攻击"></a>短地址攻击</h2><p><strong>短地址攻击本质上就是由于对智能合约 ABI 的编码规则不够熟悉导致的漏洞。</strong></p>
+<p>通常是没有对地址的长度进行校验</p>
+<p>例如下列函数</p>
+<p><code>function transfer(address to, uint amount) public returns(bool success);</code></p>
+<p>数据为</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">to</span> = <span class="hljs-number">0</span>xdeaddeaddeaddeaddeaddeaddeaddeaddeaddead<br><span class="hljs-attr">amount</span> = <span class="hljs-number">123</span><br></code></pre></td></tr></table></figure>
+
+<p>ABI 规范要求将参数填充为 32 字节的倍数，因此， 不足 32 字节的部分会被填充。</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs x86asm"><span class="hljs-number">0xa9059cbb</span><br>000000000000000000000000deaddeaddeaddeaddeaddeaddeaddeaddeaddead<br>000000000000000000000000000000000000000000000000000000000000007b<br></code></pre></td></tr></table></figure>
+
+<p>但如果地址少了一个字节，没有对参数进行校验，就会得到如下数据（第二个参数的第一个字节被补到了第一个参数末尾，而第二个参数少掉的一个字节被自然的填充成了32字节）</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs maxima"><span class="hljs-number">0xa9059cbb</span><br><span class="hljs-number">000000000000000000000000deaddeaddeaddeaddeaddeaddeaddeaddeadde00</span><br><span class="hljs-number">0000000000000000000000000000000000000000000000000000000000007b00</span><br></code></pre></td></tr></table></figure>
+
+<p>也就会被解码为</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">to</span> = <span class="hljs-number">0</span>xdeaddeaddeaddeaddeaddeaddeaddeaddeadde<span class="hljs-number">00</span><br><span class="hljs-attribute">amount</span> = <span class="hljs-number">31488</span> // 也就是十六进制的 <span class="hljs-number">0</span>x<span class="hljs-number">7</span>b<span class="hljs-number">00</span>，导致多转出了token<br></code></pre></td></tr></table></figure>
+
+<h2 id="假充值"><a href="#假充值" class="headerlink" title="假充值"></a>假充值</h2><p>当提到“假充值”攻击时，我们通常谈的是攻击者利用公链的某些特性，绕过交易所的充值入账程序，进行虚假充值，并真实入账。</p>
+<p>这里指的是智能合约中的假充值</p>
+<p><strong>ERC20</strong> 的  transfer 接口中，由于接口定义中有一个<strong>bool</strong>返回值用于返回转账是否成功。因此很多实现在转账失败时，并没有抛出异常，而是通过简单的返回 false 替代。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function transfer(address _to, uint256 _value) returns (bool success) &#123;<br>	if (_balances[msg.sender] &gt;= _value &amp;&amp; _value &gt; 0) &#123;<br>		_balances[msg.sender] -= _value;<br>		_balances[_to] += _value;<br>		emit Transfer(msg.sender, _to, _value);<br>		return true;<br>	&#125; else&#123;<br>		return false;<br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>这样的设计在合约层面看起来是合理的，但却很容易与以太坊本身的交易执行结果的状态混淆。</strong>在 Tx Receipt 中的 Status 字段由于标识该交易是否抛出了异常（比如使用了  require/assert/revert/throw  等机制），如果未抛出异常，则为0x01（true），否则为0x00（false）。如果中心化交易所在实现充值时，仅判断 Tx Receipt 的状态来区分是否充值成功的话，就会出现调用 transfer 失败返回 false，但 Tx Receipt 的状态却显示 true 的情况，此时中心化交易所认为充值成功（然而实际失败），将款打到了攻击者的账上。<a target="_blank" rel="noopener" href="https://etherscan.io/tx/0x9fbeeba6c7c20f81938d124af79d27ea8e8566b5e937578ac25fb6c6804error">示例</a></p>
+<p>我们需要严格的使用 <strong>require/assert</strong> 的方式限定条件，当不符合条件时，中止合约继续执行</p>
+<p>而对于接口使用方来说，<strong>除了判断 Tx Receipt 的状态之外，还应该判断收款地址的余额是否增加。</strong>一种方式是通过直接检查收款地址的余额来实现；另一种方式是监听相应的 <code>Transfer</code> 事件来实现，但需要注意合约开发者可能作恶，因此在使用第三方合约接口时，需要严格对代码进行审查。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%BC%8F%E6%B4%9E/">#漏洞</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>智能合约常见漏洞</div>
+      <div>http://example.com/2023/06/19/SmartContractBaseSecurity/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Sissice</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/02/01/SmartContractSecurityAnalysisTool/" title="智能合约安全分析工具赛道研究报告：不止面向开发者，触角更是抵达 C 端用户">
+                        <span class="hidden-mobile">智能合约安全分析工具赛道研究报告：不止面向开发者，触角更是抵达 C 端用户</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

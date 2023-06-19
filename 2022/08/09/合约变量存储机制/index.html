@@ -30,7 +30,7 @@
 <meta property="og:image" content="http://example.com/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/image-20220808230350960.png">
 <meta property="og:image" content="http://example.com/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/image-20220808233453422.png">
 <meta property="article:published_time" content="2022-08-08T16:06:09.000Z">
-<meta property="article:modified_time" content="2022-09-18T08:08:30.636Z">
+<meta property="article:modified_time" content="2023-06-19T02:14:19.434Z">
 <meta property="article:author" content="Sissice">
 <meta property="article:tag" content="漏洞">
 <meta name="twitter:card" content="summary_large_image">
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.5k 字
+          4.5k 字
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          30 分钟
+          38 分钟
         
       </span>
     
@@ -290,6 +290,8 @@
 <li>每个存储槽可以包含长达 32 个字节的字。</li>
 <li>存储槽从位置 0 开始（如数组索引）</li>
 <li>总共有 2²⁵⁶ 存储插槽可用（用于读/写）</li>
+<li>存储槽的第一项以低位对齐（lower-order aligned）的方式存储</li>
+<li>immutable 和 constant 不参与</li>
 </ul>
 <p>有一个优化存储原则：如果下一个变量长度和上一个变量长度加起来不超过256bits，它们就会存储在同一个插槽里</p>
 <p>可以使用 <code>web3.eth.getStorageAt</code> 来读取相应slot的内容</p>
@@ -297,8 +299,13 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function readStorageSlot0() public view returns (bytes32 result) &#123;<br>        assembly &#123;<br>            result := sload(0)<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
 
 <p>也可以在区块链浏览器或remix的debug中查看</p>
+<p>对于使用继承的合约，状态变量的顺序由没有任何其他合约依赖的合约开始的 C3 线性顺序（C3-linearized order）决定。如果上述规则允许的话，不同合约的状态变量共享同一个存储槽。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract A &#123;<br>    uint a = 1; // slot 0 for contract D. slot 2 for contract E.<br>    uint128 b = 2; // slot 1 for contract D slot 3 for contract E.<br>    uint128 c = 3;<br>&#125;<br>contract B &#123;<br>    uint d = 4; // slot 2 for contract D. slot 0 for contract E.<br>    uint e = 5; // slot 3 for contract D. slot 1 for contract E.<br>&#125;<br>contract D is A, B &#123;<br>    uint f = 6; // slot 4<br>&#125;<br>contract E is B, A &#123;<br>    uint f = 6; // slot 4<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
 <p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/blockchain-articles/175237.html">参考1</a></p>
 <p><a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.4.20/miscellaneous.html#layout-of-state-variables-in-storage">参考2-Storage官方文档</a></p>
+<h2 id="前提知识"><a href="#前提知识" class="headerlink" title="前提知识"></a>前提知识</h2><p>1字节：0x00、uint8、bool、bytes1</p>
+<p>20字节：address</p>
 <h2 id="固定大小的值"><a href="#固定大小的值" class="headerlink" title="固定大小的值"></a>固定大小的值</h2><h3 id="简单变量"><a href="#简单变量" class="headerlink" title="简单变量"></a>简单变量</h3><p>即值类型</p>
 <ul>
 <li><code>bool</code>：可以保存 true 或 false 作为其值的布尔值</li>
@@ -338,6 +345,11 @@
 <p>将mapping的key和slot一起keccak_256</p>
 <p>注意，mapping的位置实际上没有存储任何内容。（没有要存储的长度，单个值需要位于其他位置。）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> binascii<br><br><span class="hljs-keyword">from</span> _pysha3 <span class="hljs-keyword">import</span> keccak_256<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">byte32</span>(<span class="hljs-params">i</span>):</span><br>    <span class="hljs-keyword">return</span> binascii.unhexlify(<span class="hljs-string">&#x27;%064x&#x27;</span>%i)<br><br><br>b=keccak_256(byte32(<span class="hljs-number">123</span>)+byte32(<span class="hljs-number">0</span>)).hexdigest()<br><span class="hljs-built_in">print</span>(b)<br><br><span class="hljs-comment">#de31a920dbdd1f015b2a842f0275dc8dec6a82ff94d9b796a36f23c64a3c8332</span><br></code></pre></td></tr></table></figure>
+
+<p>如果映射值是一个非值类型，计算槽位置标志着数据的开始位置。例如，如果值是结构类型，你必须添加一个与结构成员相对应的偏移量才能到达该成员（offset）。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract C &#123;<br>    struct S &#123; uint16 a; uint16 b; uint256 c; &#125;<br>    uint x;<br>    mapping(uint =&gt; mapping(uint =&gt; S)) data;<br>&#125;<br><br>// 计算 data[4][9].c 的存储位置<br>// data[4]: keccak256(byte32(4) + byte32(1))<br>// data[4][9]: keccak256(byte32(9) + keccak256(byte32(4) + byte32(1))<br>// data[4][9].c: keccak256(byte32(9) + keccak256(byte32(4) + byte32(1)) + 1<br></code></pre></td></tr></table></figure>
+
+
 
 <h2 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 12.Privacy</a></p>
 <p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 19.Alien Codex</a></p>
