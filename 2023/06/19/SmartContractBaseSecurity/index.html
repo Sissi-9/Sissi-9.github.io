@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220814213108897.png">
 <meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220814213131853.png">
 <meta property="article:published_time" content="2023-06-19T08:57:02.000Z">
-<meta property="article:modified_time" content="2023-06-19T09:09:04.997Z">
+<meta property="article:modified_time" content="2023-06-20T04:41:33.861Z">
 <meta property="article:author" content="Sissice">
 <meta property="article:tag" content="漏洞">
 <meta name="twitter:card" content="summary_large_image">
@@ -223,7 +223,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          21k 字
+          22k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
         
-          175 分钟
+          182 分钟
         
       </span>
     
@@ -401,11 +401,21 @@
 <p>Solidity目前对复杂的数据类型或者说是引用类型有array数组和struct（结构体）以及mapping（映射），在函数中作为局部变量时，会默认储存在Storage当中。Solidity 允许定义一个指向外部存储 storage 的指针（引用），这个引用在未初始化的情况下等于 <strong>0</strong>，而在 storage 地址为 <strong>0</strong> 的位置存放着有意义的数据因为Solidity对于状态变量的存储次序一般是按照出现的先后顺序依次排列的。如果此时直接对「未初始化的 storage 引用」进行赋值，那么就会错误覆盖合约存储在 storage 上面的状态变量。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs solidity">struct BorrowAgreement &#123; //为初始化的<br>   address lender;<br>   address borrower;<br>   uint256 tokenAmount;<br>   uint256 collateralAmount;<br>   uint32 collateralRatio;  // Extra collateral, in integer percent.<br>   uint expiration;<br> &#125;<br><br> IERC20Token constant public bancorToken =<br>     IERC20Token(0x1F573D6Fb3F13d689FF844B4cE37794d79a7FF1C);<br> BancorChanger constant public bancorChanger =<br>     BancorChanger(0xb72A0Fa1E537c956DFca72711c468EfD81270468);<br> BorrowAgreement[] public agreements; //数组<br><br>function isCollateralWithinMargin(<br>     uint256 tokenAmount, uint256 collateralAmount, uint32 collateralRatio)<br> returns(bool) &#123;<br>   IERC20Token etherToken = bancorChanger.getQuickBuyEtherToken();<br>   uint256 collateralInTokens =<br>       bancorChanger.getPurchaseReturn(etherToken, collateralAmount);<br>   uint256 minCollateral = tokenAmount * (100 + collateralRatio) / 100;<br>   return (collateralInTokens &gt; minCollateral);<br> &#125;<br><br> function offerToLend(<br>     uint256 _amount, uint256 _collataral_ratio, uint _expiration) &#123;<br>   assert(bancorToken.transferFrom(msg.sender, this, _amount));<br>   BorrowAgreement agreement; //agreements 变量占据了 storage 的开始位置（slot 0x00），并按照动态数组的规则存放在 storage 上。<br>   agreement.lender = msg.sender; //slot 0x00 处原本存储数组大小的值被设为 msg.sender<br>   agreement.borrower = 0;<br>   agreement.tokenAmount = _amount;<br>   agreement.expiration = _expiration;<br>   agreements.push(agreement);<br> &#125;<br><br></code></pre></td></tr></table></figure>
 
+<p>以及数组类型</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.4.26;<br><br>contract bet &#123;<br>    uint public num1;<br>    uint[] public feng;<br>    <br>    function number(uint _num) public &#123;<br>        uint[] tmp;<br>        tmp.push(_num);<br>        feng=tmp; <br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
 <h2 id="蜜罐"><a href="#蜜罐" class="headerlink" title="蜜罐"></a>蜜罐</h2><p><strong>蜜罐合约是开发者故意利用各种技巧使代码部分特殊用途不易被参与者发现，利用当中的信息不对称，使参与者产生错误判断，从而被骗取本金。</strong>未初始化的 storage 指针正是“蜜罐合约”部署者最常用的一种技巧。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Honeypot &#123;<br>	uint256 luckyNum = 42;<br>	uint256 public last;<br>	struct Game &#123;<br>		address player;<br>		uint256 number;<br>	&#125;<br>	Game[] public gameHistory;<br>	address owner = msg.sender;<br>	<br>	function guess(uint256 _number) public payable &#123;<br>		Game game;<br>		game.player = msg.sender;<br>		game.number = _number;<br>		gameHistory.push(game);<br>		if (_number == luckyNum) &#123;<br>		   msg.sender.transfer(msg.value * 2);<br>		&#125;<br>		last = now;<br>	&#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
 
 <p>应该填入调用者自己的地址</p>
 <p><img src="/2023/06/19/SmartContractBaseSecurity/image-20230619114938489.png" srcset="/img/loading.gif" lazyload alt="image-20230619114938489"></p>
+<h2 id="修复"><a href="#修复" class="headerlink" title="修复"></a>修复</h2><p>实际上，这个问题只存在于solidity0.5.0之前的版本，编译器版本为0.4.26的话，报的还只是一个warning，不影响deploy；在0.5.0里面就变成了报error：</p>
+<p>在0.5.0以前的版本中，对于结构体，使用mapping进行结构体的初始化，通过创建一 个新的临时 memory 结构体，然后将它拷贝到 storage 中</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.4.26;<br><br>contract bet &#123;<br>    uint public num1;<br>    uint public num2;<br>    uint public num3;<br>    struct Feng&#123;<br>        uint nn1;<br>        uint nn2;<br>        uint nn3;<br>    &#125;<br>    <br>    mapping (uint =&gt; Feng) fengs;<br>    <br>    function number(uint _id, uint _num1, uint _num2, uint _num3) public &#123;<br>        Feng storage feng = fengs[_id];<br>        feng.nn1=_num1;<br>        feng.nn2=_num2;<br>        feng.nn3=_num3;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
+<p>对于数组，在函数中声明的时候进行初始化</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs solidity">pragma solidity ^0.4.26;<br><br>contract bet &#123;<br>    uint public num1;<br>    uint public num2;<br>    uint public num3;<br>    uint[] public feng;<br>    <br>    function number(uint _num) public &#123;<br>        uint[] storage tmp= feng;<br>        tmp.push(_num);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+
 <h1 id="call调用"><a href="#call调用" class="headerlink" title="call调用"></a>call调用</h1><h2 id="原理简介-1"><a href="#原理简介-1" class="headerlink" title="原理简介"></a>原理简介</h2><p><strong>call 与 static call 是 EVM 中合约内调用其他合约的两个方式</strong>，其对应的底层操作码是  <strong>CALL</strong>  和 <strong>STATICCALL</strong> <strong>。</strong> <strong>CALL</strong> 是在被调用者的上下文中执行，只能修改被调用者的状态。 <strong>STATICCALL</strong> 与 <strong>CALL</strong>  类似，但它不会修改被调用者的。</p>
 <h2 id="未检查的调用返回值"><a href="#未检查的调用返回值" class="headerlink" title="未检查的调用返回值"></a>未检查的调用返回值</h2><p>适用于call、send、transfer等底层消息调用</p>
 <p>call</p>
@@ -479,7 +489,7 @@
 </li>
 <li><p>Eve 通过社会工程学调查到 Alice 特别喜欢网购包包，部署一个假的购物网站并将链接发送至 Alice 的邮箱。</p>
 </li>
-<li><p>Alice 收到邮箱好奇心驱使她点开链接，发现里面有自己喜欢的包包并且价格很低，一时心动就准备购买，但是购买的时候发现需要连接钱包完成签名才能注册成功，Alice 觉得这个网站非常棒很 Web3 ，想都没想直接签名了这笔交易。</p>
+<li><p>Alice 购买的时候发现需要连接钱包完成签名才能注册成功，于是直接签名了这笔交易。</p>
 </li>
 <li><p>签名成功后 Alice 发现自己在 Wallet 合约中的所有以太已经被转移。</p>
 </li>
