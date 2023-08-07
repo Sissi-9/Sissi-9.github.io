@@ -19,7 +19,7 @@
     <meta name="description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog VAULT这道题涉及到了 EIP1167 代理合约  通过挑战的要求是改变代理合约的 owner 123function isSolved() public view returns">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Writeup | Paradigm CTF 2021 Part three">
-<meta property="og:url" content="http://example.com/2022/10/03/ParadigmCTF2021three/index.html">
+<meta property="og:url" content="http://sissice.github.io/2022/10/03/ParadigmCTF2021three/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
 <meta property="og:description" content="Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog VAULT这道题涉及到了 EIP1167 代理合约  通过挑战的要求是改变代理合约的 owner 123function isSolved() public view returns">
 <meta property="og:locale" content="zh_CN">
@@ -72,7 +72,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"sissice.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -276,8 +276,8 @@
             
               <div class="markdown-body">
                 
-                <p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/18/ParadigmCTF2021one/">Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog</a></p>
-<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/09/23/ParadigmCTF2021two/">Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog</a></p>
+                <p><a href="https://sissice.github.io/2022/09/18/ParadigmCTF2021one/">Writeup | Paradigm CTF 2021 Part one - Sissice’s Blog</a></p>
+<p><a href="https://sissice.github.io/2022/09/23/ParadigmCTF2021two/">Writeup | Paradigm CTF 2021 Part two - Sissice’s Blog</a></p>
 <h2 id="VAULT"><a href="#VAULT" class="headerlink" title="VAULT"></a>VAULT</h2><p>这道题涉及到了 <a target="_blank" rel="noopener" href="https://learnblockchain.cn/article/721">EIP1167 代理合约</a> </p>
 <p>通过挑战的要求是改变代理合约的 owner</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs solidity">function isSolved() public view returns (bool) &#123;<br>    return vault.owner() != address(this);<br>&#125;<br></code></pre></td></tr></table></figure>
@@ -335,7 +335,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>Writeup | Paradigm CTF 2021 Part three</div>
-      <div>http://example.com/2022/10/03/ParadigmCTF2021three/</div>
+      <div>http://sissice.github.io/2022/10/03/ParadigmCTF2021three/</div>
     </div>
     <div class="license-meta">
       

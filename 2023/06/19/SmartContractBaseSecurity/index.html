@@ -19,25 +19,25 @@
     <meta name="description" content="概述智能合约安全主要关注智能合约及其与区块链内部要素交互过程中的安全性，如智能合约架构设计安全、代码安全、运行安全等。本小节将简要介绍基于以太坊智能合约 Solidity 目前主要的安全问题以及解决方案。 Ethereum平台及Solidity语言的安全漏洞，基于语言本身、执行环境以及系统可以分为3个级别：Solidity、EVM 和 blockchain。  Solidity 级别的漏洞主要涵盖">
 <meta property="og:type" content="article">
 <meta property="og:title" content="智能合约常见漏洞">
-<meta property="og:url" content="http://example.com/2023/06/19/SmartContractBaseSecurity/index.html">
+<meta property="og:url" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/index.html">
 <meta property="og:site_name" content="Sissice&#39;s Blog">
 <meta property="og:description" content="概述智能合约安全主要关注智能合约及其与区块链内部要素交互过程中的安全性，如智能合约架构设计安全、代码安全、运行安全等。本小节将简要介绍基于以太坊智能合约 Solidity 目前主要的安全问题以及解决方案。 Ethereum平台及Solidity语言的安全漏洞，基于语言本身、执行环境以及系统可以分为3个级别：Solidity、EVM 和 blockchain。  Solidity 级别的漏洞主要涵盖">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20230618195016791.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220806235658226.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220807000410789.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20230619114938489.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220814210003053.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20230619144835429.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220814213108897.png">
-<meta property="og:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20220814213131853.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20230618195016791.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/v2-72bafea677bd6b52b94cdd7f45c49b73_720w.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20220806235658226.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20220807000410789.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20230619114938489.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20220814210003053.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20230619144835429.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20220814213108897.png">
+<meta property="og:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20220814213131853.png">
 <meta property="article:published_time" content="2023-06-19T08:57:02.000Z">
 <meta property="article:modified_time" content="2023-06-20T04:41:33.861Z">
 <meta property="article:author" content="Sissice">
 <meta property="article:tag" content="漏洞">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/2023/06/19/SmartContractBaseSecurity/image-20230618195016791.png">
+<meta name="twitter:image" content="http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/image-20230618195016791.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -81,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"sissice.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -338,7 +338,7 @@
 </ol>
 <p><strong>成熟的开源的浮点运算库：</strong></p>
 <p><img src="/2023/06/19/SmartContractBaseSecurity/image-20230618195016791.png" srcset="/img/loading.gif" lazyload alt="image-20230618195016791"></p>
-<h1 id="合约变量存储机制"><a href="#合约变量存储机制" class="headerlink" title="合约变量存储机制"></a>合约变量存储机制</h1><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">合约变量存储机制</a></p>
+<h1 id="合约变量存储机制"><a href="#合约变量存储机制" class="headerlink" title="合约变量存储机制"></a>合约变量存储机制</h1><p>之前的文章 <a href="https://sissice.github.io/2022/08/09/%E5%90%88%E7%BA%A6%E5%8F%98%E9%87%8F%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6/">合约变量存储机制</a></p>
 <h1 id="溢出"><a href="#溢出" class="headerlink" title="溢出"></a>溢出</h1><h2 id="整型溢出"><a href="#整型溢出" class="headerlink" title="整型溢出"></a>整型溢出</h2><h3 id="原理简介"><a href="#原理简介" class="headerlink" title="原理简介"></a>原理简介</h3><p>通常来说，在编程语言里由算数问题导致的整数溢出漏洞屡见不鲜，在区块链的世界里，智能合约的Solidity语言中也存在整数溢出问题，整数溢出一般分为又分为上溢和下溢，在智能合约中出现整数溢出的类型包括三种：</p>
 <ul>
 <li>乘法溢出</li>
@@ -360,7 +360,7 @@
 
 <p>此时将调用失败</p>
 <p><img src="/2023/06/19/SmartContractBaseSecurity/image-20220807000410789.png" srcset="/img/loading.gif" lazyload alt="image-20220807000410789"></p>
-<h3 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h3><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 5.Token</a></p>
+<h3 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h3><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 5.Token</a></p>
 <h2 id="数组溢出"><a href="#数组溢出" class="headerlink" title="数组溢出"></a>数组溢出</h2><p>数组数据位于起始位置 <code>keccak256(p)</code>，其布局方式与静态大小的数组数据相同：一个元素接一个元素，如果元素不超过 16 字节，则可能共享存储槽。动态数组的动态数组递归地应用此规则。</p>
 <p>理论上数组长度是不受限制的，我们可以不断向a、b添加元素。然而EVM存储空间不是无限的，只有2**256-1个slot，所以当动态数组下标是用户可控的且数组长度不受限的情况下，攻击者可以根据虚拟机的插槽深度构造对应的参数，使得参数指向虚拟机中的任意内存位置，从而修改对应插槽的状态变量，这是相当危险的。</p>
 <h2 id="类型混淆导致的溢出"><a href="#类型混淆导致的溢出" class="headerlink" title="类型混淆导致的溢出"></a>类型混淆导致的溢出</h2><p>Solidity允许类型之间进行相互转换，转换时必须符合一定条件，不能导致信息丢失。例如，uint8可以转换为uint16，但是int8不可以转换为uint256，因为int8可以包含uint256中不允许的负值。</p>
@@ -455,9 +455,9 @@
 <li><p>对于包含特权地址判断的敏感操作，不要轻易将合约自身的地址作为可信地址。</p>
 </li>
 </ol>
-<h2 id="案例分析-1"><a href="#案例分析-1" class="headerlink" title="案例分析"></a>案例分析</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 6.Delegation</a></p>
-<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 16. Preservation</a></p>
-<h1 id="重入攻击"><a href="#重入攻击" class="headerlink" title="重入攻击"></a>重入攻击</h1><h2 id="单函数重入"><a href="#单函数重入" class="headerlink" title="单函数重入"></a>单函数重入</h2><p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">智能合约重入漏洞</a></p>
+<h2 id="案例分析-1"><a href="#案例分析-1" class="headerlink" title="案例分析"></a>案例分析</h2><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 6.Delegation</a></p>
+<p><a href="https://sissice.github.io/2022/03/13/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8B%EF%BC%89/">Ethernaut闯关 16. Preservation</a></p>
+<h1 id="重入攻击"><a href="#重入攻击" class="headerlink" title="重入攻击"></a>重入攻击</h1><h2 id="单函数重入"><a href="#单函数重入" class="headerlink" title="单函数重入"></a>单函数重入</h2><p>之前的文章 <a href="https://sissice.github.io/2021/11/09/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%87%8D%E5%85%A5%E6%BC%8F%E6%B4%9E/">智能合约重入漏洞</a></p>
 <h2 id="跨函数重入"><a href="#跨函数重入" class="headerlink" title="跨函数重入"></a>跨函数重入</h2><p>当一个易受攻击的函数与一个可被攻击者利用的函数共享状态时，就会发生跨函数重入。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs solidity">enum ProposalStatu &#123;<br>	Pending,<br>	Success<br>&#125;<br><br>mapping (uint256 =&gt; ProposalStatu) proposalStatus;<br>mapping (address =&gt; uint256) public balance:<br>mapping (address =&gt; uint256) public weight;<br>mapping (uint256 =&gt; uint256) public votes;<br>mapping (address =&gt; bool) public isStake;<br><br>function vote(uint256 _proposalId, uint256 _valve) external &#123;<br>	require (proposalStatus[_proposalId] == Pending);<br>	require (weight[msg.sender] &gt;= _value);<br>	votes[_proposalid] += _value;<br>	weight[msg.sender] -= _value;<br>&#125;<br><br>function stake() public payable &#123;<br>	require(isStake[msg.sender] == false);<br>	balance[msg.senderl = msg.value;<br>	weight[msg.sender] += msg.value;<br>&#125;<br><br>function unstake(uint256 _value) external &#123;<br>	require(balance[msg.senderl &gt;= _value &amp;&amp; weight[msg.sender) &gt;= _value);<br>	// 触发重入调用vote将其weight减为0,前面做的eight[msg.sender] &gt;= _value`检查将不起作用<br>	msg.sender.call(value: _value) (&quot;&quot;); // send eth to user <br>	balance[msg.sender] -= _value; <br>	weight[msa.sender] -= _value; //使这里发生下溢<br>&#125;<br></code></pre></td></tr></table></figure>
 
@@ -495,7 +495,7 @@
 </li>
 </ol>
 <p>Alice 在注册时的签名并不是用于注册的，而是签名了调用 Attack.attack() 这笔交易。Attack.attack() 调用了 Wallet.transfer() 并传入 owner 也就是 Eve 的 EOA 地址，以及 Wallet 合约中的以太余额。因为签名这笔交易的地址为 Alice 的 EOA 地址，所以对于 Wallet 合约来说 tx.origin 就是 Alice 的 EOA 地址，所以 Eve 成功利用钓鱼伪造了 Alice 的身份，通过了权限检查并成功将 Wallet 合约中的以太转移到了自己的账户中。</p>
-<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 4.Telephone</a></p>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><p><a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut闯关 4.Telephone</a></p>
 <h1 id="随机数漏洞"><a href="#随机数漏洞" class="headerlink" title="随机数漏洞"></a>随机数漏洞</h1><p>一般情况下智能合约获取随机数有两种方式：通过<strong>链上信息生成</strong>或者通过<strong>链下喂养</strong>。</p>
 <h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><blockquote>
 <p>* block.coinbase 当前区块的矿工地址</p>
@@ -506,8 +506,8 @@
 <p>* block.timestamp 当前区块挖掘时间</p>
 <p>* block.blockhash(block.number) ：当前区块的区块哈希[在EVM中本值为0，区块上链后才会赋值]</p>
 </blockquote>
-<p>之前的文章 <a target="_blank" rel="noopener" href="https://sissice.github.io/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/">智能合约错误随机性</a></p>
-<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><p>block.blockhash(block.number-1)：<a target="_blank" rel="noopener" href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 3.Coin Flip</a></p>
+<p>之前的文章 <a href="https://sissice.github.io/2021/11/14/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E9%94%99%E8%AF%AF%E9%9A%8F%E6%9C%BA%E6%80%A7/">智能合约错误随机性</a></p>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例"></a>案例</h2><p>block.blockhash(block.number-1)：<a href="https://sissice.github.io/2022/02/27/Ethernaut%E9%97%AF%E5%85%B3%EF%BC%88%E4%B8%8A%EF%BC%89/">Ethernaut 3.Coin Flip</a></p>
 <h1 id="delegatecall"><a href="#delegatecall" class="headerlink" title="delegatecall"></a>delegatecall</h1><p>委托调用(delegatecall)是一个低级函数，其功能与call类似，区别在于delegatecall是使用指定地址的代码，而其他信息(存储数据)则是使用当前合约。</p>
 <p><img src="/2023/06/19/SmartContractBaseSecurity/image-20230619144835429.png" srcset="/img/loading.gif" lazyload alt="image-20230619144835429"></p>
 <p>call</p>
@@ -517,7 +517,7 @@
 <p>代理合约的简单实现</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs solidity">contract Flag &#123;<br>    bool public flag;<br>    address public sender;<br>    function setFlag() public &#123;<br>        flag = true;<br>        sender = msg.sender;<br>        &#125;<br>&#125;<br><br>contract Delegate &#123;<br>    bool public flag;<br>    address public sender;<br>	<br>    function setFlagByDelegatecall (address addr) public &#123;<br>        (bool success, bytes memory data) = addr.delegatetcall(abi.encodeWithDignature(&quot;setFlag()&quot;));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p><a target="_blank" rel="noopener" href="https://sissice.github.io/2022/11/13/upgradeable/">更多可升级合约知识</a></p>
+<p><a href="https://sissice.github.io/2022/11/13/upgradeable/">更多可升级合约知识</a></p>
 <h2 id="注意点"><a href="#注意点" class="headerlink" title="注意点"></a>注意点</h2><ol>
 <li>大多数时候我们使用代理的入口是在<strong>fallback</strong>函数，我们看下面的代码片段，直接调用delegatecall，其返回值data其实是无法返回给外部调用者的</li>
 </ol>
@@ -592,7 +592,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>智能合约常见漏洞</div>
-      <div>http://example.com/2023/06/19/SmartContractBaseSecurity/</div>
+      <div>http://sissice.github.io/2023/06/19/SmartContractBaseSecurity/</div>
     </div>
     <div class="license-meta">
       
